@@ -11,5 +11,5 @@ License of media (textures and sounds):
 ---------------------------------------
 collision.ogg by APercy. See License file
 
-Blimp model by APercy. CC-BY-SA
+Blimp model by APercy. CC0
 
