@@ -122,6 +122,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _baloon_buoyancy = 0,
     _show_hud = true,
     _energy = 1.0,--0.001,
+    _passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,}, --passengers list
+    _inv_id = "",
     item = "steampunk_blimp:blimp",
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
@@ -135,8 +137,14 @@ minetest.register_entity("steampunk_blimp:blimp", {
             stored_anchor = self.anchored,
             stored_hull_integrity = self.hull_integrity,
             stored_item = self.item,
+            stored_inv_id = self._inv_id,
+            --stored_passengers = self._passengers, --passengers list
         })
     end,
+
+	on_deactivate = function(self)
+        airutils.save_inventory(self)
+	end,
 
     on_activate = function(self, staticdata, dtime_s)
         if staticdata ~= "" and staticdata ~= nil then
@@ -152,6 +160,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.surface_level = data.stored_surface_level
             self.hull_integrity = data.stored_hull_integrity
             self.item = data.stored_item
+            self._inv_id = data.stored_inv_id
+            --self._passengers = data.stored_passengers
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"
@@ -198,14 +208,14 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         mobkit.actfunc(self, staticdata, dtime_s)
 
-        --[[
+        
 		local inv = minetest.get_inventory({type = "detached", name = self._inv_id})
 		-- if the game was closed the inventories have to be made anew, instead of just reattached
 		if not inv then
             airutils.create_inventory(self, steampunk_blimp.trunk_slots)
 		else
 		    self.inv = inv
-        end]]--
+        end
 
     end,
 
@@ -496,16 +506,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             is_attached = steampunk_blimp.check_passenger_is_attached(self, name)
 
             if is_attached then
-                --remove pax
-                if self.driver_name ~= nil then
-                    if name == self.owner then
-                        --require the pilot position now
-                        steampunk_blimp.owner_formspec(name)
-                    else
-                        steampunk_blimp.pax_formspec(name)
-                    end
-                else
-                    --check if is on owner list
+                if clicker:get_player_control().aux1 == true then --lets see the inventory
                     local is_shared = false
                     if name == self.owner then is_shared = true end
                     for k, v in pairs(self._shared_owners) do
@@ -514,12 +515,34 @@ minetest.register_entity("steampunk_blimp:blimp", {
                             break
                         end
                     end
-                    --normal user
-                    if is_shared == false then
-                        steampunk_blimp.pax_formspec(name)
+                    if is_shared then
+                        airutils.show_vehicle_trunk_formspec(self, clicker, steampunk_blimp.trunk_slots)
+                    end
+                else
+                    if self.driver_name ~= nil then
+                        if name == self.owner then
+                            --require the pilot position now
+                            steampunk_blimp.owner_formspec(name)
+                        else
+                            steampunk_blimp.pax_formspec(name)
+                        end
                     else
-                        --owners
-                        steampunk_blimp.pilot_formspec(name)
+                        --check if is on owner list
+                        local is_shared = false
+                        if name == self.owner then is_shared = true end
+                        for k, v in pairs(self._shared_owners) do
+                            if v == name then
+                                is_shared = true
+                                break
+                            end
+                        end
+                        --normal user
+                        if is_shared == false then
+                            steampunk_blimp.pax_formspec(name)
+                        else
+                            --owners
+                            steampunk_blimp.pilot_formspec(name)
+                        end
                     end
                 end
             else

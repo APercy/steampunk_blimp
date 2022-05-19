@@ -1,5 +1,6 @@
 steampunk_blimp={}
 steampunk_blimp.gravity = tonumber(minetest.settings:get("movement_gravity")) or 9.8
+steampunk_blimp.trunk_slots = 50
 steampunk_blimp.fuel = {['default:coal_lump'] = {amount=1},['default:coalblock'] = {amount=10}}
 steampunk_blimp.ideal_step = 0.02
 steampunk_blimp.rudder_limit = 30
