@@ -243,9 +243,9 @@ function steampunk_blimp.engineSoundPlay(self)
                 max_hear_distance = 5,
                 loop = true,})
 
-        self.sound_handle_pistons = minetest.sound_play({name = "default_item_smoke"},
-            {object = self.object, gain = 4.0,
-                pitch = 0.5 + ((math.abs(self._power_lever/2)/100)/2),
+        self.sound_handle_pistons = minetest.sound_play({name = "default_cool_lava"},--"default_item_smoke"},
+            {object = self.object, gain = 0.05,
+                pitch = 0.4+((math.abs(self._power_lever)/100)/2),
                 max_hear_distance = 32,
                 loop = true,})
     end
@@ -256,7 +256,7 @@ function steampunk_blimp.engine_set_sound_and_animation(self)
         if self._last_applied_power ~= self._power_lever then
             --minetest.chat_send_all('test2')
             self._last_applied_power = self._power_lever
-            self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation + (self._power_lever/2))
+            self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation + (self._power_lever))
             if self._last_sound_update == nil then self._last_sound_update = self._power_lever end
             if math.abs(self._last_sound_update - self._power_lever) > 5 then
                 self._last_sound_update = self._power_lever
