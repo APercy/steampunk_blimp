@@ -92,18 +92,18 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
         if nodedef.liquidtype ~= "none" then
         end
 
-		pointed_pos.y=pointed_pos.y+5
-		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
-		if boat and placer then
-            local ent = blimp:get_luaentity()
+
+		pointed_pos.y=pointed_pos.y+4
+		local blimp_ent = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
+		if blimp_ent and placer then
+            local ent = blimp_ent:get_luaentity()
             local owner = placer:get_player_name()
             ent.owner = owner
-			blimp:set_yaw(placer:get_look_horizontal())
+			blimp_ent:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
-
+            airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
             local properties = ent.object:get_properties()
             properties.infotext = owner .. " nice blimp"
-            ent.object:set_properties(properties)
 		end
 
 		return itemstack

@@ -110,6 +110,7 @@ function steampunk_blimp.destroy(self, overload)
     if self._passengers_base[4] then self._passengers_base[4]:remove() end
     if self._passengers_base[5] then self._passengers_base[5]:remove() end
 
+    airutils.destroy_inventory(self)
     self.object:remove()
 
     pos.y=pos.y+2

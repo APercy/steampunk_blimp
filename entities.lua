@@ -123,6 +123,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _show_hud = true,
     _energy = 1.0,--0.001,
     _passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,}, --passengers list
+    _inv = nil,
     _inv_id = "",
     item = "steampunk_blimp:blimp",
 
@@ -208,7 +209,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         mobkit.actfunc(self, staticdata, dtime_s)
 
-        
+        self.object:set_armor_groups({immortal=1})        
+
 		local inv = minetest.get_inventory({type = "detached", name = self._inv_id})
 		-- if the game was closed the inventories have to be made anew, instead of just reattached
 		if not inv then
@@ -497,9 +499,10 @@ minetest.register_entity("steampunk_blimp:blimp", {
             is_attached = steampunk_blimp.check_passenger_is_attached(self, name)
 
             if is_attached then
+                local can_bypass = minetest.check_player_privs(clicker, {protection_bypass=true})
                 if clicker:get_player_control().aux1 == true then --lets see the inventory
                     local is_shared = false
-                    if name == self.owner then is_shared = true end
+                    if name == self.owner or can_bypass then is_shared = true end
                     for k, v in pairs(self._shared_owners) do
                         if v == name then
                             is_shared = true
@@ -511,7 +514,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
                     end
                 else
                     if self.driver_name ~= nil then
-                        if name == self.owner then
+                        if name == self.owner or can_bypass then
                             --require the pilot position now
                             steampunk_blimp.owner_formspec(name)
                         else
@@ -520,7 +523,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
                     else
                         --check if is on owner list
                         local is_shared = false
-                        if name == self.owner then is_shared = true end
+                        if name == self.owner or can_bypass then is_shared = true end
                         for k, v in pairs(self._shared_owners) do
                             if v == name then
                                 is_shared = true
