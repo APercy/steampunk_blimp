@@ -184,20 +184,20 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
                             ent.anchored = true
                             ent.object:set_velocity(vector.new())
-                            if ent.driver_name then
-                                minetest.chat_send_player(ent.driver_name,core.colorize('#00ff00', " >>> Anchor away!"))
+                            if name then
+                                minetest.chat_send_player(name,core.colorize('#00ff00', " >>> Anchor away!"))
                             end
                             --ent.buoyancy = 0.1
                         else
-                            if ent.driver_name then
-                                minetest.chat_send_player(ent.driver_name,core.colorize('#ff0000', " >>> Too fast to set anchor!"))
+                            if name then
+                                minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Too fast to set anchor!"))
                             end
                         end
                     end
                 else
                     ent.anchored = false
-                    if ent.driver_name then
-                        minetest.chat_send_player(ent.driver_name,core.colorize('#00ff00', " >>> Weigh anchor!"))
+                    if name then
+                        minetest.chat_send_player(name,core.colorize('#00ff00', " >>> Weigh anchor!"))
                     end
                 end
                 --ent._rudder_angle = 0
