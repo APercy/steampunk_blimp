@@ -281,22 +281,13 @@ minetest.register_entity("steampunk_blimp:blimp", {
                     fade = 0.0,
                     pitch = 1.0,
                 })
-                if self.hull_integrity then
+                --[[if self.hull_integrity then
                     self.hull_integrity = self.hull_integrity - impact
                     if (self.hull_integrity <= 0) then
-                        --minetest.sound_play("steampunk_blimp_hull_break", {
-                        minetest.sound_play("default_break_glass", {
-                            --to_player = self.driver_name,
-                            pos = curr_pos,
-                            max_hear_distance = 15,
-                            gain = 2,
-                            fade = 0.0,
-                            pitch = 1.0,
-                        })
                         steampunk_blimp.destroy(self, true)
                         return
                     end
-                end
+                end]]--
             end
         end
         
