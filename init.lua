@@ -14,31 +14,63 @@ steampunk_blimp.passenger_pos = {
     [4] = {x=-11,y=0,z=14},
     [5] = {x=11,y=0,z=14},
     }
+
 steampunk_blimp.canvas_texture = "wool_white.png^[colorize:#f4e7c1:128"
 steampunk_blimp.metal_texture = "default_clay.png^[colorize:#a3acac:128"
 steampunk_blimp.black_texture = "default_clay.png^[colorize:#030303:200"
 steampunk_blimp.wood_texture = "default_clay.png^[colorize:#3a270d:230"
 steampunk_blimp.forno_texture = steampunk_blimp.black_texture.."^[mask:steampunk_blimp_forno_mask.png"
 steampunk_blimp.rotor_texture = "("..steampunk_blimp.canvas_texture.."^[mask:steampunk_blimp_rotor_mask2.png)^(default_wood.png^[mask:steampunk_blimp_rotor_mask.png)"
+steampunk_blimp.textures = {
+            steampunk_blimp.black_texture, --alimentacao balao
+            "default_wood.png", --asa
+            steampunk_blimp.canvas_texture, --asa
+            steampunk_blimp.canvas_texture, --balao
+            "wool_white.png", --faixas brancas nariz
+            "wool_blue.png", --faixas azuis nariz
+            steampunk_blimp.metal_texture, --pontas do balão
+            steampunk_blimp.black_texture, --caldeira
+            steampunk_blimp.forno_texture, --caldeira
+            "default_junglewood.png", --casco
+            steampunk_blimp.canvas_texture, --leme
+            "default_junglewood.png", --leme
+            steampunk_blimp.wood_texture, --timao
+            "default_ladder_wood.png", --escada
+            "default_wood.png", --mureta
+            steampunk_blimp.wood_texture, --mureta
+            steampunk_blimp.black_texture, --nacele rotores
+            steampunk_blimp.wood_texture, --quilha
+            "default_wood.png", --rotores
+            steampunk_blimp.rotor_texture, --"steampunk_blimp_rotor.png", --rotores
+            steampunk_blimp.black_texture, --suportes rotores
+            "default_junglewood.png", --suporte timao
+            "steampunk_blimp_rope.png", --cordas
+            "wool_blue.png", --det azul
+            "wool_white.png", --det branco
+            steampunk_blimp.wood_texture, --fixacao cordas
+            --"steampunk_blimp_metal.png",
+            --"steampunk_blimp_red.png",
+        }
+
 
 local steampunk_blimp_attached = {}
 
 steampunk_blimp.colors ={
-    black='#2b2b2b',
-    blue='#0063b0',
-    brown='#8c5922',
-    cyan='#07B6BC',
-    dark_green='#567a42',
-    dark_grey='#6d6d6d',
-    green='#4ee34c',
-    grey='#9f9f9f',
-    magenta='#ff0098',
-    orange='#ff8b0e',
-    pink='#ff62c6',
-    red='#dc1818',
-    violet='#a437ff',
-    white='#FFFFFF',
-    yellow='#ffe400',
+    black='black',
+    blue='blue',
+    brown='brown',
+    cyan='cyan',
+    dark_green='dark_green',
+    dark_grey='dark_grey',
+    green='green',
+    grey='grey',
+    magenta='magenta',
+    orange='orange',
+    pink='pink',
+    red='red',
+    violet='violet',
+    white='white',
+    yellow='yellow',
 }
 
 function steampunk_blimp.clone_node(node_name)

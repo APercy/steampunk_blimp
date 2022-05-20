@@ -108,15 +108,23 @@ function steampunk_blimp.dettach_pax(self, player)
     end
 end
 
+function steampunk_blimp.textures_copy()
+    local tablecopy = {}
+    for k, v in pairs(steampunk_blimp.textures) do
+      tablecopy[k] = v
+    end
+    return tablecopy
+end
+
 --painting
 function steampunk_blimp.paint(self, colstr)
     if colstr then
         self.color = colstr
-        local l_textures = self.initial_properties.textures
+        local l_textures = steampunk_blimp.textures_copy()
         for _, texture in ipairs(l_textures) do
-            local indx = texture:find('steampunk_blimp_painting.png')
+            local indx = texture:find('wool_blue.png')
             if indx then
-                l_textures[_] = "steampunk_blimp_painting.png^[multiply:".. colstr
+                l_textures[_] = "wool_".. colstr..".png"
             end
         end
         self.object:set_properties({textures=l_textures})
