@@ -1,3 +1,14 @@
+local function do_attach(self, player, slot)
+    if slot == 0 then return end
+    if self._passengers[slot] == nil then
+        local name = player:get_player_name()
+        --minetest.chat_send_all(self.driver_name)
+        self._passengers[slot] = name
+        player:set_attach(self._passengers_base[slot], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+        player_api.player_attached[name] = true
+    end
+end
+
 function steampunk_blimp.check_passenger_is_attached(self, name)
     local is_attached = false
     if self._passenger == name then is_attached = true end
@@ -14,21 +25,25 @@ function steampunk_blimp.check_passenger_is_attached(self, name)
 end
 
 --this method checks each 1 second for a disconected player who comes back
-function steampunk_blimp.checkConnectionFailedPassengers(self)
+function steampunk_blimp.rescueConnectionFailedPassengers(self)
     self._disconnection_check_time = self._disconnection_check_time + self.dtime
     if self._disconnection_check_time > 1 then
+        --minetest.chat_send_all(dump(self._passengers))
         self._disconnection_check_time = 0
         for i = 5,1,-1 
         do 
             if self._passengers[i] then
                 local player = minetest.get_player_by_name(self._passengers[i])
-                if player then
-		            if player:get_hp() > 0 then
-                        self._passengers[i] = nil --clear the slot first
-                        steampunk_blimp.attach_pax(self, player) -- realloc the lost passenger
-                    else
-                        --steampunk_blimp.dettachPlayer(self, player)
-		            end
+                if player then --we have a player!
+                    if player_api.player_attached[self._passengers[i]] == nil then --but isn't attached?
+                        --minetest.chat_send_all("okay")
+		                if player:get_hp() > 0 then
+                            self._passengers[i] = nil --clear the slot first
+                            do_attach(self, player, i) --attach
+                        else
+                            --steampunk_blimp.dettachPlayer(self, player)
+		                end
+                    end
                 end
             end
         end
@@ -36,9 +51,15 @@ function steampunk_blimp.checkConnectionFailedPassengers(self)
 end
 
 -- attach passenger
-function steampunk_blimp.attach_pax(self, player)
-    local name = player:get_player_name()
+function steampunk_blimp.attach_pax(self, player, slot)
+    slot = slot or 0
+    if slot > 0 then
+        do_attach(self, player, slot)
+        return
+    end
+    --minetest.chat_send_all(dump(self._passengers))
 
+    --now yes, lets attach the player
     --randomize the seat
     local t = {1,2,3,4,5}
     for i = 1, #t*2 do
@@ -50,10 +71,7 @@ function steampunk_blimp.attach_pax(self, player)
     for k,v in ipairs(t) do
         i = t[k]
         if self._passengers[i] == nil then
-            --minetest.chat_send_all(self.driver_name)
-            self._passengers[i] = name
-            player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-            player_api.player_attached[name] = true
+            do_attach(self, player, i)
             break
         end
     end
@@ -539,7 +557,7 @@ function steampunk_blimp.move_persons(self)
                     --minetest.chat_send_all(dump(self._passengers_base_pos[i]))
                     player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
                 else
-                    self._passengers[i] = nil
+                    --self._passengers[i] = nil
                 end
             end
         end

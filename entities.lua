@@ -140,7 +140,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             stored_hull_integrity = self.hull_integrity,
             stored_item = self.item,
             stored_inv_id = self._inv_id,
-            --stored_passengers = self._passengers, --passengers list
+            stored_passengers = self._passengers, --passengers list
         })
     end,
 
@@ -163,7 +163,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.hull_integrity = data.stored_hull_integrity
             self.item = data.stored_item
             self._inv_id = data.stored_inv_id
-            --self._passengers = data.stored_passengers
+            self._passengers = data.stored_passengers
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"
@@ -184,7 +184,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
                 [3]=steampunk_blimp.passenger_pos[3],
                 [4]=steampunk_blimp.passenger_pos[4],
                 [5]=steampunk_blimp.passenger_pos[5],} --curr pos
-        self._passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,} --passenger names
+        --self._passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,} --passenger names
 
         self._passengers_base[1]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
         self._passengers_base[1]:set_attach(self.object,'',self._passengers_base_pos[1],{x=0,y=0,z=0})
@@ -306,7 +306,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         accel = steampunk_blimp.control(self, dtime, hull_direction, longit_speed, accel) or vel
 
         --get disconnected players
-        --steampunk_blimp.checkConnectionFailedPassengers(self)
+        steampunk_blimp.rescueConnectionFailedPassengers(self)
 
         local turn_rate = math.rad(18)
         newyaw = yaw + self.dtime*(1 - 1 / (math.abs(longit_speed) + 1)) *
@@ -531,6 +531,15 @@ minetest.register_entity("steampunk_blimp:blimp", {
                     end
                 end
             else
+                --first lets clean the boat slots
+                --note that when it happens, the "rescue" function will lost the historic
+                for i = 5,1,-1 
+                do 
+                    if self._passengers[i] ~= nil then
+                        local old_player = minetest.get_player_by_name(self._passengers[i])
+                        if not old_player then self._passengers[i] = nil end
+                    end
+                end
                 --attach normal passenger
                 --if self._door_closed == false then
                     steampunk_blimp.attach_pax(self, clicker)
