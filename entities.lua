@@ -123,6 +123,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _show_hud = true,
     _energy = 1.0,--0.001,
     _passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,}, --passengers list
+    _disconnection_check_time = 0,
     _inv = nil,
     _inv_id = "",
     item = "steampunk_blimp:blimp",
@@ -253,6 +254,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
         --minetest.chat_send_all(self._energy)
         steampunk_blimp.engine_set_sound_and_animation(self)
 
+        local node_bellow = mobkit.nodeatpos(mobkit.pos_shift(curr_pos,{y=-2.8}))
+        local is_flying = true
+        if node_bellow and node_bellow.drawtype ~= 'airlike' then is_flying = false end
 
         local is_attached = false
         local player = nil
@@ -262,6 +266,12 @@ minetest.register_entity("steampunk_blimp:blimp", {
             if player then
                 is_attached = steampunk_blimp.checkAttach(self, player)
             end
+        end
+        
+        if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
+            self.object:move_to(curr_pos)
+            self.object:set_acceleration({x=0,y=mobkit.gravity,z=0})
+            return
         end
 
         --fire
@@ -292,30 +302,11 @@ minetest.register_entity("steampunk_blimp:blimp", {
                 end]]--
             end
         end
-        
+
         accel = steampunk_blimp.control(self, dtime, hull_direction, longit_speed, accel) or vel
 
-        --[[if is_attached then
-            --control
-        else
-            -- for some engine lag the player can be detached from the blimp, so lets set him attached again
-            local can_stop = true
-            if self.owner and self.driver_name then
-                -- attach the driver again
-                if player then
-                    steampunk_blimp.attach(self, player)
-                    can_stop = false
-                end
-            end
-
-            if can_stop then
-                --detach player
-                if self.sound_handle ~= nil then
-                    minetest.sound_stop(self.sound_handle)
-                    self.sound_handle = nil
-                end
-            end
-        end]]--
+        --get disconnected players
+        --steampunk_blimp.checkConnectionFailedPassengers(self)
 
         local turn_rate = math.rad(18)
         newyaw = yaw + self.dtime*(1 - 1 / (math.abs(longit_speed) + 1)) *

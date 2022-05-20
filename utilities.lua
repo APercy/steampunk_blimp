@@ -13,12 +13,34 @@ function steampunk_blimp.check_passenger_is_attached(self, name)
     return is_attached
 end
 
+--this method checks each 1 second for a disconected player who comes back
+function steampunk_blimp.checkConnectionFailedPassengers(self)
+    self._disconnection_check_time = self._disconnection_check_time + self.dtime
+    if self._disconnection_check_time > 1 then
+        self._disconnection_check_time = 0
+        for i = 5,1,-1 
+        do 
+            if self._passengers[i] then
+                local player = minetest.get_player_by_name(self._passengers[i])
+                if player then
+		            if player:get_hp() > 0 then
+                        self._passengers[i] = nil --clear the slot first
+                        steampunk_blimp.attach_pax(self, player) -- realloc the lost passenger
+                    else
+                        --steampunk_blimp.dettachPlayer(self, player)
+		            end
+                end
+            end
+        end
+    end
+end
+
 -- attach passenger
 function steampunk_blimp.attach_pax(self, player)
     local name = player:get_player_name()
 
     --randomize the seat
-    local t = {1,2,3,4}
+    local t = {1,2,3,4,5}
     for i = 1, #t*2 do
         local a = math.random(#t)
         local b = math.random(#t)

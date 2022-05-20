@@ -155,22 +155,23 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 --  dettach player
                 --=========================
                 -- eject passenger if the plane is on ground
-                local touching_ground, liquid_below = airutils.check_node_below(plane_obj, 2.5)
-                --if ent.isinliquid or touching_ground then --isn't flying?
-                    --ok, remove pax
-                    local passenger = nil
-                    for i = 5,1,-1 
-                    do 
-                        if ent._passengers[i] == name then
-                            passenger = minetest.get_player_by_name(ent._passengers[i])
-                            if passenger then
-                                steampunk_blimp.dettach_pax(ent, passenger)
-                                --minetest.chat_send_all('saiu')
-                                break
-                            end
+                ent.driver_name = nil
+                ent._at_control = false
+
+                --ok, remove pax
+                local passenger = nil
+                for i = 5,1,-1 
+                do 
+                    if ent._passengers[i] == name then
+                        passenger = minetest.get_player_by_name(ent._passengers[i])
+                        if passenger then
+                            steampunk_blimp.dettach_pax(ent, passenger)
+                            --minetest.chat_send_all('saiu')
+                            break
                         end
                     end
-                --end
+                end
+
 		    end
 		    if fields.bring then
 
