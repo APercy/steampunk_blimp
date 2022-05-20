@@ -68,32 +68,32 @@ minetest.register_entity("steampunk_blimp:blimp", {
         backface_culling = false,
         mesh = "steampunk_blimp.b3d",
         textures = {
-            "steampunk_blimp_black.png", --alimentacao balao
+            steampunk_blimp.black_texture, --alimentacao balao
             "default_wood.png", --asa
-            "steampunk_blimp_canvas.png", --asa
-            "steampunk_blimp_canvas.png", --balao
+            steampunk_blimp.canvas_texture, --asa
+            steampunk_blimp.canvas_texture, --balao
             "wool_white.png", --faixas brancas nariz
             "wool_blue.png", --faixas azuis nariz
-            "steampunk_blimp_metal.png", --pontas do balão
-            "steampunk_blimp_black.png", --caldeira
-            "steampunk_blimp_forno.png", --caldeira
+            steampunk_blimp.metal_texture, --pontas do balão
+            steampunk_blimp.black_texture, --caldeira
+            steampunk_blimp.forno_texture, --caldeira
             "default_junglewood.png", --casco
-            "steampunk_blimp_canvas.png", --leme
+            steampunk_blimp.canvas_texture, --leme
             "default_junglewood.png", --leme
-            "steampunk_blimp_wood.png", --timao
+            steampunk_blimp.wood_texture, --timao
             "default_ladder_wood.png", --escada
             "default_wood.png", --mureta
-            "steampunk_blimp_wood.png", --mureta
-            "steampunk_blimp_black.png", --nacele rotores
-            "steampunk_blimp_wood.png", --quilha
+            steampunk_blimp.wood_texture, --mureta
+            steampunk_blimp.black_texture, --nacele rotores
+            steampunk_blimp.wood_texture, --quilha
             "default_wood.png", --rotores
-            "steampunk_blimp_rotor.png", --rotores
-            "steampunk_blimp_black.png", --suportes rotores
-            "steampunk_blimp_wood.png", --suporte timao
+            steampunk_blimp.rotor_texture, --"steampunk_blimp_rotor.png", --rotores
+            steampunk_blimp.black_texture, --suportes rotores
+            "default_junglewood.png", --suporte timao
             "steampunk_blimp_rope.png", --cordas
             "wool_blue.png", --det azul
             "wool_white.png", --det branco
-            "steampunk_blimp_wood.png", --fixacao cordas
+            steampunk_blimp.wood_texture, --fixacao cordas
             --"steampunk_blimp_metal.png",
             --"steampunk_blimp_red.png",
         },

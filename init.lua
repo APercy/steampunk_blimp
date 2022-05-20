@@ -14,6 +14,12 @@ steampunk_blimp.passenger_pos = {
     [4] = {x=-11,y=0,z=14},
     [5] = {x=11,y=0,z=14},
     }
+steampunk_blimp.canvas_texture = "wool_white.png^[colorize:#f4e7c1:128"
+steampunk_blimp.metal_texture = "default_clay.png^[colorize:#a3acac:128"
+steampunk_blimp.black_texture = "default_clay.png^[colorize:#030303:200"
+steampunk_blimp.wood_texture = "default_clay.png^[colorize:#3a270d:230"
+steampunk_blimp.forno_texture = steampunk_blimp.black_texture.."^[mask:steampunk_blimp_forno_mask.png"
+steampunk_blimp.rotor_texture = "("..steampunk_blimp.canvas_texture.."^[mask:steampunk_blimp_rotor_mask2.png)^(default_wood.png^[mask:steampunk_blimp_rotor_mask.png)"
 
 local steampunk_blimp_attached = {}
 
