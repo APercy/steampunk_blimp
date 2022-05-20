@@ -268,6 +268,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
             end
         end
         
+        steampunk_blimp.move_persons(self)
+
         if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
             self.object:move_to(curr_pos)
             --self.object:set_acceleration({x=0,y=mobkit.gravity,z=0})
@@ -373,8 +375,6 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         --saves last velocy for collision detection (abrupt stop)
         self.last_vel = self.object:get_velocity()
-
-        steampunk_blimp.move_persons(self)
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
