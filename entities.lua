@@ -252,11 +252,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self.object:move_to(curr_pos)
 
         --minetest.chat_send_all(self._energy)
-        steampunk_blimp.engine_set_sound_and_animation(self)
-
         local node_bellow = mobkit.nodeatpos(mobkit.pos_shift(curr_pos,{y=-2.8}))
-        local is_flying = true
-        if node_bellow and node_bellow.drawtype ~= 'airlike' then is_flying = false end
+        --[[local is_flying = true
+        if node_bellow and node_bellow.drawtype ~= 'airlike' then is_flying = false end]]--
 
         local is_attached = false
         local player = nil
@@ -267,14 +265,14 @@ minetest.register_entity("steampunk_blimp:blimp", {
                 is_attached = steampunk_blimp.checkAttach(self, player)
             end
         end
-        
-        steampunk_blimp.move_persons(self)
 
-        if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
+        --[[if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
             self.object:move_to(curr_pos)
             --self.object:set_acceleration({x=0,y=mobkit.gravity,z=0})
             return
-        end
+        end]]--
+
+        steampunk_blimp.engine_set_sound_and_animation(self)
 
         --fire
         if self._engine_running == true then
@@ -375,6 +373,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         --saves last velocy for collision detection (abrupt stop)
         self.last_vel = self.object:get_velocity()
+
+        steampunk_blimp.move_persons(self)
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
