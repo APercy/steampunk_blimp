@@ -68,6 +68,7 @@ function steampunk_blimp.attach_pax(self, player, slot)
         t[a],t[b] = t[b],t[a]
     end
 
+    local i=0
     for k,v in ipairs(t) do
         i = t[k]
         if self._passengers[i] == nil then
