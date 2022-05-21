@@ -11,7 +11,6 @@ end
 
 function steampunk_blimp.check_passenger_is_attached(self, name)
     local is_attached = false
-    if self._passenger == name then is_attached = true end
     if is_attached == false then
         for i = 5,1,-1 
         do 
@@ -68,6 +67,8 @@ function steampunk_blimp.attach_pax(self, player, slot)
         t[a],t[b] = t[b],t[a]
     end
 
+    --minetest.chat_send_all(dump(t))
+
     local i=0
     for k,v in ipairs(t) do
         i = t[k]
@@ -79,23 +80,19 @@ function steampunk_blimp.attach_pax(self, player, slot)
 end
 
 function steampunk_blimp.dettach_pax(self, player)
-    local name = player:get_player_name() --self._passenger
+    if player then
+        local name = player:get_player_name() --self._passenger
 
-    -- passenger clicked the object => driver gets off the vehicle
-    if self._passenger == name then
-        self._passenger = nil
-    else
+        -- passenger clicked the object => driver gets off the vehicle
         for i = 5,1,-1 
         do 
             if self._passengers[i] == name then
                 self._passengers[i] = nil
-                break
+                --break
             end
         end
-    end
 
-    -- detach the player
-    if player then
+        -- detach the player
         player:set_detach()
         player_api.player_attached[name] = nil
         player_api.set_animation(player, "stand")
@@ -136,19 +133,6 @@ function steampunk_blimp.destroy(self, overload)
     if self.sound_handle then
         minetest.sound_stop(self.sound_handle)
         self.sound_handle = nil
-    end
-
-    if self.driver_name then
-        local driver = minetest.get_player_by_name(self.driver_name)
-        -- prevent error when submarine of unlogged driver is destroied by preasure
-        if driver then
-            driver:set_detach()
-            driver:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-            -- player should stand again
-            player_api.set_animation(driver, "stand")
-        end
-        player_api.player_attached[self.driver_name] = nil
-        self.driver_name = nil
     end
 
     local pos = self.object:get_pos()
@@ -346,9 +330,9 @@ function steampunk_blimp.start_furnace(self)
 end
 
 function steampunk_blimp.boat_upper_deck_map(pos, dpos)
-    local orig_pos = vector.new(pos)
-    local position = vector.new(dpos)
-    local new_pos = vector.new(dpos)
+    local orig_pos = steampunk_blimp.copy_vector(pos)
+    local position = steampunk_blimp.copy_vector(dpos)
+    local new_pos = steampunk_blimp.copy_vector(dpos)
     
     new_pos.z = steampunk_blimp.clamp(new_pos.z, -47, -16)
 
@@ -378,9 +362,9 @@ function steampunk_blimp.boat_upper_deck_map(pos, dpos)
 end
 
 function steampunk_blimp.boat_lower_deck_map(pos, dpos)
-    local orig_pos = vector.new(pos)
-    local position = vector.new(dpos)
-    local new_pos = vector.new(dpos)
+    local orig_pos = steampunk_blimp.copy_vector(pos)
+    local position = steampunk_blimp.copy_vector(dpos)
+    local new_pos = steampunk_blimp.copy_vector(dpos)
     new_pos.z = steampunk_blimp.clamp(new_pos.z, -29, 45)
     if position.z > -31 and position.z < -14 then --limit 10
         new_pos.y = 0
@@ -441,9 +425,9 @@ function steampunk_blimp.boat_lower_deck_map(pos, dpos)
 end
 
 function steampunk_blimp.ladder_map(pos, dpos)
-    local orig_pos = vector.new(pos)
-    local position = vector.new(dpos)
-    local new_pos = vector.new(dpos)
+    local orig_pos = steampunk_blimp.copy_vector(pos)
+    local position = steampunk_blimp.copy_vector(dpos)
+    local new_pos = steampunk_blimp.copy_vector(dpos)
     new_pos.z = steampunk_blimp.clamp(new_pos.z, -18, -12)
     if position.z > -20 and position.z < -10 then --limit 10
         new_pos.x = steampunk_blimp.clamp(new_pos.x, 4, 12)
@@ -534,11 +518,14 @@ end
 
 function steampunk_blimp.move_persons(self)
     --self._passenger = nil
+    if self.object == nil then return end
     for i = 5,1,-1 
     do
+        local player = nil
+        if self._passengers[i] then player = minetest.get_player_by_name(self._passengers[i]) end
+
         if self.driver_name and self._passengers[i] == self.driver_name then
-            local player = minetest.get_player_by_name(self.driver_name)
-            --the driver
+            --clean driver if it's nil
             if player == nil then
                 self._passengers[i] = nil
                 self.driver_name = nil
@@ -546,21 +533,20 @@ function steampunk_blimp.move_persons(self)
         else
             if self._passengers[i] ~= nil then
                 --minetest.chat_send_all("pass: "..dump(self._passengers[i]))
-                local player = minetest.get_player_by_name(self._passengers[i])
                 --the rest of the passengers
                 if player then
                     local result_pos = get_result_pos(self, player)
                     local y_rot = 0
                     if result_pos then
                         y_rot = result_pos.y -- the only field that returns a rotation
-                        local new_pos = vector.new(self._passengers_base_pos[i])
+                        local new_pos = steampunk_blimp.copy_vector(self._passengers_base_pos[i])
                         new_pos.x = new_pos.x - result_pos.z
                         new_pos.z = new_pos.z - result_pos.x
                         --minetest.chat_send_all(dump(new_pos))
                         --local pos_d = steampunk_blimp.boat_lower_deck_map(self._passengers_base_pos[i], new_pos)
                         local pos_d = steampunk_blimp.navigate_deck(self._passengers_base_pos[i], new_pos, player)
                         --minetest.chat_send_all(dump(height))
-                        self._passengers_base_pos[i] = vector.new(pos_d)
+                        self._passengers_base_pos[i] = steampunk_blimp.copy_vector(pos_d)
                         self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
                     end
                     --minetest.chat_send_all(dump(self._passengers_base_pos[i]))
@@ -573,3 +559,10 @@ function steampunk_blimp.move_persons(self)
     end
 end
 
+function steampunk_blimp.copy_vector(original_vector)
+    local tablecopy = {}
+    for k, v in pairs(original_vector) do
+      tablecopy[k] = v
+    end
+    return tablecopy
+end

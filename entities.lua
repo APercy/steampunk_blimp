@@ -93,7 +93,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _baloon_buoyancy = 0,
     _show_hud = true,
     _energy = 1.0,--0.001,
-    _passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,}, --passengers list
+    _passengers = {}, --passengers list
+    _passengers_base = {}, --obj id
+    _passengers_base_pos = steampunk_blimp.copy_vector({}),
     _disconnection_check_time = 0,
     _inv = nil,
     _inv_id = "",
@@ -120,21 +122,22 @@ minetest.register_entity("steampunk_blimp:blimp", {
 	end,
 
     on_activate = function(self, staticdata, dtime_s)
+        --minetest.chat_send_all('passengers: '.. dump(self._passengers))
         if staticdata ~= "" and staticdata ~= nil then
             local data = minetest.deserialize(staticdata) or {}
-            self._baloon_buoyancy = data.stored_baloon_buoyancy
-            self._energy = data.stored_energy
-            self.owner = data.stored_owner
-            self._shared_owners = data.stored_shared_owners
-            self.hp = data.stored_hp
-            self.color = data.stored_color
-            self.anchored = data.stored_anchor
-            self.buoyancy = data.stored_buoyancy
-            self.surface_level = data.stored_surface_level
+
+            self._baloon_buoyancy = data.stored_baloon_buoyancy or 0
+            self._energy = data.stored_energy or 0
+            self.owner = data.stored_owner or ""
+            self._shared_owners = data.stored_shared_owners or {}
+            self.hp = data.stored_hp or 50
+            self.color = data.stored_color or "blue"
+            self.anchored = data.stored_anchor or true
+            self.buoyancy = data.stored_buoyancy or 0.15
             self.hull_integrity = data.stored_hull_integrity
             self.item = data.stored_item
             self._inv_id = data.stored_inv_id
-            self._passengers = data.stored_passengers
+            self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"
@@ -153,13 +156,14 @@ minetest.register_entity("steampunk_blimp:blimp", {
         fire:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
 	    self.fire = fire
 
-        self._passengers_base = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil} --obj id
+        self._passengers_base = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
+        self._passengers_base_pos = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
         self._passengers_base_pos = {
-                [1]=steampunk_blimp.passenger_pos[1],
-                [2]=steampunk_blimp.passenger_pos[2],
-                [3]=steampunk_blimp.passenger_pos[3],
-                [4]=steampunk_blimp.passenger_pos[4],
-                [5]=steampunk_blimp.passenger_pos[5],} --curr pos
+                [1]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[1]),
+                [2]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[2]),
+                [3]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[3]),
+                [4]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[4]),
+                [5]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[5]),} --curr pos
         --self._passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,} --passenger names
 
         self._passengers_base[1]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
@@ -195,7 +199,6 @@ minetest.register_entity("steampunk_blimp:blimp", {
 		else
 		    self.inv = inv
         end
-
     end,
 
     on_step = function(self, dtime)
@@ -228,7 +231,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self.object:move_to(curr_pos)
 
         --minetest.chat_send_all(self._energy)
-        local node_bellow = mobkit.nodeatpos(mobkit.pos_shift(curr_pos,{y=-2.8}))
+        --local node_bellow = mobkit.nodeatpos(mobkit.pos_shift(curr_pos,{y=-2.8}))
         --[[local is_flying = true
         if node_bellow and node_bellow.drawtype ~= 'airlike' then is_flying = false end]]--
 
@@ -242,6 +245,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             end
         end
 
+        if self.owner == "" then return end
         --[[if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
             self.object:move_to(curr_pos)
             --self.object:set_acceleration({x=0,y=mobkit.gravity,z=0})
@@ -260,7 +264,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         --detect collision
         if self.last_vel ~= nil then
             local impact = steampunk_blimp.get_hipotenuse_value(vel, self.last_vel)
-            if impact > 1 then
+            if impact > 3 then
                 minetest.sound_play("steampunk_blimp_collision", {
                     --to_player = self.driver_name,
                     pos = curr_pos,
@@ -443,7 +447,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         local is_on_ground = self.isinliquid or touching_ground or liquid_below
         local is_under_water = airutils.check_is_under_water(self.object)
 
-        --minetest.chat_send_all('name '.. dump(name) .. ' - pilot: ' .. dump(self.driver_name) .. ' - pax: ' .. dump(copilot_name))
+        --minetest.chat_send_all('passengers: '.. dump(self._passengers))
         --=========================
         --  form to pilot
         --=========================
@@ -463,9 +467,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
         --  attach passenger
         --=========================
         else
-            is_attached = steampunk_blimp.check_passenger_is_attached(self, name)
+            local pass_is_attached = steampunk_blimp.check_passenger_is_attached(self, name)
 
-            if is_attached then
+            if pass_is_attached then
                 local can_bypass = minetest.check_player_privs(clicker, {protection_bypass=true})
                 if clicker:get_player_control().aux1 == true then --lets see the inventory
                     local is_shared = false

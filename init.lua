@@ -52,9 +52,6 @@ steampunk_blimp.textures = {
             --"steampunk_blimp_red.png",
         }
 
-
-local steampunk_blimp_attached = {}
-
 steampunk_blimp.colors ={
     black='black',
     blue='blue',
@@ -72,15 +69,6 @@ steampunk_blimp.colors ={
     white='white',
     yellow='yellow',
 }
-
-function steampunk_blimp.clone_node(node_name)
-    if not (node_name and type(node_name) == 'string') then
-        return
-    end
-
-    local node = minetest.registered_nodes[node_name]
-    return table.copy(node)
-end
 
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "utilities.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "control.lua")
@@ -125,23 +113,25 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
 		end
         
         local pointed_pos = pointed_thing.under
-        local node_below = minetest.get_node(pointed_pos).name
-        local nodedef = minetest.registered_nodes[node_below]
-        if nodedef.liquidtype ~= "none" then
-        end
-
-
-		pointed_pos.y=pointed_pos.y+4
-		local blimp_ent = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
-		if blimp_ent and placer then
-            local ent = blimp_ent:get_luaentity()
+        --local node_below = minetest.get_node(pointed_pos).name
+        --local nodedef = minetest.registered_nodes[node_below]
+        
+		pointed_pos.y=pointed_pos.y+3
+		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
+		if blimp and placer then
+            local ent = blimp:get_luaentity()
+            ent._passengers = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
+            --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
             local owner = placer:get_player_name()
             ent.owner = owner
-			blimp_ent:set_yaw(placer:get_look_horizontal())
+			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
             airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
+
             local properties = ent.object:get_properties()
             properties.infotext = owner .. " nice blimp"
+            blimp:set_properties(properties)
+            --steampunk_blimp.attach_pax(ent, placer)
 		end
 
 		return itemstack
