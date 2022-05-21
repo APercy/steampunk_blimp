@@ -403,7 +403,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
                     local color = item_name:sub(indx+1)
                     local colstr = steampunk_blimp.colors[color]
                     --minetest.chat_send_all(color ..' '.. dump(colstr))
-                    if colstr then
+                    if colstr and (name == self.owner or minetest.check_player_privs(puncher, {protection_bypass=true})) then
                         local ctrl = puncher:get_player_control()
                         if ctrl.aux1 then
                             steampunk_blimp.paint2(self, colstr)
