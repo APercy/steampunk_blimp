@@ -26,7 +26,7 @@ steampunk_blimp.textures = {
             "default_wood.png", --asa
             steampunk_blimp.canvas_texture, --asa
             steampunk_blimp.canvas_texture, --balao
-            "wool_white.png", --faixas brancas nariz
+            "wool_yellow.png", --faixas brancas nariz
             "wool_blue.png", --faixas azuis nariz
             steampunk_blimp.metal_texture, --pontas do balão
             steampunk_blimp.black_texture, --caldeira
@@ -46,7 +46,7 @@ steampunk_blimp.textures = {
             "default_junglewood.png", --suporte timao
             "steampunk_blimp_rope.png", --cordas
             "wool_blue.png", --det azul
-            "wool_white.png", --det branco
+            "wool_yellow.png", --det branco
             steampunk_blimp.wood_texture, --fixacao cordas
             --"steampunk_blimp_metal.png",
             --"steampunk_blimp_red.png",

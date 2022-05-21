@@ -77,6 +77,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     lastvelocity = vector.new(),
     hp = 50,
     color = "blue",
+    color2 = "white",
     timeout = 0;
     buoyancy = 0.15,
     max_hp = 50,
@@ -109,6 +110,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             stored_shared_owners = self._shared_owners,
             stored_hp = self.hp,
             stored_color = self.color,
+            stored_color2 = self.color2,
             stored_anchor = self.anchored,
             stored_hull_integrity = self.hull_integrity,
             stored_item = self.item,
@@ -132,6 +134,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self._shared_owners = data.stored_shared_owners or {}
             self.hp = data.stored_hp or 50
             self.color = data.stored_color or "blue"
+            self.color2 = data.stored_color2 or "white"
             self.anchored = data.stored_anchor or true
             self.buoyancy = data.stored_buoyancy or 0.15
             self.hull_integrity = data.stored_hull_integrity
@@ -150,6 +153,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.color = colstr
         end
         steampunk_blimp.paint(self, self.color)
+        steampunk_blimp.paint2(self, self.color2)
         local pos = self.object:get_pos()
 
         local fire=minetest.add_entity(pos,'steampunk_blimp:fire')
@@ -400,7 +404,12 @@ minetest.register_entity("steampunk_blimp:blimp", {
                     local colstr = steampunk_blimp.colors[color]
                     --minetest.chat_send_all(color ..' '.. dump(colstr))
                     if colstr then
-                        steampunk_blimp.paint(self, colstr)
+                        local ctrl = puncher:get_player_control()
+                        if ctrl.aux1 then
+                            steampunk_blimp.paint2(self, colstr)
+                        else
+                            steampunk_blimp.paint(self, colstr)
+                        end
                         itmstck:set_count(itmstck:get_count()-1)
                         puncher:set_wielded_item(itmstck)
                     end

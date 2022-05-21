@@ -113,18 +113,32 @@ function steampunk_blimp.textures_copy()
     return tablecopy
 end
 
+local function paint(self)
+    local l_textures = steampunk_blimp.textures_copy()
+    for _, texture in ipairs(l_textures) do
+        local indx = texture:find('wool_blue.png')
+        if indx then
+            l_textures[_] = "wool_".. self.color..".png"
+        end
+        indx = texture:find('wool_yellow.png')
+        if indx then
+            l_textures[_] = "wool_".. self.color2..".png"
+        end
+    end
+    self.object:set_properties({textures=l_textures})
+end
+
 --painting
 function steampunk_blimp.paint(self, colstr)
     if colstr then
         self.color = colstr
-        local l_textures = steampunk_blimp.textures_copy()
-        for _, texture in ipairs(l_textures) do
-            local indx = texture:find('wool_blue.png')
-            if indx then
-                l_textures[_] = "wool_".. colstr..".png"
-            end
-        end
-        self.object:set_properties({textures=l_textures})
+        paint(self)
+    end
+end
+function steampunk_blimp.paint2(self, colstr)
+    if colstr then
+        self.color2 = colstr
+        paint(self)
     end
 end
 
