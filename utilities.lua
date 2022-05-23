@@ -103,13 +103,6 @@ function steampunk_blimp.dettach_pax(self, player, side)
             local rotation = self.object:get_rotation()
             local direction = rotation.y
 
-            --[[
-            sin(theta) = opposite/hypotenuse
-            cos(theta) = adjacent/hypotenuse
-            For X "Distance * COS ( Angle )"
-            For Y "Distance * SIN ( Angle )"
-            ]]--
-
             if side == "l" then
                 direction = direction - math.rad(180)
             end
@@ -117,7 +110,11 @@ function steampunk_blimp.dettach_pax(self, player, side)
             local move = 5
             pos.x = pos.x + move * math.cos(direction)
             pos.z = pos.z + move * math.sin(direction)
-            pos.y = pos.y - 2.5
+            if self.isinliquid then
+                pos.y = pos.y + 1
+            else
+                pos.y = pos.y - 2.5
+            end
             player:set_pos(pos)
         end, player:get_pos())
     end
