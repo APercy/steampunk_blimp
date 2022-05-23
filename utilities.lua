@@ -124,8 +124,21 @@ local function paint(self)
         if indx then
             l_textures[_] = "wool_".. self.color2..".png"
         end
+        indx = texture:find('steampunk_blimp_alpha_logo.png')
+        if indx then
+            l_textures[_] = self.logo
+        end
     end
     self.object:set_properties({textures=l_textures})
+end
+
+function steampunk_blimp.set_logo(self, texture_name)
+    if texture_name == "" or texture_name == nil then
+        self.logo = "steampunk_blimp_alpha_logo.png"
+    elseif texture_name then
+        self.logo = texture_name
+    end
+    paint(self)
 end
 
 --painting

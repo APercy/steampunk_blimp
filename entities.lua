@@ -78,6 +78,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     hp = 50,
     color = "blue",
     color2 = "white",
+    logo = "steampunk_blimp_alpha_logo.png",
     timeout = 0;
     buoyancy = 0.15,
     max_hp = 50,
@@ -111,6 +112,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             stored_hp = self.hp,
             stored_color = self.color,
             stored_color2 = self.color2,
+            stored_logo = self.logo,
             stored_anchor = self.anchored,
             stored_hull_integrity = self.hull_integrity,
             stored_item = self.item,
@@ -135,6 +137,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.hp = data.stored_hp or 50
             self.color = data.stored_color or "blue"
             self.color2 = data.stored_color2 or "white"
+            self.logo = data.stored_logo or "steampunk_blimp_alpha_logo.png"
             self.anchored = data.stored_anchor or true
             self.buoyancy = data.stored_buoyancy or 0.15
             self.hull_integrity = data.stored_hull_integrity

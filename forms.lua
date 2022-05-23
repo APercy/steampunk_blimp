@@ -51,6 +51,25 @@ function steampunk_blimp.pax_formspec(name)
     minetest.show_formspec(name, "steampunk_blimp:passenger_main", basic_form)
 end
 
+function steampunk_blimp.logo_formspec(name)
+    local basic_form = table.concat({
+        "formspec_version[3]",
+        "size[6,4]",
+	}, "")
+
+    local logos = {"blimp_liz.png","blimp_shotting_star.png","blimp_skull.png",}
+    local logolist = ""
+    for k, v in pairs(logos) do
+        logolist = logolist .. v .. ","
+    end
+
+    basic_form = basic_form.."label[1,1.0;Select a logo:]"
+    basic_form = basic_form.."dropdown[1,1.2;4,0.6;logo;"..logolist..";0;false]"
+    basic_form = basic_form.."button[1,2.2;4,0.8;set_logo;Set Blimp Logo]"
+
+    minetest.show_formspec(name, "steampunk_blimp:logo_main", basic_form)
+end
+
 function steampunk_blimp.owner_formspec(name)
     local basic_form = table.concat({
         "formspec_version[3]",
@@ -110,6 +129,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         minetest.close_formspec(name, "steampunk_blimp:passenger_main")
 	end
+    if formname == "steampunk_blimp:logo_main" then
+        local name = player:get_player_name()
+        local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
+        if plane_obj == nil then
+            minetest.close_formspec(name, "steampunk_blimp:logo_main")
+            return
+        end
+        local ent = plane_obj:get_luaentity()
+        if ent then
+		    if fields.logo or fields.set_logo then
+                steampunk_blimp.set_logo(ent, fields.logo)
+		    end
+        end
+        minetest.close_formspec(name, "steampunk_blimp:logo_main")
+    end
     if formname == "steampunk_blimp:pilot_main" then
         local name = player:get_player_name()
         local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
@@ -255,7 +289,7 @@ minetest.register_chatcommand("blimp_share", {
 
 minetest.register_chatcommand("blimp_remove", {
 	params = "name",
-	description = "Removes ownewrshipfrom someone",
+	description = "Removes ownewrship from someone",
 	privs = {interact = true},
 	func = function(name, param)
         local player = minetest.get_player_by_name(name)
@@ -275,6 +309,37 @@ minetest.register_chatcommand("blimp_remove", {
                                 end
                             end
                             minetest.chat_send_player(name,core.colorize('#00ff00', " >>> user removed"))
+                            --minetest.chat_send_all(dump(entity._shared_owners))
+                        else
+                            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
+                        end
+                    else
+			            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+                    end
+                end
+            end
+		else
+			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+		end
+	end
+})
+
+minetest.register_chatcommand("blimp_logo", {
+	params = "",
+	description = "Changes blimp logo",
+	privs = {interact = true},
+	func = function(name, param)
+        local player = minetest.get_player_by_name(name)
+        local attached_to = player:get_attach()
+    
+		if attached_to ~= nil then
+            local seat = attached_to:get_attach()
+            if seat ~= nil then
+                local entity = seat:get_luaentity()
+                if entity then
+                    if entity.name == "steampunk_blimp:blimp" then
+                        if entity.owner == name then
+                            steampunk_blimp.logo_formspec(name)
                             --minetest.chat_send_all(dump(entity._shared_owners))
                         else
                             minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))

@@ -48,6 +48,7 @@ steampunk_blimp.textures = {
             "wool_blue.png", --det azul
             "wool_yellow.png", --det branco
             steampunk_blimp.wood_texture, --fixacao cordas
+            "steampunk_blimp_alpha_logo.png", --logo
             --"steampunk_blimp_metal.png",
             --"steampunk_blimp_red.png",
         }
