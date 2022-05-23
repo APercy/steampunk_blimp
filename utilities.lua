@@ -89,6 +89,7 @@ function steampunk_blimp.dettach_pax(self, player, side)
         do 
             if self._passengers[i] == name then
                 self._passengers[i] = nil
+                self._passengers_base_pos[i] = steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
                 --break
             end
         end
