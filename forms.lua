@@ -35,7 +35,10 @@ function steampunk_blimp.pilot_formspec(name)
 
     basic_form = basic_form.."checkbox[1,4.6;take_control;Take the Control;"..take_control.."]"
     basic_form = basic_form.."checkbox[1,5.2;anchor;Anchor away;"..anchor.."]"
-    basic_form = basic_form.."button[1,6.0;4,1;go_out;Go Offboard]"
+    
+    basic_form = basic_form.."label[1,6.0;Disembark:]"
+    basic_form = basic_form.."button[1,6.2;2,1;disembark_l;<< Left]"
+    basic_form = basic_form.."button[3,6.2;2,1;disembark_r;Right >>]"
 
     minetest.show_formspec(name, "steampunk_blimp:pilot_main", basic_form)
 end
@@ -46,7 +49,9 @@ function steampunk_blimp.pax_formspec(name)
         "size[6,3]",
 	}, "")
 
-	basic_form = basic_form.."button[1,1.0;4,1;go_out;Go Offboard]"
+    basic_form = basic_form.."label[1,1.0;Disembark:]"
+    basic_form = basic_form.."button[1,1.2;2,1;disembark_l;<< Left]"
+    basic_form = basic_form.."button[3,1.2;2,1;disembark_r;Right >>]"
 
     minetest.show_formspec(name, "steampunk_blimp:passenger_main", basic_form)
 end
@@ -73,11 +78,13 @@ end
 function steampunk_blimp.owner_formspec(name)
     local basic_form = table.concat({
         "formspec_version[3]",
-        "size[6,4]",
+        "size[6,4.2]",
 	}, "")
 
 	basic_form = basic_form.."button[1,1.0;4,1;take;Take the Control Now]"
-    basic_form = basic_form.."button[1,2.0;4,1;go_out;Go Offboard]"
+    basic_form = basic_form.."label[1,2.2;Disembark:]"
+    basic_form = basic_form.."button[1,2.4;2,1;disembark_l;<< Left]"
+    basic_form = basic_form.."button[3,2.4;2,1;disembark_r;Right >>]"
 
     minetest.show_formspec(name, "steampunk_blimp:owner_main", basic_form)
 end
@@ -92,8 +99,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         local ent = plane_obj:get_luaentity()
         if ent then
-		    if fields.go_out then
-                steampunk_blimp.dettach_pax(ent, player)
+		    if fields.disembark_l then
+                steampunk_blimp.dettach_pax(ent, player, "l")
+		    end
+		    if fields.disembark_r then
+                steampunk_blimp.dettach_pax(ent, player, "r")
 		    end
 		    if fields.take then
                 ent._at_control = true
@@ -123,8 +133,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         local ent = plane_obj:get_luaentity()
         if ent then
-		    if fields.go_out then
-                steampunk_blimp.dettach_pax(ent, player)
+		    if fields.disembark_l then
+                steampunk_blimp.dettach_pax(ent, player, "l")
+		    end
+		    if fields.disembark_r then
+                steampunk_blimp.dettach_pax(ent, player, "r")
 		    end
         end
         minetest.close_formspec(name, "steampunk_blimp:passenger_main")
@@ -165,7 +178,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
 		    if fields.take_control then
                 if fields.take_control == "true" then
-                    if ent.driver_name == nil then
+                    if ent.driver_name == nil or ent.driver_name == "" then
                         ent._at_control = true
                         for i = 5,1,-1 
                         do 
@@ -178,13 +191,15 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                                 break
                             end
                         end
+                    else
+                        minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. Someone is at the blimp control now."))
                     end
                 else
                     ent.driver_name = nil
                     ent._at_control = false
                 end
 		    end
-		    if fields.go_out then
+		    if fields.disembark_l then
                 --=========================
                 --  dettach player
                 --=========================
@@ -192,19 +207,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 ent.driver_name = nil
                 ent._at_control = false
 
-                --ok, remove pax
-                local passenger = nil
-                for i = 5,1,-1 
-                do 
-                    if ent._passengers[i] == name then
-                        passenger = minetest.get_player_by_name(ent._passengers[i])
-                        if passenger then
-                            steampunk_blimp.dettach_pax(ent, passenger)
-                            --minetest.chat_send_all('saiu')
-                            break
-                        end
-                    end
-                end
+                steampunk_blimp.dettach_pax(ent, player, "l")
+
+		    end
+		    if fields.disembark_r then
+                --=========================
+                --  dettach player
+                --=========================
+                -- eject passenger if the plane is on ground
+                ent.driver_name = nil
+                ent._at_control = false
+
+                steampunk_blimp.dettach_pax(ent, player, "r")
 
 		    end
 		    if fields.bring then

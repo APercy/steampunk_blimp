@@ -79,7 +79,8 @@ function steampunk_blimp.attach_pax(self, player, slot)
     end
 end
 
-function steampunk_blimp.dettach_pax(self, player)
+function steampunk_blimp.dettach_pax(self, player, side)
+    side = side or "r"
     if player then
         local name = player:get_player_name() --self._passenger
 
@@ -99,6 +100,23 @@ function steampunk_blimp.dettach_pax(self, player)
 
         -- move player down
         minetest.after(0.1, function(pos)
+            local rotation = self.object:get_rotation()
+            local direction = rotation.y
+
+            --[[
+            sin(theta) = opposite/hypotenuse
+            cos(theta) = adjacent/hypotenuse
+            For X "Distance * COS ( Angle )"
+            For Y "Distance * SIN ( Angle )"
+            ]]--
+
+            if side == "l" then
+                direction = direction - math.rad(180)
+            end
+
+            local move = 5
+            pos.x = pos.x + move * math.cos(direction)
+            pos.z = pos.z + move * math.sin(direction)
             pos.y = pos.y - 2.5
             player:set_pos(pos)
         end, player:get_pos())

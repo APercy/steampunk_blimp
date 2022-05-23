@@ -496,7 +496,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
                         airutils.show_vehicle_trunk_formspec(self, clicker, steampunk_blimp.trunk_slots)
                     end
                 else
-                    if self.driver_name ~= nil then
+                    if self.driver_name ~= nil and self.driver_name ~= "" then
+                        --lets take the control by force
                         if name == self.owner or can_bypass then
                             --require the pilot position now
                             steampunk_blimp.owner_formspec(name)
