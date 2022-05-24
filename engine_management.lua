@@ -46,6 +46,7 @@ local function boiler_step(self, accel)
     end
 
     self._boiler_pressure = self._boiler_pressure - consumed_pressure
+    if self._boiler_pressure < 0 then self._boiler_pressure = 0 end
 end
 
 local function furnace_step(self, accel)
