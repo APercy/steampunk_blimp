@@ -355,6 +355,7 @@ function steampunk_blimp.engine_set_sound_and_animation(self)
     end
 end
 
+
 function steampunk_blimp.start_furnace(self)
     if self._engine_running then
 	    self._engine_running = false
@@ -363,13 +364,16 @@ function steampunk_blimp.start_furnace(self)
             minetest.sound_stop(self.sound_handle)
             self.sound_handle = nil
         end
-        self.object:set_animation_frame_speed(0)
-        self._power_lever = 0 --zero power
     elseif self._engine_running == false and self._energy > 0 then
 	    self._engine_running = true
-        -- sound and animation
-        steampunk_blimp.engineSoundPlay(self)
-        self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation)
+        -- sound
+        if self.sound_handle then minetest.sound_stop(self.sound_handle) end
+        if self.object then
+            self.sound_handle = minetest.sound_play({name = "default_furnace_active"},
+                {object = self.object, gain = 0.2,
+                    max_hear_distance = 5,
+                    loop = true,})
+        end
     end
 end
 

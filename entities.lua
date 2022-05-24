@@ -144,7 +144,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.color = data.stored_color or "blue"
             self.color2 = data.stored_color2 or "white"
             self.logo = data.stored_logo or "steampunk_blimp_alpha_logo.png"
-            self.anchored = data.stored_anchor or true
+            self.anchored = data.stored_anchor or false
             self.buoyancy = data.stored_buoyancy or 0.15
             self.hull_integrity = data.stored_hull_integrity
             self.item = data.stored_item
@@ -265,8 +265,6 @@ minetest.register_entity("steampunk_blimp:blimp", {
             return
         end]]--
 
-        steampunk_blimp.engine_set_sound_and_animation(self)
-
         --fire
         if self._engine_running == true then
             self.fire:set_properties({textures={"default_furnace_fire_fg.png"},glow=15})
@@ -382,7 +380,6 @@ minetest.register_entity("steampunk_blimp:blimp", {
         if is_attached == true then
             --refuel
             steampunk_blimp.load_fuel(self, puncher)
-            self._engine_running = true
         end
 
         if is_attached == false then
