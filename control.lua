@@ -2,13 +2,6 @@
 
 steampunk_blimp.vector_up = vector.new(0, 1, 0)
 
-function steampunk_blimp.get_pointer_angle(value, maxvalue)
-    local angle = value/maxvalue * 180
-    angle = angle - 90
-    angle = angle * -1
-    return angle
-end
-
 function steampunk_blimp.check_node_below(obj)
 	local pos_below = obj:get_pos()
 	pos_below.y = pos_below.y - 0.1

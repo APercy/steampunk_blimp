@@ -83,6 +83,7 @@ function steampunk_blimp.dettach_pax(self, player, side)
     side = side or "r"
     if player then
         local name = player:get_player_name() --self._passenger
+        steampunk_blimp.remove_hud(player)
 
         -- passenger clicked the object => driver gets off the vehicle
         for i = 5,1,-1 

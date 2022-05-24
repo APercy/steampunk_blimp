@@ -197,6 +197,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 else
                     ent.driver_name = nil
                     ent._at_control = false
+                    steampunk_blimp.remove_hud(player)
                 end
 		    end
 		    if fields.disembark_l then
@@ -226,7 +227,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		    end
             if fields.anchor then
                 if fields.anchor == "true" then
-                    local max_speed_anchor = 0.2
+                    local max_speed_anchor = 0.5
                     if ent._longit_speed then
                         if ent._longit_speed < max_speed_anchor and
                            ent._longit_speed > -max_speed_anchor then

@@ -95,6 +95,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _baloon_buoyancy = 0,
     _show_hud = true,
     _energy = 1.0,--0.001,
+    _water_level = 1.0,
+    _boiler_pressure = 1.0, --min 155 max 310
     _passengers = {}, --passengers list
     _passengers_base = {}, --obj id
     _passengers_base_pos = steampunk_blimp.copy_vector({}),
@@ -107,6 +109,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
         return minetest.serialize({
             stored_baloon_buoyancy = self._baloon_buoyancy,
             stored_energy = self._energy,
+            stored_water_level = self._water_level,
+            stored_boiler_pressure = self._boiler_pressure,
             stored_owner = self.owner,
             stored_shared_owners = self._shared_owners,
             stored_hp = self.hp,
@@ -132,6 +136,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
             self._baloon_buoyancy = data.stored_baloon_buoyancy or 0
             self._energy = data.stored_energy or 0
+            self._water_level = data.stored_water_level or 0
+            self._boiler_pressure = data.stored_boiler_pressure or 0
             self.owner = data.stored_owner or ""
             self._shared_owners = data.stored_shared_owners or {}
             self.hp = data.stored_hp or 50
@@ -299,23 +305,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         newyaw = yaw + self.dtime*(1 - 1 / (math.abs(longit_speed) + 1)) *
             self._rudder_angle / 30 * turn_rate * steampunk_blimp.sign(longit_speed)
 
-        -- calculate energy consumption --
-        ----------------------------------
-        if self._energy > 0 and self._engine_running then
-            local zero_reference = vector.new()
-            local acceleration = steampunk_blimp.get_hipotenuse_value(accel, zero_reference)
-            local consumed_power = acceleration/steampunk_blimp.FUEL_CONSUMPTION
-            --self._energy = self._energy - consumed_power;
-
-            local energy_indicator_angle = steampunk_blimp.get_pointer_angle(self._energy, steampunk_blimp.MAX_FUEL)
-        end
-        if self._energy <= 0 then
-            self._engine_running = false
-            if self.sound_handle then minetest.sound_stop(self.sound_handle) end
-            self.object:set_animation_frame_speed(0)
-        end
-        ----------------------------
-        -- end energy consumption --
+        steampunk_blimp.engine_step(self, accel)
         
         --roll adjust
         ---------------------------------

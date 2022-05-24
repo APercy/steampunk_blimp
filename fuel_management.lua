@@ -1,8 +1,7 @@
 --
 -- fuel
 --
-steampunk_blimp.GAUGE_FUEL_POSITION = {x=0,y=-8.45,z=5.31}
-steampunk_blimp.MAX_FUEL = minetest.settings:get("steampunk_blimp_max_fuel") or 10
+steampunk_blimp.MAX_FUEL = minetest.settings:get("steampunk_blimp_max_fuel") or 99
 steampunk_blimp.FUEL_CONSUMPTION = minetest.settings:get("steampunk_blimp_fuel_consumption") or 6000
 
 minetest.register_entity('steampunk_blimp:pointer',{
@@ -49,10 +48,10 @@ function steampunk_blimp.load_fuel(self, player)
     if fuel then
         local stack = ItemStack(item_name .. " 1")
 
-        if self.energy < steampunk_blimp.MAX_FUEL then
+        if self._energy < steampunk_blimp.MAX_FUEL then
             inv:remove_item("main", stack)
-            self.energy = self.energy + fuel.amount
-            if self.energy > steampunk_blimp.MAX_FUEL then self.energy = steampunk_blimp.MAX_FUEL end
+            self._energy = self._energy + fuel.amount
+            if self._energy > steampunk_blimp.MAX_FUEL then self._energy = steampunk_blimp.MAX_FUEL end
             --minetest.chat_send_all(self.energy)
             
             if fuel.drop then
@@ -62,7 +61,7 @@ function steampunk_blimp.load_fuel(self, player)
                 end
             end
 
-            local energy_indicator_angle = steampunk_blimp.get_pointer_angle(self.energy, steampunk_blimp.MAX_FUEL)
+            --local energy_indicator_angle = steampunk_blimp.get_pointer_angle(self._energy, steampunk_blimp.MAX_FUEL)
         end
         
         return true
