@@ -6,10 +6,10 @@ local gained_pressure = (2/steampunk_blimp.FUEL_CONSUMPTION)*adjust_variable
 
 local lost_water = (1/steampunk_blimp.WATER_CONSUMPTION)
 
-steampunk_blimp.boyler_min = 155
-steampunk_blimp.boyler_max = 310
+steampunk_blimp.boiler_min = 155
+steampunk_blimp.boiler_max = 310
 
-function steampunk_blimp.start_boyler(self)
+function steampunk_blimp.start_boiler(self)
     if self._boiler_pressure < 150 then
         -- sound and animation
         if self.sound_handle_pistons then
@@ -32,13 +32,13 @@ function steampunk_blimp.start_boyler(self)
 end
 
 local function boiler_step(self, accel)
-    steampunk_blimp.start_boyler(self)
+    steampunk_blimp.start_boiler(self)
 
     local consumed_pressure = self._power_lever/steampunk_blimp.PRESSURE_CONSUMPTION
     if self._engine_running == false then consumed_pressure = consumed_pressure + lost_power end
 
-    if self._boiler_pressure > steampunk_blimp.boyler_max then self._boiler_pressure = steampunk_blimp.boyler_max end
-    if self._boiler_pressure > steampunk_blimp.boyler_min then
+    if self._boiler_pressure > steampunk_blimp.boiler_max then self._boiler_pressure = steampunk_blimp.boiler_max end
+    if self._boiler_pressure > steampunk_blimp.boiler_min then
         --[[-- sound and animation
         steampunk_blimp.engineSoundPlay(self)
         self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation)]]--
@@ -46,7 +46,7 @@ local function boiler_step(self, accel)
         steampunk_blimp.engine_set_sound_and_animation(self)
         self._water_level = self._water_level - lost_water
     end
-    if self._boiler_pressure < steampunk_blimp.boyler_min then
+    if self._boiler_pressure < steampunk_blimp.boiler_min then
         self._power_lever = 0
         --if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
         self.object:set_animation_frame_speed(0)
