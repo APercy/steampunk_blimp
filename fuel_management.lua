@@ -23,6 +23,21 @@ function steampunk_blimp.load_fuel(self, player)
     local item_name = ""
     if itmstck then item_name = itmstck:get_name() end
 
+    local grp_wood = minetest.get_item_group(item_name, "wood")
+    local grp_tree = minetest.get_item_group(item_name, "tree")
+    if grp_wood == 1 or grp_tree == 1 then
+        local stack = ItemStack(item_name .. " 1")
+
+        if self._energy < steampunk_blimp.MAX_FUEL then
+            inv:remove_item("main", stack)
+            local amount = 1
+            if grp_tree == 1 then amount = 4 end
+            self._energy = self._energy + amount
+            if self._energy > steampunk_blimp.MAX_FUEL then self._energy = steampunk_blimp.MAX_FUEL end
+        end
+        return true
+    end
+
     --minetest.chat_send_all("fuel: ".. dump(item_name))
     local fuel = steampunk_blimp.contains(steampunk_blimp.fuel, item_name)
     if fuel then
