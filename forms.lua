@@ -31,7 +31,7 @@ function steampunk_blimp.pilot_formspec(name)
     if ent.anchored == true then anchor = "true" end
 
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop the fire]"
-    basic_form = basic_form.."button[1,2.0;4,1;hud;Show/Hide Gauges]"
+    basic_form = basic_form.."button[1,2.0;4,1;water;Load water from bellow]"
 
     basic_form = basic_form.."checkbox[1,4.6;take_control;Take the Control;"..take_control.."]"
     basic_form = basic_form.."checkbox[1,5.2;anchor;Anchor away;"..anchor.."]"
@@ -169,11 +169,22 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		    if fields.turn_on then
                 steampunk_blimp.start_furnace(ent)
 		    end
-            if fields.hud then
-                if ent._show_hud == true then
-                    ent._show_hud = false
+            if fields.water then
+                if ent.isinliquid then
+                    if ent._engine_running == true then
+                        steampunk_blimp.start_furnace(ent)
+                    end
+                    if ent._boiler_pressure > 0 then
+                        minetest.sound_play({name = "default_cool_lava"},
+                            {object = ent.object, gain = 1.0,
+                                pitch = 1.0,
+                                max_hear_distance = 32,
+                                loop = false,}, true)
+                    end
+                    ent._boiler_pressure = 0
+                    ent._water_level = steampunk_blimp.MAX_WATER
                 else
-                    ent._show_hud = true
+                    minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. The ship needs to be in the water."))
                 end
             end
 		    if fields.take_control then

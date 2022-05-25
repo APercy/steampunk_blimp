@@ -38,8 +38,9 @@ initial_properties = {
 --
 minetest.register_entity('steampunk_blimp:stand_base',{
 initial_properties = {
-	physical = false,
-	collide_with_objects=false,
+	physical = true,
+	collide_with_objects=true,
+    collisionbox = {-2, -2, -2, 2, 0, 2},
 	pointable=false,
 	visual = "mesh",
 	mesh = "steampunk_blimp_stand_base.b3d",
@@ -62,7 +63,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     initial_properties = {
         physical = true,
         collide_with_objects = true, --true,
-        collisionbox = {-4, -2.5, -4, 4, 10, 4}, --{-1,0,-1, 1,0.3,1},
+        collisionbox = {-4, -2.5, -4, 4, 9, 4}, --{-1,0,-1, 1,0.3,1},
         --selectionbox = {-0.6,0.6,-0.6, 0.6,1,0.6},
         visual = "mesh",
         backface_culling = false,
@@ -97,6 +98,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _energy = 1.0,--0.001,
     _water_level = 1.0,
     _boiler_pressure = 1.0, --min 155 max 310
+    _is_going_up = false, --to tell the boiler to lose pressure
     _passengers = {}, --passengers list
     _passengers_base = {}, --obj id
     _passengers_base_pos = steampunk_blimp.copy_vector({}),
@@ -380,6 +382,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         if is_attached == true then
             --refuel
             steampunk_blimp.load_fuel(self, puncher)
+            steampunk_blimp.load_water(self, puncher)
         end
 
         if is_attached == false then

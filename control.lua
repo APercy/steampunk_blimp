@@ -62,8 +62,12 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
             end
         end
 
+        self._is_going_up = false
 		if ctrl.jump then
-            self._baloon_buoyancy = 1.02
+            if self._boiler_pressure > 0 then
+                self._baloon_buoyancy = 1.02
+            end
+            self._is_going_up = true
 		elseif ctrl.sneak then
             self._baloon_buoyancy = -1.02
 		end

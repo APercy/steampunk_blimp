@@ -4,28 +4,8 @@
 steampunk_blimp.MAX_FUEL = minetest.settings:get("steampunk_blimp_max_fuel") or 99
 steampunk_blimp.FUEL_CONSUMPTION = minetest.settings:get("steampunk_blimp_fuel_consumption") or 6000
 
-minetest.register_entity('steampunk_blimp:pointer',{
-initial_properties = {
-	physical = false,
-	collide_with_objects=false,
-	pointable=false,
-	visual = "mesh",
-	mesh = "pointer.b3d",
-	textures = {"steampunk_blimp_interior.png"},
-	},
-	
-on_activate = function(self,std)
-	self.sdata = minetest.deserialize(std) or {}
-	if self.sdata.remove then self.object:remove() end
-end,
-	
-get_staticdata=function(self)
-  	
-  self.sdata.remove=true
-  return minetest.serialize(self.sdata)
-end,
-	
-})
+steampunk_blimp.MAX_WATER = 10
+steampunk_blimp.WATER_CONSUMPTION = 50000
 
 function steampunk_blimp.contains(table, val)
     for k,v in pairs(table) do
@@ -53,13 +33,6 @@ function steampunk_blimp.load_fuel(self, player)
             self._energy = self._energy + fuel.amount
             if self._energy > steampunk_blimp.MAX_FUEL then self._energy = steampunk_blimp.MAX_FUEL end
             --minetest.chat_send_all(self.energy)
-            
-            if fuel.drop then
-                local leftover = inv:add_item("main", fuel.drop)
-                if leftover then
-                    minetest.item_drop(leftover, player, player:get_pos())
-                end
-            end
 
             --local energy_indicator_angle = steampunk_blimp.get_pointer_angle(self._energy, steampunk_blimp.MAX_FUEL)
         end
@@ -70,3 +43,33 @@ function steampunk_blimp.load_fuel(self, player)
     return false
 end
 
+function steampunk_blimp.load_water(self, player)
+    local inv = player:get_inventory()
+
+    local itmstck=player:get_wielded_item()
+    local item_name = ""
+    if itmstck then item_name = itmstck:get_name() end
+
+    --minetest.chat_send_all("water: ".. dump(item_name))
+    local water = steampunk_blimp.contains(steampunk_blimp.water, item_name)
+    if water then
+        if self._water_level < steampunk_blimp.MAX_WATER then
+            local itemstack = ItemStack(item_name .. " 1")
+            inv:remove_item("main", itemstack)
+
+            local indx = item_name:find('bucket:bucket')
+            if indx then
+                itemstack = ItemStack("bucket:bucket_empty")
+                inv:add_item("main", itemstack)
+                player:set_wielded_item(itemstack)
+            end
+
+            self._water_level = self._water_level + water.amount
+            if self._water_level > steampunk_blimp.MAX_WATER then self._water_level = steampunk_blimp.MAX_WATER end
+        end
+        
+        return true
+    end
+
+    return false
+end
