@@ -330,28 +330,22 @@ function steampunk_blimp.engineSoundPlay(self)
 end
 
 function steampunk_blimp.engine_set_sound_and_animation(self)
-    if self._engine_running then
-        if self._last_applied_power ~= self._power_lever then
-            --minetest.chat_send_all('test2')
-            self._last_applied_power = self._power_lever
-            self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation + (self._power_lever))
-            if self._last_sound_update == nil then self._last_sound_update = self._power_lever end
-            if math.abs(self._last_sound_update - self._power_lever) > 5 then
-                self._last_sound_update = self._power_lever
-                steampunk_blimp.engineSoundPlay(self)
-            end
+    if self._last_applied_power ~= self._power_lever then
+        --minetest.chat_send_all('test2')
+        self._last_applied_power = self._power_lever
+        self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation + (self._power_lever))
+        if self._last_sound_update == nil then self._last_sound_update = self._power_lever end
+        if math.abs(self._last_sound_update - self._power_lever) > 5 then
+            self._last_sound_update = self._power_lever
+            steampunk_blimp.engineSoundPlay(self)
         end
-    else
+    end
+    if self._engine_running == false then
         if self.sound_handle then
             minetest.sound_stop(self.sound_handle)
             self.sound_handle = nil
-            self.object:set_animation_frame_speed(0)
+            --self.object:set_animation_frame_speed(0)
         end
-        if self.sound_handle_pistons then
-            minetest.sound_stop(self.sound_handle_pistons)
-            self.sound_handle_pistons = nil
-        end
-
     end
 end
 

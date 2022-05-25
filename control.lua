@@ -49,14 +49,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 		ctrl = player:get_player_control()
 		local max_speed_anchor = 0.2
 
-        if self.anchored == false and self._engine_running == true then
-	        --local paddleacc
-	        --[[if longit_speed < 4.0 and ctrl.up then
-		        paddleacc = 2
-	        elseif longit_speed >  -1.0 and ctrl.down then
-		        paddleacc = -0.5
-	        end]]--
-
+        if self.anchored == false then
             local factor = 1
             if ctrl.up then
                 steampunk_blimp.powerAdjust(self, dtime, factor, 1)
