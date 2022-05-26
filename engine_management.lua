@@ -85,7 +85,8 @@ function steampunk_blimp.engine_step(self, accel)
         local pressure = steampunk_blimp.get_pointer_angle(self._boiler_pressure, 200 )
         local water = steampunk_blimp.get_pointer_angle(self._water_level, steampunk_blimp.MAX_WATER)
         local coal = self._energy
-        steampunk_blimp.update_hud(player, coal, 180-water, -pressure)
+        --minetest.chat_send_all(self._power_lever)
+        steampunk_blimp.update_hud(player, coal, 180-water, -pressure, self._power_lever)
     end
 end
 

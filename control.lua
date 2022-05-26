@@ -52,15 +52,19 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         if self.anchored == false then
             local factor = 1
             if ctrl.up then
-                steampunk_blimp.powerAdjust(self, dtime, factor, 1)
-                --self.object:set_animation_frame_speed(40)
+                local can_acc = true
+                if self._power_lever >= 82 then can_acc = false end
+                if ctrl.aux1 then can_acc = true end
+                if can_acc then
+                    steampunk_blimp.powerAdjust(self, dtime, factor, 1)
+                end
             elseif ctrl.down then
                 steampunk_blimp.powerAdjust(self, dtime, factor, -1)
-                --self.object:set_animation_frame_speed(-40)
             else
                 --self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation)
             end
         end
+        if not ctrl.aux1 and self._power_lever < 0 then self._power_lever = 0 end
 
         self._is_going_up = false
 		if ctrl.jump then
@@ -90,18 +94,6 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     local max_speed = 3
     if longit_speed > max_speed then
         engineacc = engineacc - (longit_speed-max_speed)
-    end
-    if engineacc < 0 then
-        local is_reversed = false
-        if ctrl then
-            if ctrl.aux1 then
-                is_reversed = true
-            end
-        end
-        if is_reversed == false then
-            engineacc = 0
-            self._power_lever = 0
-        end
     end
 
     if engineacc ~= nil then

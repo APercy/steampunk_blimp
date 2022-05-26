@@ -35,7 +35,7 @@ function steampunk_blimp.animate_gauge(player, ids, prefix, x, y, angle)
     player:hud_change(ids[prefix .. "7"], "offset", {x = pos_x + x, y = pos_y + y})
 end
 
-function steampunk_blimp.update_hud(player, coal, water, pressure)
+function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
     local player_name = player:get_player_name()
 
     local screen_pos_y = -100
@@ -49,6 +49,8 @@ function steampunk_blimp.update_hud(player, coal, water, pressure)
     local coal_1_y = screen_pos_y
     local coal_2_x = coal_1_x + 60
     local coal_2_y = screen_pos_y
+    local throttle_x = screen_pos_x + 395
+    local throttle_y = screen_pos_y + 45
 
     local ids = steampunk_blimp.hud_list[player_name]
     if ids then
@@ -57,6 +59,9 @@ function steampunk_blimp.update_hud(player, coal, water, pressure)
         if coal_value < 0 then coal_value = 0 end
         player:hud_change(ids["coal_1"], "text", "steampunk_blimp_"..(math.floor(coal_value/10))..".png")
         player:hud_change(ids["coal_2"], "text", "steampunk_blimp_"..(math.floor(coal_value%10))..".png")
+
+        player:hud_change(ids["throttle"], "offset", {x = throttle_x, y = throttle_y - power_lever})
+
         steampunk_blimp.animate_gauge(player, ids, "water_pt_", water_gauge_x, water_gauge_y, water)
         steampunk_blimp.animate_gauge(player, ids, "press_pt_", press_gauge_x, press_gauge_y, pressure)
     else
@@ -99,6 +104,15 @@ function steampunk_blimp.update_hud(player, coal, water, pressure)
             alignment = { x = 1, y = 0 },
         })
         
+        ids["throttle"] = player:hud_add({
+            hud_elem_type = "image",
+            position  = {x = 0, y = 1},
+            offset    = {x = throttle_x, y = throttle_y},
+            text      = "steampunk_blimp_throttle.png",
+            scale     = { x = 0.5, y = 0.5},
+            alignment = { x = 1, y = 0 },
+        })
+
         ids["water_pt_1"] = player:hud_add({
             hud_elem_type = "image",
             position  = {x = 0, y = 1},
@@ -231,6 +245,7 @@ function steampunk_blimp.remove_hud(player)
             player:hud_remove(ids["bg"])
             player:hud_remove(ids["coal_1"])
             player:hud_remove(ids["coal_2"])
+            player:hud_remove(ids["throttle"])
             player:hud_remove(ids["water_pt_7"])
             player:hud_remove(ids["water_pt_6"])
             player:hud_remove(ids["water_pt_5"])
