@@ -216,8 +216,34 @@ minetest.register_entity("steampunk_blimp:blimp", {
         end
     end,
 
-    on_step = function(self, dtime)
-        mobkit.stepfunc(self, dtime)
+    on_step = function(self,dtime,colinfo)
+	    self.dtime = math.min(dtime,0.2)
+	    self.colinfo = colinfo
+	    self.height = mobkit.get_box_height(self)
+	    
+    --  physics comes first
+	    local vel = self.object:get_velocity()
+	    
+	    if colinfo then 
+		    self.isonground = colinfo.touching_ground
+	    else
+		    if self.lastvelocity.y==0 and vel.y==0 then
+			    self.isonground = true
+		    else
+			    self.isonground = false
+		    end
+	    end
+	    
+	    self:physics()
+
+	    if self.logic then
+		    self:logic()
+	    end
+	    
+	    self.lastvelocity = self.object:get_velocity()
+	    self.time_total=self.time_total+self.dtime
+    end,
+    logic = function(self)
         
         local accel_y = self.object:get_acceleration().y
         local rotation = self.object:get_rotation()
@@ -275,28 +301,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
         end
 
         --detect collision
-        if self.last_vel ~= nil then
-            local impact = steampunk_blimp.get_hipotenuse_value(vel, self.last_vel)
-            if impact > 3 then
-                minetest.sound_play("steampunk_blimp_collision", {
-                    --to_player = self.driver_name,
-                    pos = curr_pos,
-                    max_hear_distance = 15,
-                    gain = 1.0,
-                    fade = 0.0,
-                    pitch = 1.0,
-                })
-                --[[if self.hull_integrity then
-                    self.hull_integrity = self.hull_integrity - impact
-                    if (self.hull_integrity <= 0) then
-                        steampunk_blimp.destroy(self, true)
-                        return
-                    end
-                end]]--
-            end
-        end
+        steampunk_blimp.testDamage(self, vel, curr_pos)
 
-        accel = steampunk_blimp.control(self, dtime, hull_direction, longit_speed, accel) or vel
+        accel = steampunk_blimp.control(self, self.dtime, hull_direction, longit_speed, accel) or vel
 
         --get disconnected players
         steampunk_blimp.rescueConnectionFailedPassengers(self)
@@ -339,7 +346,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         ---------------------------------
         -- end roll
 
-        accel.y = accel_y -- + bob
+        accel.y = accel_y
         newpitch = velocity.y * math.rad(1.5)
         self.object:set_acceleration(accel)
         self.object:set_rotation({x=newpitch,y=newyaw,z=newroll})
@@ -349,7 +356,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self.object:set_bone_position("timao", {x=0,y=27,z=-25}, {x=0,y=0,z=self._rudder_angle*8})
 
         --saves last velocy for collision detection (abrupt stop)
-        self.last_vel = self.object:get_velocity()
+        self._last_vel = self.object:get_velocity()
+        self._last_accell = accel
 
         steampunk_blimp.move_persons(self)
     end,
