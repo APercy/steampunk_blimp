@@ -102,6 +102,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _passengers = {}, --passengers list
     _passengers_base = {}, --obj id
     _passengers_base_pos = steampunk_blimp.copy_vector({}),
+    _passengers_locked = false,
     _disconnection_check_time = 0,
     _inv = nil,
     _inv_id = "",
@@ -124,6 +125,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             stored_item = self.item,
             stored_inv_id = self._inv_id,
             stored_passengers = self._passengers, --passengers list
+            stored_passengers_locked = self._passengers_locked,
         })
     end,
 
@@ -152,6 +154,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.item = data.stored_item
             self._inv_id = data.stored_inv_id
             self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
+            self._passengers_locked = data.stored_passengers_locked
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"

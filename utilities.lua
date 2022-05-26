@@ -114,6 +114,26 @@ end
 -- attach passenger
 function steampunk_blimp.attach_pax(self, player, slot)
     slot = slot or 0
+
+    --verify if is locked to non-owners
+    if self._passengers_locked == true then
+        local name = player:get_player_name()
+        local can_bypass = minetest.check_player_privs(player, {protection_bypass=true})
+        local is_shared = false
+        if name == self.owner or can_bypass then is_shared = true end
+        for k, v in pairs(self._shared_owners) do
+            if v == name then
+                is_shared = true
+                break
+            end
+        end
+        if is_shared == false then
+            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> This blimp is currently locked for non-owners"))
+            return
+        end
+    end
+
+
     if slot > 0 then
         do_attach(self, player, slot)
         return

@@ -350,6 +350,69 @@ minetest.register_chatcommand("blimp_remove", {
 	end
 })
 
+minetest.register_chatcommand("blimp_list", {
+	params = "",
+	description = "Lists the blimp shared owners",
+	privs = {interact = true},
+	func = function(name, param)
+        local player = minetest.get_player_by_name(name)
+        local attached_to = player:get_attach()
+    
+		if attached_to ~= nil then
+            local seat = attached_to:get_attach()
+            if seat ~= nil then
+                local entity = seat:get_luaentity()
+                if entity then
+                    if entity.name == "steampunk_blimp:blimp" then
+                        minetest.chat_send_player(name,core.colorize('#ffff00', " >>> Current owners are:"))
+                        minetest.chat_send_player(name,core.colorize('#0000ff', entity.owner))
+                        for k, v in pairs(entity._shared_owners) do
+                            minetest.chat_send_player(name,core.colorize('#00ff00', v))
+                        end
+                        --minetest.chat_send_all(dump(entity._shared_owners))
+                    else
+			            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+                    end
+                end
+            end
+		else
+			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+		end
+	end
+})
+
+minetest.register_chatcommand("blimp_lock", {
+	params = "true/false",
+	description = "Blocks boarding of non-owners. true to lock, false to unlock",
+	privs = {interact = true},
+	func = function(name, param)
+        local player = minetest.get_player_by_name(name)
+        local attached_to = player:get_attach()
+    
+		if attached_to ~= nil then
+            local seat = attached_to:get_attach()
+            if seat ~= nil then
+                local entity = seat:get_luaentity()
+                if entity then
+                    if entity.name == "steampunk_blimp:blimp" then
+                        if param == "true" then
+                            entity._passengers_locked = true
+                            minetest.chat_send_player(name,core.colorize('#ffff00', " >>> Non owners cannot enter now."))
+                        elseif param == "false" then
+                            entity._passengers_locked = false
+                            minetest.chat_send_player(name,core.colorize('#00ff00', " >>> Non owners are free to enter now."))
+                        end
+                    else
+			            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+                    end
+                end
+            end
+		else
+			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+		end
+	end
+})
+
 minetest.register_chatcommand("blimp_logo", {
 	params = "",
 	description = "Changes blimp logo",
