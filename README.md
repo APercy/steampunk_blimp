@@ -4,14 +4,15 @@ Minetest 5.4 mod: Steampunk Blimp
 
 
 
+
 License of source code:
 MIT (see file LICENSE) 
 
 License of media (textures and sounds):
 ---------------------------------------
-collision.ogg by APercy. CC0
+collision.ogg by APercy, CC0
 
-Blimp model by APercy. CC BY-SA 3.0
+Blimp model and textures by APercy. CC BY-SA 3.0
 
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)
 Copyright (C) 2022 Alexsandro Percy (APercy) <alexsandro.percy@gmail.com>
