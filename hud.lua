@@ -36,6 +36,7 @@ function steampunk_blimp.animate_gauge(player, ids, prefix, x, y, angle)
 end
 
 function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
+    if player == nil then return end
     local player_name = player:get_player_name()
 
     local screen_pos_y = -100
