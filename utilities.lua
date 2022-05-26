@@ -5,7 +5,7 @@ function steampunk_blimp.testDamage(self, velocity, position)
     local low_node_pos = -2.5
     if self._last_vel == nil then return end
     --lets calculate the vertical speed, to avoid the bug on colliding on floor with hard lag
-    if abs(velocity.y - self._last_vel.y) > 2 then
+    if math.abs(velocity.y - self._last_vel.y) > 2 then
 		local noded = mobkit.nodeatpos(mobkit.pos_shift(p,{y=low_node_pos}))
 	    if (noded and noded.drawtype ~= 'airlike') then
 		    collision = true
@@ -15,7 +15,7 @@ function steampunk_blimp.testDamage(self, velocity, position)
             self.object:set_velocity(vector.add(velocity, vector.multiply(self._last_accell, self.dtime/8)))
         end
     end
-    local impact = abs(steampunk_blimp.get_hipotenuse_value(velocity, self._last_vel))
+    local impact = math.abs(steampunk_blimp.get_hipotenuse_value(velocity, self._last_vel))
     if impact > 2 then
         if self.colinfo then
             collision = self.colinfo.collides
