@@ -143,4 +143,90 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
 })
 
 
+--
+-- crafting
+--
+
+if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
+    minetest.register_craft({
+	    output = "steampunk_blimp:cylinder_part",
+	    recipe = {
+		    {"default:stick", "wool:white", "default:stick"},
+		    {"wool:white", "group:wood", "wool:white"},
+            {"default:stick", "wool:white", "default:stick"},
+	    }
+    })
+
+    minetest.register_craft({
+	    output = "steampunk_blimp:cylinder",
+	    recipe = {
+		    {"steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part"},
+	    }
+    })
+
+    minetest.register_craft({
+	    output = "steampunk_blimp:rotor",
+	    recipe = {
+		    {"wool:white", "default:stick", ""},
+		    {"wool:white", "default:stick", "default:steelblock"},
+		    {"wool:white", "default:stick", ""},
+	    }
+    })
+
+    minetest.register_craft({
+	    output = "steampunk_blimp:boiler",
+	    recipe = {
+		    {"default:steel_ingot","default:steel_ingot"},
+		    {"default:steelblock","default:steel_ingot",},
+		    {"default:steelblock","default:steel_ingot"},
+	    }
+    })
+
+    minetest.register_craft({
+	    output = "steampunk_blimp:boat",
+	    recipe = {
+		    {"group:wood", "group:wood", "steampunk_blimp:rotor"},
+		    {"group:wood", "steampunk_blimp:boiler", "group:wood"},
+		    {"group:wood", "group:wood", "steampunk_blimp:rotor"},
+	    }
+    })
+
+	minetest.register_craft({
+		output = "steampunk_blimp:blimp",
+		recipe = {
+			{"steampunk_blimp:cylinder",},
+			{"steampunk_blimp:boat",},
+		}
+	})
+
+    -- cylinder section
+    minetest.register_craftitem("steampunk_blimp:cylinder_part",{
+	    description = "steampunk_blimp cylinder section",
+	    inventory_image = "steampunk_blimp_cylinder_part.png",
+    })
+
+    -- cylinder
+    minetest.register_craftitem("steampunk_blimp:cylinder",{
+	    description = "steampunk_blimp cylinder",
+	    inventory_image = "steampunk_blimp_cylinder.png",
+    })
+
+    -- boiler
+    minetest.register_craftitem("steampunk_blimp:boiler",{
+	    description = "steampunk_blimp boiler",
+	    inventory_image = "steampunk_blimp_boiler.png",
+    })
+
+    -- boiler
+    minetest.register_craftitem("steampunk_blimp:rotor",{
+	    description = "steampunk_blimp rotor",
+	    inventory_image = "steampunk_blimp_rotor.png",
+    })
+
+    -- fuselage
+    minetest.register_craftitem("steampunk_blimp:boat",{
+	    description = "steampunk_blimp fuselage",
+	    inventory_image = "steampunk_blimp_boat.png",
+    })
+end
 
