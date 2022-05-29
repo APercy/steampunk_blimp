@@ -449,6 +449,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
 		if not clicker or not clicker:is_player() then
 			return
 		end
+        local max_seats = 5
 
         local name = clicker:get_player_name()
 
@@ -470,6 +471,19 @@ minetest.register_entity("steampunk_blimp:blimp", {
             local plane = seat:get_attach()
             if plane == self.object then is_attached = true end
         end
+
+        --check error after being shot for any other mod
+        if is_attached == false then
+            for i = max_seats,1,-1 
+            do 
+                if self._passengers[i] == name then
+                    self._passengers[i] = nil --clear the wrong information
+                    break
+                end
+            end
+        end
+
+        --shows pilot formspec
         if name == self.driver_name then
             if is_attached then
                 steampunk_blimp.pilot_formspec(name)
@@ -527,7 +541,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             else
                 --first lets clean the boat slots
                 --note that when it happens, the "rescue" function will lost the historic
-                for i = 5,1,-1 
+                for i = max_seats,1,-1 
                 do 
                     if self._passengers[i] ~= nil then
                         local old_player = minetest.get_player_by_name(self._passengers[i])
