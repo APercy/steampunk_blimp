@@ -206,7 +206,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         self.object:set_armor_groups({immortal=1})
 
-        mobkit.actfunc(self, staticdata, dtime_s)
+        airutils.actfunc(self, staticdata, dtime_s)
 
         self.object:set_armor_groups({immortal=1})        
 
@@ -222,7 +222,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     on_step = function(self,dtime,colinfo)
 	    self.dtime = math.min(dtime,0.2)
 	    self.colinfo = colinfo
-	    self.height = mobkit.get_box_height(self)
+	    self.height = airutils.get_box_height(self)
 	    
     --  physics comes first
 	    local vel = self.object:get_velocity()
@@ -275,7 +275,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self.object:move_to(curr_pos)
 
         --minetest.chat_send_all(self._energy)
-        --local node_bellow = mobkit.nodeatpos(mobkit.pos_shift(curr_pos,{y=-2.8}))
+        --local node_bellow = airutils.nodeatpos(airutils.pos_shift(curr_pos,{y=-2.8}))
         --[[local is_flying = true
         if node_bellow and node_bellow.drawtype ~= 'airlike' then is_flying = false end]]--
 
@@ -292,7 +292,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         if self.owner == "" then return end
         --[[if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
             self.object:move_to(curr_pos)
-            --self.object:set_acceleration({x=0,y=mobkit.gravity,z=0})
+            --self.object:set_acceleration({x=0,y=airutils.gravity,z=0})
             return
         end]]--
 
@@ -422,8 +422,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
                 else -- deal damage
                     if not self.driver_name and toolcaps and toolcaps.damage_groups and
                             toolcaps.damage_groups.fleshy then
-                        --mobkit.hurt(self,toolcaps.damage_groups.fleshy - 1)
-                        --mobkit.make_sound(self,'hit')
+                        --airutils.hurt(self,toolcaps.damage_groups.fleshy - 1)
+                        --airutils.make_sound(self,'hit')
                         self.hp = self.hp - 10
                         minetest.sound_play("collision", {
                             object = self.object,

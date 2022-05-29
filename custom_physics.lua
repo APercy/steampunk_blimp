@@ -47,17 +47,17 @@ function steampunk_blimp.physics(self)
 	--buoyancy
 	local surface = nil
 	local surfnodename = nil
-	local spos = mobkit.get_stand_pos(self)
+	local spos = airutils.get_stand_pos(self)
 	spos.y = spos.y+0.01
 	-- get surface height
-	local snodepos = mobkit.get_node_pos(spos)
-	local surfnode = mobkit.nodeatpos(spos)
+	local snodepos = airutils.get_node_pos(spos)
+	local surfnode = airutils.nodeatpos(spos)
 	while surfnode and (surfnode.drawtype == 'liquid' or surfnode.drawtype == 'flowingliquid') do
 		surfnodename = surfnode.name
 		surface = snodepos.y +0.5
 		if surface > spos.y+self.height then break end
 		snodepos.y = snodepos.y+1
-		surfnode = mobkit.nodeatpos(snodepos)
+		surfnode = airutils.nodeatpos(snodepos)
 	end
 
     local new_velocity = nil
@@ -72,13 +72,13 @@ function steampunk_blimp.physics(self)
         local height = self.height
 		local submergence = min(surface-spos.y,height)/height
 --		local balance = self.buoyancy*self.height
-		local buoyacc = mobkit.gravity*(self.buoyancy-submergence)
+		local buoyacc = airutils.gravity*(self.buoyancy-submergence)
         --local buoyacc = self._baloon_buoyancy*(self.buoyancy-submergence)
         accell = {x=-vel.x*self.water_drag,y=buoyacc-(vel.y*abs(vel.y)*0.4),z=-vel.z*self.water_drag}
         --local v_accell = {x=0,y=buoyacc-(vel.y*abs(vel.y)*0.4),z=0}
-        mobkit.set_acceleration(self.object,accell)
+        airutils.set_acceleration(self.object,accell)
         if self._baloon_buoyancy > 0 then
-            mobkit.set_acceleration(self.object,{x=0,y=y_accel,z=0})
+            airutils.set_acceleration(self.object,{x=0,y=y_accel,z=0})
         end
 	else
         self.isinliquid = false
@@ -88,7 +88,7 @@ function steampunk_blimp.physics(self)
             self.object:set_velocity(velocity)
         end
         --minetest.chat_send_all("_baloon_buoyancy: "..self._baloon_buoyancy.." - dtime: "..self.dtime.." - ideal: "..steampunk_blimp.ideal_step)
-        mobkit.set_acceleration(self.object,{x=0,y=y_accel,z=0})
+        airutils.set_acceleration(self.object,{x=0,y=y_accel,z=0})
     end
     
 end
