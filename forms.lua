@@ -32,6 +32,7 @@ function steampunk_blimp.pilot_formspec(name)
 
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop the fire]"
     basic_form = basic_form.."button[1,2.0;4,1;water;Load water from bellow]"
+    basic_form = basic_form.."button[1,3.0;4,1;manual;Show Manual Menu]"
 
     basic_form = basic_form.."checkbox[1,4.6;take_control;Take the Control;"..take_control.."]"
     basic_form = basic_form.."checkbox[1,5.2;anchor;Anchor away;"..anchor.."]"
@@ -186,6 +187,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 else
                     minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. The ship needs to be in the water."))
                 end
+            end
+            if fields.manual then
+                steampunk_blimp.manual_formspec(name)
             end
 		    if fields.take_control then
                 if fields.take_control == "true" then

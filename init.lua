@@ -80,6 +80,7 @@ dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "custom_physics.l
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "hud.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "entities.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "forms.lua")
+dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "manual.lua")
 
 --
 -- helpers and co.
