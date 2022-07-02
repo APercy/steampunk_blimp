@@ -37,15 +37,16 @@ initial_properties = {
 -- seat pivot
 --
 minetest.register_entity('steampunk_blimp:stand_base',{
-initial_properties = {
-	physical = true,
-	collide_with_objects=true,
-    collisionbox = {-2, -2, -2, 2, 0, 2},
-	pointable=false,
-	visual = "mesh",
-	mesh = "steampunk_blimp_stand_base.b3d",
-    textures = {"steampunk_blimp_alpha.png",},
+    initial_properties = {
+	    physical = true,
+	    collide_with_objects=true,
+        collisionbox = {-2, -2, -2, 2, 0, 2},
+	    pointable=false,
+	    visual = "mesh",
+	    mesh = "steampunk_blimp_stand_base.b3d",
+        textures = {"steampunk_blimp_alpha.png",},
 	},
+    dist_moved = 0,
 	
     on_activate = function(self,std)
 	    self.sdata = minetest.deserialize(std) or {}
@@ -56,7 +57,6 @@ initial_properties = {
       self.sdata.remove=true
       return minetest.serialize(self.sdata)
     end,
-	
 })
 
 minetest.register_entity("steampunk_blimp:blimp", {

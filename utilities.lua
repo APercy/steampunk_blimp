@@ -540,7 +540,8 @@ function steampunk_blimp.play_rope_sound(self)
                     ephemeral = true,})
 end
 
-local function get_result_pos(self, player)
+--note: index variable just for the walk
+local function get_result_pos(self, player, index)
     local pos = nil
     if player then
         local direction = player:get_look_horizontal()
@@ -567,6 +568,17 @@ local function get_result_pos(self, player)
             local move = 0.3 * dir * time_correction
             pos.x = move * math.cos(-direction)
             pos.z = move * math.sin(-direction)
+
+            --lets fake walk sound
+            if self._passengers_base_pos[index].dist_moved == nil then self._passengers_base_pos[index].dist_moved = 0 end
+            self._passengers_base_pos[index].dist_moved = self._passengers_base_pos[index].dist_moved + move;
+            if math.abs(self._passengers_base_pos[index].dist_moved) > 5 then
+                self._passengers_base_pos[index].dist_moved = 0
+                minetest.sound_play({name = "default_wood_footstep"},
+                    {object = player, gain = 0.05,
+                        max_hear_distance = 5,
+                        ephemeral = true,})
+            end
 
             --[[
             sin(theta) = opposite/hypotenuse
@@ -634,7 +646,7 @@ function steampunk_blimp.move_persons(self)
                 --minetest.chat_send_all("pass: "..dump(self._passengers[i]))
                 --the rest of the passengers
                 if player then
-                    local result_pos = get_result_pos(self, player)
+                    local result_pos = get_result_pos(self, player, i)
                     local y_rot = 0
                     if result_pos then
                         y_rot = result_pos.y -- the only field that returns a rotation
