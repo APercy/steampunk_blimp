@@ -575,7 +575,7 @@ local function get_result_pos(self, player, index)
             if math.abs(self._passengers_base_pos[index].dist_moved) > 5 then
                 self._passengers_base_pos[index].dist_moved = 0
                 minetest.sound_play({name = "default_wood_footstep"},
-                    {object = player, gain = 0.05,
+                    {object = self._passengers_base_pos[index].object, gain = 0.1,
                         max_hear_distance = 5,
                         ephemeral = true,})
             end
