@@ -334,14 +334,13 @@ minetest.register_entity("steampunk_blimp:blimp", {
                 if self._roll_state == 0 then self._roll_state = 1 end
                 self._last_roll = newroll
             end
-            if math.abs(math.deg(newroll)) >= 1 then
-                if self._roll_state == 1 then
-                    self._roll_state = -1
-                    steampunk_blimp.play_rope_sound(self);
-                elseif self._roll_state == -1 then
-                    self._roll_state = 1
-                    steampunk_blimp.play_rope_sound(self)
-                end
+            if math.deg(newroll) >= 1 and self._roll_state == 1 then
+                self._roll_state = -1
+                steampunk_blimp.play_rope_sound(self);
+            end
+            if math.deg(newroll) <= -1 and self._roll_state == -1 then
+                self._roll_state = 1
+                steampunk_blimp.play_rope_sound(self);
             end
             local roll_factor = (self._roll_state * 0.005) * time_correction
             self._last_roll = self._last_roll + math.rad(roll_factor)
