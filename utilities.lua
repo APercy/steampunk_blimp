@@ -533,6 +533,13 @@ local function is_ladder_zone(pos)
     return ladder_zone
 end
 
+function steampunk_blimp.play_rope_sound(self)
+    minetest.sound_play({name = "steampunk_blimp_rope"},
+                {object = self.object, gain = 1,
+                    max_hear_distance = 5,
+                    ephemeral = true,})
+end
+
 local function get_result_pos(self, player)
     local pos = nil
     if player then
