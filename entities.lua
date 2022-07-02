@@ -336,6 +336,10 @@ minetest.register_entity("steampunk_blimp:blimp", {
             end
             if math.abs(math.deg(newroll)) >= 1 then
                 if self._roll_state == 1 then self._roll_state = -1 elseif self._roll_state == -1 then self._roll_state = 1 end
+                minetest.sound_play({name = "steampunk_blimp_rope"},
+                            {object = self.object, gain = 1,
+                                max_hear_distance = 5,
+                                ephemeral = true,})
             end
             local roll_factor = (self._roll_state * 0.005) * time_correction
             self._last_roll = self._last_roll + math.rad(roll_factor)
@@ -343,6 +347,12 @@ minetest.register_entity("steampunk_blimp:blimp", {
             --in movement
             self._roll_state = nil
             newroll = (prsr*math.rad(rollfactor))*later_speed
+            if math.sign(newroll) ~= math.sign(self._last_roll) then
+                minetest.sound_play({name = "steampunk_blimp_rope"},
+                            {object = self.object, gain = 1,
+                                max_hear_distance = 5,
+                                ephemeral = true,})
+            end
             self._last_roll = newroll
         end
         --minetest.chat_send_all('newroll: '.. newroll)
