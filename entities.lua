@@ -131,6 +131,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
 	on_deactivate = function(self)
         airutils.save_inventory(self)
+        if self.sound_handle then minetest.sound_stop(self.sound_handle) end
+        if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
 	end,
 
     on_activate = function(self, staticdata, dtime_s)
@@ -217,6 +219,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
 		else
 		    self.inv = inv
         end
+
+        steampunk_blimp.engine_step(self, 0)
     end,
 
     on_step = function(self,dtime,colinfo)
