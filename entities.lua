@@ -348,8 +348,10 @@ minetest.register_entity("steampunk_blimp:blimp", {
             --in movement
             self._roll_state = nil
             newroll = (prsr*math.rad(rollfactor))*later_speed
-            if math.sign(newroll) ~= math.sign(self._last_roll) then
-                steampunk_blimp.play_rope_sound(self)
+            if self._last_roll ~= nil then 
+                if math.sign(newroll) ~= math.sign(self._last_roll) then
+                    steampunk_blimp.play_rope_sound(self)
+                end
             end
             self._last_roll = newroll
         end
