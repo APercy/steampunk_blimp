@@ -50,7 +50,6 @@ local function boiler_step(self, accel)
         self._power_lever = 0
         --if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
         self.object:set_animation_frame_speed(0)
-        if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
     end
 
     self._boiler_pressure = self._boiler_pressure - consumed_pressure
