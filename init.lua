@@ -7,7 +7,8 @@ steampunk_blimp.ideal_step = 0.02
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.max_engine_acc = 3
-steampunk_blimp.pilot_base_pos = {x=0.0,y=20.821,z=-30.844}
+steampunk_blimp.max_seats = 5
+steampunk_blimp.pilot_base_pos = {x=0.0,y=20.821,z=-30}
 steampunk_blimp.passenger_pos = {
     [1] = {x=0.0,y=0,z=-15},
     [2] = {x=-11,y=0,z=-12},
@@ -33,9 +34,12 @@ steampunk_blimp.textures = {
             steampunk_blimp.black_texture, --caldeira
             steampunk_blimp.forno_texture, --caldeira
             "default_junglewood.png", --casco
+            steampunk_blimp.black_texture, -- corpo da bussola
+            steampunk_blimp.metal_texture, -- indicador bussola
             steampunk_blimp.canvas_texture, --leme
             "default_junglewood.png", --leme
             steampunk_blimp.wood_texture, --timao
+            "steampunk_blimp_compass.png",
             "default_ladder_wood.png", --escada
             "default_wood.png", --mureta
             steampunk_blimp.wood_texture, --mureta

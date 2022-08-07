@@ -371,6 +371,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self.object:set_bone_position("low_rudder", {x=0,y=0,z=0}, {x=0,y=self._rudder_angle,z=0})
         self.object:set_bone_position("rudder", {x=0,y=97,z=-148}, {x=0,y=self._rudder_angle,z=0})
         self.object:set_bone_position("timao", {x=0,y=27,z=-25}, {x=0,y=0,z=self._rudder_angle*8})
+        self.object:set_bone_position("compass_axis", {x=0,y=30.2,z=-21.243}, {x=0, y=(math.deg(newyaw)), z=0})
 
         --saves last velocy for collision detection (abrupt stop)
         self._last_vel = self.object:get_velocity()
@@ -410,44 +411,53 @@ minetest.register_entity("steampunk_blimp:blimp", {
             steampunk_blimp.load_water(self, puncher)
         end
 
-        if is_attached == false then
+        -- deal with painting or destroying
+        if itmstck then
+            local _,indx = item_name:find('dye:')
+            if indx then
 
-            -- deal with painting or destroying
-            if itmstck then
-                local _,indx = item_name:find('dye:')
-                if indx then
-
-                    --lets paint!!!!
-                    local color = item_name:sub(indx+1)
-                    local colstr = steampunk_blimp.colors[color]
-                    --minetest.chat_send_all(color ..' '.. dump(colstr))
-                    if colstr and (name == self.owner or minetest.check_player_privs(puncher, {protection_bypass=true})) then
-                        local ctrl = puncher:get_player_control()
-                        if ctrl.aux1 then
-                            steampunk_blimp.paint2(self, colstr)
-                        else
-                            steampunk_blimp.paint(self, colstr)
-                        end
-                        itmstck:set_count(itmstck:get_count()-1)
-                        puncher:set_wielded_item(itmstck)
+                --lets paint!!!!
+                local color = item_name:sub(indx+1)
+                local colstr = steampunk_blimp.colors[color]
+                --minetest.chat_send_all(color ..' '.. dump(colstr))
+                if colstr and (name == self.owner or minetest.check_player_privs(puncher, {protection_bypass=true})) then
+                    local ctrl = puncher:get_player_control()
+                    if ctrl.aux1 then
+                        steampunk_blimp.paint2(self, colstr)
+                    else
+                        steampunk_blimp.paint(self, colstr)
                     end
-                    -- end painting
-
-                else -- deal damage
-                    if not self.driver_name and toolcaps and toolcaps.damage_groups and
-                            toolcaps.damage_groups.fleshy then
-                        --airutils.hurt(self,toolcaps.damage_groups.fleshy - 1)
-                        --airutils.make_sound(self,'hit')
-                        self.hp = self.hp - 10
-                        minetest.sound_play("collision", {
-                            object = self.object,
-                            max_hear_distance = 5,
-                            gain = 1.0,
-                            fade = 0.0,
-                            pitch = 1.0,
-                        })
-                    end
+                    itmstck:set_count(itmstck:get_count()-1)
+                    puncher:set_wielded_item(itmstck)
                 end
+                -- end painting
+            end
+        end
+
+        if is_attached == false then
+            local i = 0
+            local has_passengers = false
+            for i = steampunk_blimp.max_seats,1,-1 
+            do 
+                if self._passengers[i] ~= nil then
+                    has_passengers = true
+                    break
+                end
+            end
+
+
+            if not has_passengers and toolcaps and toolcaps.damage_groups and
+                    toolcaps.damage_groups.fleshy then
+                --airutils.hurt(self,toolcaps.damage_groups.fleshy - 1)
+                --airutils.make_sound(self,'hit')
+                self.hp = self.hp - 10
+                minetest.sound_play("collision", {
+                    object = self.object,
+                    max_hear_distance = 5,
+                    gain = 1.0,
+                    fade = 0.0,
+                    pitch = 1.0,
+                })
             end
 
             if self.hp <= 0 then
@@ -463,7 +473,6 @@ minetest.register_entity("steampunk_blimp:blimp", {
 		if not clicker or not clicker:is_player() then
 			return
 		end
-        local max_seats = 5
 
         local name = clicker:get_player_name()
 
@@ -488,7 +497,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         --check error after being shot for any other mod
         if is_attached == false then
-            for i = max_seats,1,-1 
+            for i = steampunk_blimp.max_seats,1,-1 
             do 
                 if self._passengers[i] == name then
                     self._passengers[i] = nil --clear the wrong information
@@ -555,7 +564,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             else
                 --first lets clean the boat slots
                 --note that when it happens, the "rescue" function will lost the historic
-                for i = max_seats,1,-1 
+                for i = steampunk_blimp.max_seats,1,-1 
                 do 
                     if self._passengers[i] ~= nil then
                         local old_player = minetest.get_player_by_name(self._passengers[i])
