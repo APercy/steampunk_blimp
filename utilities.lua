@@ -354,10 +354,10 @@ end
 
 function steampunk_blimp.reclamp(value, min, max)
     local retVal = value
-    local mid = (max/min)/2
-    if value > min and value <= mid then retVal = min end
-    if value < max and value > mid then retVal = max end
-    --minetest.chat_send_all(value .. " - " ..retVal)
+    local mid = (max-min)/2
+    if value > min and value <= (min+mid) then retVal = min end
+    if value < max and value > (max-mid) then retVal = max end
+    --minetest.chat_send_all(value .. " - return: " ..retVal .. " - mid: " .. mid)
     return retVal
 end
 
