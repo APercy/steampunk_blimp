@@ -46,10 +46,10 @@ forward and backward while in drive position: controls the power lever
 left and right while in drive position: controls the direction
 jump and sneak: controls the up and down movement
 
-right click to enter and access menu
-E + right click while inside: acess inventory
-E + backward while in drive position: the machine does backward
-E + foward while in drive position: extra power
+- right click to enter and access menu
+- E + right click while inside: acess inventory
+- E + backward while in drive position: the machine does backward
+- E + foward while in drive position: extra power
 
 Tip:
 Drive it gently.
