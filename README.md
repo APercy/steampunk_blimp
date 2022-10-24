@@ -27,15 +27,17 @@ The blimp inventory can be accessed by Aux (E) + rightclick.
 Shared owners:
 This vehicle was made to be shared with a team. So the owner can set more users to
 operate it. Inside the blimp, just use the command /blimp_share <name>
-To remove someone from the sharing, /blimp_remove <name>
-To list the owners, /blimp_list
-Is possible to lock the blimp access, so only the owners can enter: /blimp_lock true
-To let anyone enter, /blimp_lock false
+
+- To remove someone from the sharing, /blimp_remove <name>
+- To list the owners, /blimp_list
+- To lock the blimp access, so only the owners can enter: /blimp_lock true
+- To let anyone enter, /blimp_lock false
+
 All shared owners can access the blimp inventory
 
 Painting:
 As the planes, punch a dye against the hull, so the primary color will change
-To change the secondary color, punch a dye, but holding Aux (E) key.
+- To change the secondary color, punch a dye, but holding Aux (E) key.
 It is possible to set a logo on your blimp, so enter inside it and type the command /blimp_logo
 Only the original owner can do the paintings
 
