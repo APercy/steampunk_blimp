@@ -10,6 +10,7 @@ water for the boiler. The fuel can be coal, coal block and wood. To supply it,
 be on board and punch the necessary items on the airship. There is another way to
 load water to the boiler: if it is landed on water, it can load it through the
 menu. But the current pressure will be lost.
+
 Activate the furnace in the first option of the menu. Take control by activating
 the option "Take the Control".
 
