@@ -4,6 +4,7 @@ Minetest 5.4 mod: Steampunk Blimp
 This mod implements a fantasy steampunk blimp for minetest.
 The mod was made for fun, but tries to provide an immersion on it's operation.
 It can carry 5 people.
+
 To fly it, it is necessary to provide some items, such as fuel to be burned and
 water for the boiler. The fuel can be coal, coal block and wood. To supply it,
 be on board and punch the necessary items on the airship. There is another way to
@@ -11,10 +12,12 @@ load water to the boiler: if it is landed on water, it can load it through the
 menu. But the current pressure will be lost.
 Activate the furnace in the first option of the menu. Take control by activating
 the option "Take the Control".
+
 The information panel will be on the left and bottom of the screen. Wait for the
 boiler to reach the proper pressure for operation (green) before operating the power lever.
 To go up, press Jump (space). Note that it takes some pressure from the boiler. To go down,
 hold sneak (shift).
+
 Forward increases the propeller power, Backward reduces. To go reverse, hold aux (E key)
 and backward together. There is a power mode. When the lever reaches the up limit, hold E
 and forward to increase the acceleration. But note that the boiler will lose pressure.
@@ -55,6 +58,7 @@ wants to enter the blimp.
 Know issues:
 The walk movement inside the ship is affected by server lag, because the lack of
 an interpolation method on attach function.
+  
 Rubber-band bug is from minetest nature, just close and reopen minetest to solve.
 Or try to live the Michael Jackson's way of life and learn the Moonwalk properly XD
 Some old versions of minetest can have an strange issue, the camera is set to
