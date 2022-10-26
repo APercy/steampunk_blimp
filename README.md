@@ -19,8 +19,8 @@ boiler to reach the proper pressure for operation (green) before operating the p
 To go up, press Jump (space). Note that it takes some pressure from the boiler. To go down,
 hold sneak (shift).
 
-Forward increases the propeller power, Backward reduces. To go reverse, hold aux (E key)
-and backward together. There is a power mode. When the lever reaches the up limit, hold E
+Forward increases the propeller power, Backward reduces.
+There is a power mode. When the lever reaches the up limit, hold E
 and forward to increase the acceleration. But note that the boiler will lose pressure.
 The blimp inventory can be accessed by Aux (E) + rightclick.
 
@@ -28,6 +28,7 @@ Shared owners:
 This vehicle was made to be shared with a team. So the owner can set more users to
 operate it. Inside the blimp, just use the command /blimp_share <name>
 
+- To go reverse, hold aux (E key) and backward together.
 - To remove someone from the sharing, /blimp_remove <name>
 - To list the owners, /blimp_list
 - To lock the blimp access, so only the owners can enter: /blimp_lock true
