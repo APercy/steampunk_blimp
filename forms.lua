@@ -15,7 +15,7 @@ end
 function steampunk_blimp.pilot_formspec(name)
     local basic_form = table.concat({
         "formspec_version[5]",
-        "size[6,8]",
+        "size[6,9]",
 	}, "")
 
     local player = minetest.get_player_by_name(name)
@@ -32,14 +32,15 @@ function steampunk_blimp.pilot_formspec(name)
 
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop the fire]"
     basic_form = basic_form.."button[1,2.0;4,1;water;Load water from bellow]"
-    basic_form = basic_form.."button[1,3.0;4,1;manual;Show Manual Menu]"
+    basic_form = basic_form.."button[1,3.0;4,1;inventory;Open inventory]"
+    basic_form = basic_form.."button[1,4.0;4,1;manual;Show Manual Menu]"
 
-    basic_form = basic_form.."checkbox[1,4.6;take_control;Take the Control;"..take_control.."]"
-    basic_form = basic_form.."checkbox[1,5.2;anchor;Anchor away;"..anchor.."]"
+    basic_form = basic_form.."checkbox[1,5.6;take_control;Take the Control;"..take_control.."]"
+    basic_form = basic_form.."checkbox[1,6.2;anchor;Anchor away;"..anchor.."]"
     
-    basic_form = basic_form.."label[1,6.0;Disembark:]"
-    basic_form = basic_form.."button[1,6.2;2,1;disembark_l;<< Left]"
-    basic_form = basic_form.."button[3,6.2;2,1;disembark_r;Right >>]"
+    basic_form = basic_form.."label[1,7.0;Disembark:]"
+    basic_form = basic_form.."button[1,7.2;2,1;disembark_l;<< Left]"
+    basic_form = basic_form.."button[3,7.2;2,1;disembark_r;Right >>]"
 
     minetest.show_formspec(name, "steampunk_blimp:pilot_main", basic_form)
 end
@@ -187,6 +188,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 else
                     minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. The ship needs to be in the water."))
                 end
+            end
+            if fields.inventory then
+                airutils.show_vehicle_trunk_formspec(ent, player, steampunk_blimp.trunk_slots)
             end
             if fields.manual then
                 steampunk_blimp.manual_formspec(name)

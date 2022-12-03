@@ -447,17 +447,25 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
 
             if not has_passengers and toolcaps and toolcaps.damage_groups and
-                    toolcaps.damage_groups.fleshy then
-                --airutils.hurt(self,toolcaps.damage_groups.fleshy - 1)
+                    toolcaps.groupcaps and toolcaps.groupcaps.choppy then
+
+                local is_empty = true --[[false
+                local inventory = airutils.get_inventory(self)
+                if inventory then
+                    if inventory:is_empty("main") then is_empty = true end
+                end]]--
+
                 --airutils.make_sound(self,'hit')
-                self.hp = self.hp - 10
-                minetest.sound_play("collision", {
-                    object = self.object,
-                    max_hear_distance = 5,
-                    gain = 1.0,
-                    fade = 0.0,
-                    pitch = 1.0,
-                })
+                if is_empty == true then
+                    self.hp = self.hp - 10
+                    minetest.sound_play("collision", {
+                        object = self.object,
+                        max_hear_distance = 5,
+                        gain = 1.0,
+                        fade = 0.0,
+                        pitch = 1.0,
+                    })
+                end
             end
 
             if self.hp <= 0 then
