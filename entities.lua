@@ -458,7 +458,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
                 --airutils.make_sound(self,'hit')
                 if is_empty == true then
                     self.hp = self.hp - 10
-                    minetest.sound_play("collision", {
+                    minetest.sound_play("steampunk_blimp_collision", {
                         object = self.object,
                         max_hear_distance = 5,
                         gain = 1.0,

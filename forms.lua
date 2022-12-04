@@ -246,12 +246,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		    end
             if fields.anchor then
                 if fields.anchor == "true" then
-                    local max_speed_anchor = 0.5
+                    local max_speed_anchor = 0.6
                     if ent._longit_speed then
-                        if ent._longit_speed < max_speed_anchor and
-                           ent._longit_speed > -max_speed_anchor then
+                        if math.abs(ent._longit_speed) < max_speed_anchor then
 
                             ent.anchored = true
+                            ent.object:set_acceleration(vector.new())
                             ent.object:set_velocity(vector.new())
                             if name then
                                 minetest.chat_send_player(name,core.colorize('#00ff00', " >>> Anchor away!"))

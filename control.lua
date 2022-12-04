@@ -63,6 +63,9 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
             else
                 --self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation)
             end
+        else
+            --anchor away, so stop!
+            self._power_lever = 0
         end
         if not ctrl.aux1 and self._power_lever < 0 then self._power_lever = 0 end
 
