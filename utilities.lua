@@ -552,6 +552,9 @@ local function get_result_pos(self, player, index)
 
         pos = vector.new()
 
+        local y_rot = -math.deg(direction)
+        pos.y = y_rot --okay, this is strange to keep here, but as I dont use it anyway...
+
         if ctrl.up or ctrl.down or ctrl.left or ctrl.right then
             player_api.set_animation(player, "walk", 30)
 
