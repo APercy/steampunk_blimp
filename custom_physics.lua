@@ -67,6 +67,11 @@ function steampunk_blimp.physics(self)
     self.object:move_to(self.object:get_pos())
     local time_correction = (self.dtime/steampunk_blimp.ideal_step)
     local y_accel = self._baloon_buoyancy*time_correction
+    local max_y_acell = 0.6
+    if y_accel > max_y_acell then y_accel = max_y_acell end
+    if y_accel < (-1*max_y_acell) then y_accel = -1*max_y_acell end
+
+
     if surface then
         self.isinliquid = true
         local height = self.height
