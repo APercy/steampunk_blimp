@@ -387,18 +387,10 @@ minetest.register_entity("steampunk_blimp:blimp", {
         local is_admin = false
         is_admin = minetest.check_player_privs(puncher, {server=true})
 		local name = puncher:get_player_name()
-        if self.owner and self.owner ~= name and self.owner ~= "" then
-            if is_admin == false then return end
-        end
         if self.owner == nil then
             self.owner = name
         end
             
-        if self.driver_name and self.driver_name ~= name then
-            -- do not allow other players to remove the object while there is a driver
-            return
-        end
-        
         local is_attached = steampunk_blimp.checkAttach(self, puncher)
 
         local itmstck=puncher:get_wielded_item()
@@ -407,8 +399,17 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         if is_attached == true then
             --refuel
-            steampunk_blimp.load_fuel(self, puncher)
-            steampunk_blimp.load_water(self, puncher)
+            if steampunk_blimp.load_fuel(self, puncher) then return end
+            if steampunk_blimp.load_water(self, puncher) then return end
+        end
+
+        if self.owner and self.owner ~= name and self.owner ~= "" then
+            if is_admin == false then return end
+        end
+
+        if self.driver_name and self.driver_name ~= name then
+            -- do not allow other players to remove the object while there is a driver
+            return
         end
 
         -- deal with painting or destroying

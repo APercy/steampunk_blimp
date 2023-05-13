@@ -284,10 +284,6 @@ function steampunk_blimp.destroy(self, overload)
     --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'steampunk_blimp:boat')
     --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:diamond')
 
-    --[[local total_biofuel = math.floor(self._energy) - 1
-    for i=0,total_biofuel do
-        minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'biofuel:biofuel')
-    end]]--
     if overload then
         local stack = ItemStack(self.item)
         local item_def = stack:get_definition()
@@ -576,7 +572,9 @@ local function get_result_pos(self, player, index)
             if math.abs(self._passengers_base_pos[index].dist_moved) > 5 then
                 self._passengers_base_pos[index].dist_moved = 0
                 minetest.sound_play({name = "default_wood_footstep"},
-                    {object = self._passengers_base_pos[index].object, gain = 0.1,
+                    --{object = self._passengers_base_pos[index].object, gain = 0.1,
+                        {object = player,
+                        gain = 0.1,
                         max_hear_distance = 5,
                         ephemeral = true,})
             end
