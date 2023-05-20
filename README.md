@@ -3,7 +3,7 @@ Minetest 5.4 mod: Steampunk Blimp
 
 This mod implements a fantasy steampunk blimp for minetest.
 The mod was made for fun, but tries to provide an immersion on it's operation.
-It can carry 5 people.
+It can carry 7 people.
 
 To fly it, it is necessary to provide some items, such as fuel to be burned and
 water for the boiler. The fuel can be coal, coal block and wood. To supply it,
