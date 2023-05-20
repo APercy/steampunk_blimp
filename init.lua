@@ -8,6 +8,7 @@ steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.max_engine_acc = 3
 steampunk_blimp.max_seats = 7
+steampunk_blimp.wind_enabled = false
 steampunk_blimp.pilot_base_pos = {x=0.0,y=20.821,z=-30}
 steampunk_blimp.passenger_pos = {
     [1] = {x=0.0,y=0,z=-15},
@@ -150,6 +151,11 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
 	end,
 })
 
+if minetest.settings:get_bool('steampunk_blimp.enable_wind') then
+    steampunk_blimp.wind_enabled = true
+else
+    steampunk_blimp.wind_enabled = false
+end
 
 --
 -- crafting

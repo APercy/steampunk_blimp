@@ -38,8 +38,8 @@ initial_properties = {
 --
 minetest.register_entity('steampunk_blimp:stand_base',{
     initial_properties = {
-	    physical = true,
-	    collide_with_objects=true,
+	    physical = false,
+	    collide_with_objects=false,
         collisionbox = {-2, -2, -2, 2, 0, 2},
 	    pointable=false,
 	    visual = "mesh",
@@ -83,7 +83,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     timeout = 0;
     buoyancy = 0.15,
     max_hp = 50,
-    anchored = false,
+    anchored = true,
     physics = steampunk_blimp.physics,
     hull_integrity = nil,
     owner = "",
@@ -251,17 +251,23 @@ minetest.register_entity("steampunk_blimp:blimp", {
         local hull_direction = minetest.yaw_to_dir(yaw)
         local nhdir = {x=hull_direction.z,y=0,z=-hull_direction.x}        -- lateral unit vector
         local velocity = self.object:get_velocity()
+        local wind_speed = airutils.get_wind(curr_pos, 0.15)
 
         local longit_speed = steampunk_blimp.dot(velocity,hull_direction)
         self._longit_speed = longit_speed --for anchor verify
-        local longit_drag = vector.multiply(hull_direction,longit_speed*
-                longit_speed*LONGIT_DRAG_FACTOR*-1*steampunk_blimp.sign(longit_speed))
+        local relative_longit_speed = longit_speed
+        if steampunk_blimp.wind_enabled then
+            relative_longit_speed = ap_airship.dot(vector.add(velocity, wind_speed), hull_direction)
+        end
+        self._relative_longit_speed = relative_longit_speed
+
+        local longit_drag = vector.multiply(hull_direction,relative_longit_speed*
+                relative_longit_speed*LONGIT_DRAG_FACTOR*-1*steampunk_blimp.sign(relative_longit_speed))
         local later_speed = steampunk_blimp.dot(velocity,nhdir)
         local later_drag = vector.multiply(nhdir,later_speed*later_speed*
                 LATER_DRAG_FACTOR*-1*steampunk_blimp.sign(later_speed))
         local accel = vector.add(longit_drag,later_drag)
 
-        local vel = self.object:get_velocity()
         local curr_pos = self.object:get_pos()
         self._last_pos = curr_pos
         self.object:move_to(curr_pos)
@@ -282,7 +288,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         end
 
         if self.owner == "" then return end
-        --[[if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
+        --[[if relative_longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
             self.object:move_to(curr_pos)
             --self.object:set_acceleration({x=0,y=airutils.gravity,z=0})
             return
@@ -296,16 +302,16 @@ minetest.register_entity("steampunk_blimp:blimp", {
         end
 
         --detect collision
-        steampunk_blimp.testDamage(self, vel, curr_pos)
+        steampunk_blimp.testDamage(self, velocity, curr_pos)
 
-        accel = steampunk_blimp.control(self, self.dtime, hull_direction, longit_speed, accel) or vel
+        accel = steampunk_blimp.control(self, self.dtime, hull_direction, relative_longit_speed, accel) or velocity
 
         --get disconnected players
         steampunk_blimp.rescueConnectionFailedPassengers(self)
 
         local turn_rate = math.rad(18)
-        newyaw = yaw + self.dtime*(1 - 1 / (math.abs(longit_speed) + 1)) *
-            self._rudder_angle / 30 * turn_rate * steampunk_blimp.sign(longit_speed)
+        newyaw = yaw + self.dtime*(1 - 1 / (math.abs(relative_longit_speed) + 1)) *
+            self._rudder_angle / 30 * turn_rate * steampunk_blimp.sign(relative_longit_speed)
 
         steampunk_blimp.engine_step(self, accel)
         
@@ -318,7 +324,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         local newroll = 0
         if self._last_roll ~= nil then newroll = self._last_roll end
         --oscilation when stoped
-        if longit_speed == 0 then
+        if relative_longit_speed == 0 then
             local time_correction = (self.dtime/steampunk_blimp.ideal_step)
             --stoped
             if self._roll_state == nil then
@@ -351,8 +357,19 @@ minetest.register_entity("steampunk_blimp:blimp", {
         ---------------------------------
         -- end roll
 
+        if steampunk_blimp.wind_enabled then
+            local wind_yaw = minetest.dir_to_yaw(wind_speed)
+            --minetest.chat_send_all("x: "..wind_speed.x.. " - z: "..wind_speed.z.." - yaw: "..math.deg(wind_yaw).. " - orig: "..wind_yaw)
+
+            if self.anchored == false and self.isonground == false then
+                accel = vector.add(accel, wind_speed)
+            else
+                accel = vector.new()
+            end
+        end
         accel.y = accel_y
-        newpitch = velocity.y * math.rad(1.5)
+
+        newpitch =  velocity.y * math.rad(1.5) * (relative_longit_speed/3)
         self.object:set_acceleration(accel)
         self.object:set_rotation({x=newpitch,y=newyaw,z=newroll})
 
