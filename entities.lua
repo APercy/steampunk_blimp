@@ -102,6 +102,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _passengers = {}, --passengers list
     _passengers_base = {}, --obj id
     _passengers_base_pos = steampunk_blimp.copy_vector({}),
+    _passenger_is_sit = {}, -- 0, 1, 2, 3 or 4 ==> stand, 0, 90, 180, 270 --the sit rotation
     _passengers_locked = false,
     _disconnection_check_time = 0,
     _inv = nil,
@@ -155,7 +156,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.hull_integrity = data.stored_hull_integrity
             self.item = data.stored_item
             self._inv_id = data.stored_inv_id
-            self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
+            self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             self._passengers_locked = data.stored_passengers_locked
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
@@ -176,30 +177,17 @@ minetest.register_entity("steampunk_blimp:blimp", {
         fire:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
 	    self.fire = fire
 
-        self._passengers_base = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
-        self._passengers_base_pos = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
-        self._passengers_base_pos = {
-                [1]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[1]),
-                [2]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[2]),
-                [3]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[3]),
-                [4]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[4]),
-                [5]=steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[5]),} --curr pos
-        --self._passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,} --passenger names
-
-        self._passengers_base[1]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
-        self._passengers_base[1]:set_attach(self.object,'',self._passengers_base_pos[1],{x=0,y=0,z=0})
-
-        self._passengers_base[2]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
-        self._passengers_base[2]:set_attach(self.object,'',self._passengers_base_pos[2],{x=0,y=0,z=0})
-
-        self._passengers_base[3]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
-        self._passengers_base[3]:set_attach(self.object,'',self._passengers_base_pos[3],{x=0,y=0,z=0})
-
-        self._passengers_base[4]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
-        self._passengers_base[4]:set_attach(self.object,'',self._passengers_base_pos[4],{x=0,y=0,z=0})
-
-        self._passengers_base[5]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
-        self._passengers_base[5]:set_attach(self.object,'',self._passengers_base_pos[5],{x=0,y=0,z=0})
+        --passengers positions
+        self._passenger_is_sit = ap_airship.copy_vector({})
+        self._passengers_base = ap_airship.copy_vector({})
+        self._passengers_base_pos = ap_airship.copy_vector({})
+        for i = 1,ap_airship.max_pos,1 
+        do
+            self._passenger_is_sit[i] = 0
+            self._passengers_base_pos[i] = ap_airship.copy_vector(ap_airship.passenger_pos[i])
+            self._passengers_base[i]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
+            self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+        end
 
         --animation load - stoped
         self.object:set_animation({x = 1, y = 47}, 0, 0, true)

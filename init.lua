@@ -7,7 +7,7 @@ steampunk_blimp.ideal_step = 0.02
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.max_engine_acc = 3
-steampunk_blimp.max_seats = 5
+steampunk_blimp.max_seats = 7
 steampunk_blimp.pilot_base_pos = {x=0.0,y=20.821,z=-30}
 steampunk_blimp.passenger_pos = {
     [1] = {x=0.0,y=0,z=-15},
@@ -15,6 +15,8 @@ steampunk_blimp.passenger_pos = {
     [3] = {x=11,y=0,z=-12},
     [4] = {x=-11,y=0,z=14},
     [5] = {x=11,y=0,z=14},
+    [6] = {x=-11,y=0,z=13},
+    [7] = {x=11,y=0,z=13},
     }
 
 steampunk_blimp.canvas_texture = "wool_white.png^[colorize:#f4e7c1:128"
@@ -76,6 +78,7 @@ steampunk_blimp.colors ={
     yellow='yellow',
 }
 
+dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "walk_map.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "utilities.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "control.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "fuel_management.lua")
@@ -129,7 +132,7 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
 		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
 		if blimp and placer then
             local ent = blimp:get_luaentity()
-            ent._passengers = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil,})
+            ent._passengers = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
             local owner = placer:get_player_name()
             ent.owner = owner
