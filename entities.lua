@@ -87,6 +87,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     physics = steampunk_blimp.physics,
     hull_integrity = nil,
     owner = "",
+    time_total = 0,
     _shared_owners = {},
     _engine_running = false,
     _power_lever = 0,
