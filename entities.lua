@@ -179,13 +179,13 @@ minetest.register_entity("steampunk_blimp:blimp", {
 	    self.fire = fire
 
         --passengers positions
-        self._passenger_is_sit = ap_airship.copy_vector({})
-        self._passengers_base = ap_airship.copy_vector({})
-        self._passengers_base_pos = ap_airship.copy_vector({})
-        for i = 1,ap_airship.max_pos,1 
+        self._passenger_is_sit = steampunk_blimp.copy_vector({})
+        self._passengers_base = steampunk_blimp.copy_vector({})
+        self._passengers_base_pos = steampunk_blimp.copy_vector({})
+        for i = 1,steampunk_blimp.max_seats,1 
         do
             self._passenger_is_sit[i] = 0
-            self._passengers_base_pos[i] = ap_airship.copy_vector(ap_airship.passenger_pos[i])
+            self._passengers_base_pos[i] = steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
             self._passengers_base[i]=minetest.add_entity(pos,'steampunk_blimp:stand_base')
             self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
         end
@@ -258,7 +258,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self._longit_speed = longit_speed --for anchor verify
         local relative_longit_speed = longit_speed
         if steampunk_blimp.wind_enabled then
-            relative_longit_speed = ap_airship.dot(vector.add(velocity, wind_speed), hull_direction)
+            relative_longit_speed = steampunk_blimp.dot(vector.add(velocity, wind_speed), hull_direction)
         end
         self._relative_longit_speed = relative_longit_speed
 
