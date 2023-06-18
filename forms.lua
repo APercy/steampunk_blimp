@@ -199,7 +199,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 if fields.take_control == "true" then
                     if ent.driver_name == nil or ent.driver_name == "" then
                         ent._at_control = true
-                        for i = 5,1,-1 
+                        for i = steampunk_blimp.max_seats,1,-1 
                         do 
                             if ent._passengers[i] == name then
                                 ent._passengers_base_pos[i] = vector.new(steampunk_blimp.pilot_base_pos)

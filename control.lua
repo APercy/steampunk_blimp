@@ -140,7 +140,7 @@ function steampunk_blimp.buoyancy_auto_correction(self, dtime)
     if self._baloon_buoyancy > 0 then factor = -1 end
     local time_correction = (dtime/steampunk_blimp.ideal_step)
     local intensity = 0.2
-    local correction = (intensity*factor) * time_correction
+    local correction = (intensity*factor) * math.max(time_correction, steampunk_blimp.ideal_step)
     --minetest.chat_send_player(self.driver_name, correction)
     local before_correction = self._baloon_buoyancy
     local new_baloon_buoyancy = self._baloon_buoyancy + correction
