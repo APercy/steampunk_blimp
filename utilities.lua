@@ -264,11 +264,14 @@ function steampunk_blimp.destroy(self, overload)
 
     local pos = self.object:get_pos()
     if self.fire then self.fire:remove() end
+
     if self._passengers_base[1] then self._passengers_base[1]:remove() end
     if self._passengers_base[2] then self._passengers_base[2]:remove() end
     if self._passengers_base[3] then self._passengers_base[3]:remove() end
     if self._passengers_base[4] then self._passengers_base[4]:remove() end
     if self._passengers_base[5] then self._passengers_base[5]:remove() end
+    if self._passengers_base[6] then self._passengers_base[6]:remove() end
+    if self._passengers_base[7] then self._passengers_base[7]:remove() end
 
     airutils.destroy_inventory(self)
     self.object:remove()
