@@ -274,9 +274,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self.object:move_to(curr_pos)
 
         --minetest.chat_send_all(self._energy)
-        --local node_bellow = airutils.nodeatpos(airutils.pos_shift(curr_pos,{y=-2.8}))
+        --local node_below = airutils.nodeatpos(airutils.pos_shift(curr_pos,{y=-2.8}))
         --[[local is_flying = true
-        if node_bellow and node_bellow.drawtype ~= 'airlike' then is_flying = false end]]--
+        if node_below and node_below.drawtype ~= 'airlike' then is_flying = false end]]--
 
         local is_attached = false
         local player = nil
