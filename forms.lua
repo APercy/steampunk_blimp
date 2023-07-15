@@ -31,7 +31,7 @@ function steampunk_blimp.pilot_formspec(name)
     if ent.anchored == true then anchor = "true" end
 
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop the fire]"
-    basic_form = basic_form.."button[1,2.0;4,1;water;Load water from bellow]"
+    basic_form = basic_form.."button[1,2.0;4,1;water;Load water from below]"
     basic_form = basic_form.."button[1,3.0;4,1;inventory;Open inventory]"
     basic_form = basic_form.."button[1,4.0;4,1;manual;Show Manual Menu]"
 
