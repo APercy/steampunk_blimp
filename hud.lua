@@ -104,7 +104,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             scale     = { x = 0.5, y = 0.5},
             alignment = { x = 1, y = 0 },
         })
-        
+
         ids["throttle"] = player:hud_add({
             hud_elem_type = "image",
             position  = {x = 0, y = 1},

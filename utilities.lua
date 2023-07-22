@@ -74,8 +74,8 @@ end
 function steampunk_blimp.check_passenger_is_attached(self, name)
     local is_attached = false
     if is_attached == false then
-        for i = steampunk_blimp.max_seats,1,-1 
-        do 
+        for i = steampunk_blimp.max_seats,1,-1
+        do
             if self._passengers[i] == name then
                 is_attached = true
                 break
@@ -91,8 +91,8 @@ function steampunk_blimp.rescueConnectionFailedPassengers(self)
     if self._disconnection_check_time > 1 then
         --minetest.chat_send_all(dump(self._passengers))
         self._disconnection_check_time = 0
-        for i = steampunk_blimp.max_seats,1,-1 
-        do 
+        for i = steampunk_blimp.max_seats,1,-1
+        do
             if self._passengers[i] then
                 local player = minetest.get_player_by_name(self._passengers[i])
                 if player then --we have a player!
@@ -101,8 +101,6 @@ function steampunk_blimp.rescueConnectionFailedPassengers(self)
 		                if player:get_hp() > 0 then
                             self._passengers[i] = nil --clear the slot first
                             do_attach(self, player, i) --attach
-                        else
-                            --steampunk_blimp.dettachPlayer(self, player)
 		                end
                     end
                 end
@@ -151,9 +149,8 @@ function steampunk_blimp.attach_pax(self, player, slot)
 
     --minetest.chat_send_all(dump(t))
 
-    local i=0
     for k,v in ipairs(t) do
-        i = t[k]
+        local i = t[k] or 0
         if self._passengers[i] == nil then
             do_attach(self, player, i)
             --minetest.chat_send_all(i)
@@ -169,8 +166,8 @@ function steampunk_blimp.dettach_pax(self, player, side)
         steampunk_blimp.remove_hud(player)
 
         -- passenger clicked the object => driver gets off the vehicle
-        for i = steampunk_blimp.max_seats,1,-1 
-        do 
+        for i = steampunk_blimp.max_seats,1,-1
+        do
             if self._passengers[i] == name then
                 self._passengers[i] = nil
                 self._passengers_base_pos[i] = steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
@@ -291,7 +288,7 @@ function steampunk_blimp.destroy(self, overload)
     if overload then
         local stack = ItemStack(self.item)
         local item_def = stack:get_definition()
-        
+
         if item_def.overload_drop then
             for _,item in pairs(item_def.overload_drop) do
                 minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},item)
@@ -332,8 +329,8 @@ function steampunk_blimp.checkAttach(self, player)
     if player then
         local player_attach = player:get_attach()
         if player_attach then
-            for i = steampunk_blimp.max_seats,1,-1 
-            do 
+            for i = steampunk_blimp.max_seats,1,-1
+            do
                 if player_attach == self._passengers_base[i] then
                     retVal = true
                     break

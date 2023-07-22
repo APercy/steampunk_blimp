@@ -37,7 +37,7 @@ function steampunk_blimp.pilot_formspec(name)
 
     basic_form = basic_form.."checkbox[1,5.6;take_control;Take the Control;"..take_control.."]"
     basic_form = basic_form.."checkbox[1,6.2;anchor;Anchor away;"..anchor.."]"
-    
+
     basic_form = basic_form.."label[1,7.0;Disembark:]"
     basic_form = basic_form.."button[1,7.2;2,1;disembark_l;<< Left]"
     basic_form = basic_form.."button[3,7.2;2,1;disembark_r;Right >>]"
@@ -109,8 +109,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		    end
 		    if fields.take then
                 ent._at_control = true
-                for i = 5,1,-1 
-                do 
+                for i = 5,1,-1
+                do
                     if ent._passengers[i] == name then
                         ent._passengers_base_pos[i] = vector.new(steampunk_blimp.pilot_base_pos)
                         ent._passengers_base[i]:set_attach(ent.object,'',steampunk_blimp.pilot_base_pos,{x=0,y=0,z=0})
@@ -199,8 +199,8 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 if fields.take_control == "true" then
                     if ent.driver_name == nil or ent.driver_name == "" then
                         ent._at_control = true
-                        for i = steampunk_blimp.max_seats,1,-1 
-                        do 
+                        for i = steampunk_blimp.max_seats,1,-1
+                        do
                             if ent._passengers[i] == name then
                                 ent._passengers_base_pos[i] = vector.new(steampunk_blimp.pilot_base_pos)
                                 ent._passengers_base[i]:set_attach(ent.object,'',steampunk_blimp.pilot_base_pos,{x=0,y=0,z=0})
@@ -239,9 +239,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 ent._at_control = false
 
                 steampunk_blimp.dettach_pax(ent, player, "r")
-
-		    end
-		    if fields.bring then
 
 		    end
             if fields.anchor then
@@ -285,7 +282,7 @@ minetest.register_chatcommand("blimp_share", {
         local player = minetest.get_player_by_name(name)
         local target_player = minetest.get_player_by_name(param)
         local attached_to = player:get_attach()
-    
+
 		if attached_to ~= nil and target_player ~= nil then
             local seat = attached_to:get_attach()
             if seat ~= nil then
@@ -328,7 +325,7 @@ minetest.register_chatcommand("blimp_remove", {
 	func = function(name, param)
         local player = minetest.get_player_by_name(name)
         local attached_to = player:get_attach()
-    
+
 		if attached_to ~= nil then
             local seat = attached_to:get_attach()
             if seat ~= nil then
@@ -365,7 +362,7 @@ minetest.register_chatcommand("blimp_list", {
 	func = function(name, param)
         local player = minetest.get_player_by_name(name)
         local attached_to = player:get_attach()
-    
+
 		if attached_to ~= nil then
             local seat = attached_to:get_attach()
             if seat ~= nil then
@@ -396,7 +393,7 @@ minetest.register_chatcommand("blimp_lock", {
 	func = function(name, param)
         local player = minetest.get_player_by_name(name)
         local attached_to = player:get_attach()
-    
+
 		if attached_to ~= nil then
             local seat = attached_to:get_attach()
             if seat ~= nil then
@@ -428,7 +425,7 @@ minetest.register_chatcommand("blimp_logo", {
 	func = function(name, param)
         local player = minetest.get_player_by_name(name)
         local attached_to = player:get_attach()
-    
+
 		if attached_to ~= nil then
             local seat = attached_to:get_attach()
             if seat ~= nil then
@@ -467,8 +464,8 @@ minetest.register_chatcommand("blimp_eject", {
                 local entity = seat:get_luaentity()
                 if entity then
                     if entity.name == "steampunk_blimp:blimp" then
-                        for i = 5,1,-1 
-                        do 
+                        for i = 5,1,-1
+                        do
                             if entity._passengers[i] == name then
                                 steampunk_blimp.dettach_pax(entity, player, "l")
                                 break
