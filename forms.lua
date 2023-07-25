@@ -464,7 +464,7 @@ minetest.register_chatcommand("blimp_eject", {
                 local entity = seat:get_luaentity()
                 if entity then
                     if entity.name == "steampunk_blimp:blimp" then
-                        for i = 5,1,-1
+                        for i = steampunk_blimp.max_seats,1,-1
                         do
                             if entity._passengers[i] == name then
                                 steampunk_blimp.dettach_pax(entity, player, "l")
