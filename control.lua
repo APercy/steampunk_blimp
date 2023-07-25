@@ -17,7 +17,6 @@ function steampunk_blimp.powerAdjust(self,dtime,factor,dir,max_power)
     local max = max_power or 100
     local add_factor = factor/2
     add_factor = add_factor * (dtime/steampunk_blimp.ideal_step) --adjusting the command speed by dtime
-    local power_index = self._power_lever
 
     if dir == 1 then
         if self._power_lever < max then
@@ -42,12 +41,11 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         player = minetest.get_player_by_name(self.driver_name)
     end
     local retval_accel = accel;
-    
+
 	-- player control
     local ctrl = nil
 	if player and self._at_control == true then
 		ctrl = player:get_player_control()
-		local max_speed_anchor = 0.2
 
         if self.anchored == false then
             local factor = 1
@@ -60,8 +58,6 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
                 end
             elseif ctrl.down then
                 steampunk_blimp.powerAdjust(self, dtime, factor, -1)
-            else
-                --self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation)
             end
         else
             --anchor away, so stop!
@@ -107,8 +103,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 
     if longit_speed > 0 then
         if ctrl then
-            if ctrl.right or ctrl.left then
-            else
+            if not ctrl.right or not ctrl.left then
                 steampunk_blimp.rudder_auto_correction(self, longit_speed, dtime)
             end
         else

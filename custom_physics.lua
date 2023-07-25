@@ -12,11 +12,11 @@ function steampunk_blimp.physics(self)
 								z=vel.z*friction}
         self.object:set_velocity(vel)
 	end
-	
+
 	-- bounciness
 	if self.springiness and self.springiness > 0 then
 		local vnew = vector.new(vel)
-		
+
 		if not self.collided then						-- ugly workaround for inconsistent collisions
 			for _,k in ipairs({'y','z','x'}) do
 				if vel[k]==0 and abs(self.lastvelocity[k])> 0.1 then
@@ -24,7 +24,7 @@ function steampunk_blimp.physics(self)
 				end
 			end
 		end
-		
+
 		if not vector.equals(vel,vnew) then
 			self.collided = true
 		else
@@ -46,23 +46,19 @@ function steampunk_blimp.physics(self)
 
 	--buoyancy
 	local surface = nil
-	local surfnodename = nil
 	local spos = airutils.get_stand_pos(self)
 	spos.y = spos.y+0.01
 	-- get surface height
 	local snodepos = airutils.get_node_pos(spos)
 	local surfnode = airutils.nodeatpos(spos)
 	while surfnode and (surfnode.drawtype == 'liquid' or surfnode.drawtype == 'flowingliquid') do
-		surfnodename = surfnode.name
 		surface = snodepos.y +0.5
 		if surface > spos.y+self.height then break end
 		snodepos.y = snodepos.y+1
 		surfnode = airutils.nodeatpos(snodepos)
 	end
 
-    local new_velocity = nil
-
-    local accell = {x=0, y=0, z=0}
+    local accell
     self.water_drag = 0.1
     self.object:move_to(self.object:get_pos())
     local time_correction = (self.dtime/steampunk_blimp.ideal_step)
@@ -95,5 +91,5 @@ function steampunk_blimp.physics(self)
         --minetest.chat_send_all("_baloon_buoyancy: "..self._baloon_buoyancy.." - dtime: "..self.dtime.." - ideal: "..steampunk_blimp.ideal_step)
         airutils.set_acceleration(self.object,{x=0,y=y_accel,z=0})
     end
-    
+
 end

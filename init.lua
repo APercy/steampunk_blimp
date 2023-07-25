@@ -124,11 +124,11 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
 		if pointed_thing.type ~= "node" then
 			return
 		end
-        
+
         local pointed_pos = pointed_thing.under
         --local node_below = minetest.get_node(pointed_pos).name
         --local nodedef = minetest.registered_nodes[node_below]
-        
+
 		pointed_pos.y=pointed_pos.y+3
 		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
 		if blimp and placer then

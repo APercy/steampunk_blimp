@@ -3,10 +3,9 @@ allow_defined_top = true
 
 globals = {
     "minetest",
-    "mobkit",
+    "airutils",
     "core",
     "player_api",
-    "player_monoids",
     "math.sign",
 }
 
@@ -22,4 +21,3 @@ read_globals = {
     "default", "sfinv", "creative",
 }
 
-ignore = {"611"}

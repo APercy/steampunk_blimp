@@ -18,10 +18,7 @@ end
 local function is_obstacle_zone(pos, start_point, end_point)
     local retVal = steampunk_blimp.table_copy(pos)
 
-    local min_x = 0
-    local min_z = 0
-    local max_x = 0
-    local max_z = 0
+    local min_x, min_z, max_x, max_z
 
     if start_point.x <= end_point.x then min_x = start_point.x else min_x = end_point.x end
     if start_point.z <= end_point.z then min_z = start_point.z else min_z = end_point.z end
@@ -62,7 +59,7 @@ function steampunk_blimp.boat_upper_deck_map(pos, dpos)
     local orig_pos = steampunk_blimp.copy_vector(pos)
     local position = steampunk_blimp.copy_vector(dpos)
     local new_pos = steampunk_blimp.copy_vector(dpos)
-    
+
     new_pos.z = steampunk_blimp.clamp(new_pos.z, -47, -16)
     new_pos = is_obstacle_zone(new_pos, {x=4, z=-28}, {x=-4, z=-20}) --timao
     new_pos = is_obstacle_zone(new_pos, {x=-30, z=-24}, {x=4, z=-12})
@@ -93,7 +90,6 @@ local function is_ladder_zone(pos)
 end
 
 function steampunk_blimp.boat_lower_deck_map(pos, dpos)
-    local orig_pos = steampunk_blimp.copy_vector(pos)
     local position = steampunk_blimp.copy_vector(dpos)
     local new_pos = steampunk_blimp.copy_vector(dpos)
     new_pos.z = steampunk_blimp.clamp(new_pos.z, -29, 45)
@@ -190,7 +186,6 @@ endis_obstacle_zone(new_pos, {x=30, z=55}, {x=2, z=90})
 end]]--
 
 function steampunk_blimp.ladder_map(pos, dpos)
-    local orig_pos = steampunk_blimp.copy_vector(pos)
     local position = steampunk_blimp.copy_vector(dpos)
     local new_pos = steampunk_blimp.copy_vector(dpos)
     new_pos.z = steampunk_blimp.clamp(new_pos.z, -18, -12)
@@ -213,7 +208,7 @@ end]]--
 function steampunk_blimp.navigate_deck(pos, dpos, player)
     local pos_d = dpos
     local ladder_zone = is_ladder_zone(pos)
-    
+
     local upper_deck_y = 20.821
     local lower_deck_y = 0
     if player then
@@ -269,7 +264,7 @@ local function get_result_pos(self, player, index)
 
             local speed = 0.4
 
-            dir = vector.new(ctrl.up and -1 or ctrl.down and 1 or 0, 0, ctrl.left and 1 or ctrl.right and -1 or 0)
+            local dir = vector.new(ctrl.up and -1 or ctrl.down and 1 or 0, 0, ctrl.left and 1 or ctrl.right and -1 or 0)
             dir = vector.normalize(dir)
             dir = vector.rotate(dir, {x = 0, y = -direction, z = 0})
 
@@ -300,8 +295,8 @@ end
 function steampunk_blimp.move_persons(self)
     --self._passenger = nil
     if self.object == nil then return end
-    
-    for i = steampunk_blimp.max_seats,1,-1 
+
+    for i = steampunk_blimp.max_seats,1,-1
     do
         local player = nil
         if self._passengers[i] then player = minetest.get_player_by_name(self._passengers[i]) end
@@ -342,8 +337,6 @@ function steampunk_blimp.move_persons(self)
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 3.6, z = 0}, {x = 0, y = y_rot, z = 0})
                         airutils.sit(player)
                     end
-                else
-                    --self._passengers[i] = nil
                 end
             end
         end
