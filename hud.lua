@@ -72,7 +72,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             hud_elem_type = "text",
             position  = {x = 0, y = 1},
             offset    = {x = screen_pos_x + 240, y = screen_pos_y - 100},
-            text      = "Blimp engine state",
+            text      = "Fuel level",
             alignment = 0,
             scale     = { x = 100, y = 30},
             number    = 0xFFFFFF,
