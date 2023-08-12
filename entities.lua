@@ -451,7 +451,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
 
             if not has_passengers and toolcaps and toolcaps.damage_groups and
-                    toolcaps.groupcaps and toolcaps.groupcaps.choppy then
+                    toolcaps.groupcaps and (toolcaps.groupcaps.choppy or toolcaps.groupcaps.axey_dig) then
 
                 local is_empty = true --[[false
                 local inventory = airutils.get_inventory(self)

@@ -70,11 +70,14 @@ function steampunk_blimp.load_water(self, player)
     if water then
         if self._water_level < steampunk_blimp.MAX_WATER then
             local itemstack
-            --inv:remove_item("main", itemstack)
+            --itmstck:set_count(1)
+            --inv:remove_item("main", itmstck)
 
-            local indx = item_name:find('bucket:bucket')
+            local bucket_name = 'bucket:bucket'
+            if airutils.is_mcl then bucket_name = "mcl_buckets:bucket" end
+            local indx = item_name:find(bucket_name)
             if indx then
-                itemstack = ItemStack("bucket:bucket_empty")
+                itemstack = ItemStack(bucket_name.."_empty")
                 --inv:add_item("main", itemstack)
                 player:set_wielded_item(itemstack)
             end

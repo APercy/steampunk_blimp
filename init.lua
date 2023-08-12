@@ -2,7 +2,8 @@ steampunk_blimp={}
 steampunk_blimp.gravity = tonumber(minetest.settings:get("movement_gravity")) or 9.8
 steampunk_blimp.trunk_slots = 50
 steampunk_blimp.fuel = {['default:coal_lump'] = {amount=1},['default:coalblock'] = {amount=10}}
-steampunk_blimp.water = {['default:water_source'] = {amount=1},['default:river_water_source'] = {amount=1}, ['bucket:bucket_water'] = {amount=1}, ['bucket:bucket_river_water'] = {amount=1}}  --bucket:bucket_empty
+steampunk_blimp.water = {['default:water_source'] = {amount=1},['default:river_water_source'] = {amount=1}, ['bucket:bucket_water'] = {amount=1},
+    ['bucket:bucket_river_water'] = {amount=1}, ['mcl_buckets:bucket_water'] = {amount=1}, ['mcl_buckets:bucket_river_water'] = {amount=1}}  --bucket:bucket_empty
 steampunk_blimp.ideal_step = 0.02
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
