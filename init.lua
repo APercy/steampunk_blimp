@@ -165,14 +165,27 @@ end
 --
 
 if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
-    minetest.register_craft({
-	    output = "steampunk_blimp:cylinder_part",
-	    recipe = {
-		    {"default:stick", "wool:white", "default:stick"},
-		    {"wool:white", "group:wood", "wool:white"},
-            {"default:stick", "wool:white", "default:stick"},
-	    }
-    })
+
+    local item_name = "steampunk_blimp:cylinder_part"
+    if not airutils.is_mcl then
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"default:stick", "wool:white", "default:stick"},
+		        {"wool:white", "group:wood", "wool:white"},
+                {"default:stick", "wool:white", "default:stick"},
+	        }
+        })
+    else
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"mcl_core:stick", "mcl_wool:white", "mcl_core:stick"},
+		        {"mcl_wool:white", "mcl_core:wood", "mcl_wool:white"},
+                {"mcl_core:stick", "mcl_wool:white", "mcl_core:stick"},
+	        }
+        })
+    end
 
     minetest.register_craft({
 	    output = "steampunk_blimp:cylinder",
@@ -181,23 +194,47 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
 	    }
     })
 
-    minetest.register_craft({
-	    output = "steampunk_blimp:rotor",
-	    recipe = {
-		    {"wool:white", "default:stick", ""},
-		    {"wool:white", "default:stick", "default:steelblock"},
-		    {"wool:white", "default:stick", ""},
-	    }
-    })
+    item_name = "steampunk_blimp:rotor"
+    if not airutils.is_mcl then
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"wool:white", "default:stick", ""},
+		        {"wool:white", "default:stick", "default:steelblock"},
+		        {"wool:white", "default:stick", ""},
+	        }
+        })
+    else
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"mcl_wool:white", "mcl_core:stick", ""},
+		        {"mcl_wool:white", "mcl_core:stick", "mcl_core:ironblock"},
+		        {"mcl_wool:white", "mcl_core:stick", ""},
+	        }
+        })
+    end
 
-    minetest.register_craft({
-	    output = "steampunk_blimp:boiler",
-	    recipe = {
-		    {"default:steel_ingot","default:steel_ingot"},
-		    {"default:steelblock","default:steel_ingot",},
-		    {"default:steelblock","default:steel_ingot"},
-	    }
-    })
+    item_name = "steampunk_blimp:boiler"
+    if not airutils.is_mcl then
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"default:steel_ingot","default:steel_ingot"},
+		        {"default:steelblock","default:steel_ingot",},
+		        {"default:steelblock","default:steel_ingot"},
+	        }
+        })
+    else
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"mcl_core:iron_ingot","mcl_core:iron_ingot"},
+		        {"mcl_core:ironblock","mcl_core:iron_ingot",},
+		        {"mcl_core:ironblock","mcl_core:iron_ingot"},
+	        }
+        })
+    end
 
     minetest.register_craft({
 	    output = "steampunk_blimp:boat",
