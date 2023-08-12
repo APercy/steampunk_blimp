@@ -26,6 +26,8 @@ steampunk_blimp.black_texture = "default_clay.png^[colorize:#030303:200"
 steampunk_blimp.wood_texture = "default_clay.png^[colorize:#3a270d:230"
 steampunk_blimp.forno_texture = steampunk_blimp.black_texture.."^[mask:steampunk_blimp_forno_mask.png"
 steampunk_blimp.rotor_texture = "("..steampunk_blimp.canvas_texture.."^[mask:steampunk_blimp_rotor_mask2.png)^(default_wood.png^[mask:steampunk_blimp_rotor_mask.png)"
+local ladder_texture = "default_ladder_wood.png"
+if airutils.is_mcl then ladder_texture = "default_ladder.png" end
 steampunk_blimp.textures = {
             steampunk_blimp.black_texture, --alimentacao balao
             "default_wood.png", --asa
@@ -43,7 +45,7 @@ steampunk_blimp.textures = {
             "default_junglewood.png", --leme
             steampunk_blimp.wood_texture, --timao
             "steampunk_blimp_compass.png",
-            "default_ladder_wood.png", --escada
+            ladder_texture, --escada
             "default_wood.png", --mureta
             steampunk_blimp.wood_texture, --mureta
             steampunk_blimp.black_texture, --nacele rotores

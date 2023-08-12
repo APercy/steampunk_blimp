@@ -67,7 +67,12 @@ local function do_attach(self, player, slot)
         --minetest.chat_send_all(self.driver_name)
         self._passengers[slot] = name
         player:set_attach(self._passengers_base[slot], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-        player_api.player_attached[name] = true
+        
+        if airutils.is_mcl then
+            mcl_player.player_attached[name] = true
+        else
+            player_api.player_attached[name] = true
+        end
     end
 end
 
@@ -96,7 +101,14 @@ function steampunk_blimp.rescueConnectionFailedPassengers(self)
             if self._passengers[i] then
                 local player = minetest.get_player_by_name(self._passengers[i])
                 if player then --we have a player!
-                    if player_api.player_attached[self._passengers[i]] == nil then --but isn't attached?
+                    local is_attached = nil
+                    if airutils.is_mcl then
+                        is_attached = mcl_player.player_attached[self._passengers[i]]
+                    else
+                        is_attached = player_api.player_attached[self._passengers[i]]
+                    end
+
+                    if is_attached == nil then --but isn't attached?
                         --minetest.chat_send_all("okay")
 		                if player:get_hp() > 0 then
                             self._passengers[i] = nil --clear the slot first
@@ -177,8 +189,13 @@ function steampunk_blimp.dettach_pax(self, player, side)
 
         -- detach the player
         player:set_detach()
-        player_api.player_attached[name] = nil
-        player_api.set_animation(player, "stand")
+        if airutils.is_mcl then
+            mcl_player.player_attached[name] = nil
+            mcl_player.player_set_animation(player, "stand", 30)
+        else
+            player_api.player_attached[name] = nil
+            player_api.set_animation(player, "stand")
+        end
 
         -- move player down
         minetest.after(0.1, function(pos)
@@ -363,7 +380,9 @@ function steampunk_blimp.engineSoundPlay(self)
     if self.sound_handle then minetest.sound_stop(self.sound_handle) end
     if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
     if self.object then
-        self.sound_handle = minetest.sound_play({name = "default_furnace_active"},
+        local furnace_sound = "default_furnace_active"
+        if airutils.is_mcl then furnace_sound = "fire_fire" end
+        self.sound_handle = minetest.sound_play({name = furnace_sound},
             {object = self.object, gain = 0.2,
                 max_hear_distance = 5,
                 loop = true,})
@@ -410,7 +429,10 @@ function steampunk_blimp.start_furnace(self)
         -- sound
         if self.sound_handle then minetest.sound_stop(self.sound_handle) end
         if self.object then
-            self.sound_handle = minetest.sound_play({name = "default_furnace_active"},
+            local furnace_sound = "default_furnace_active"
+            if airutils.is_mcl then furnace_sound = "fire_fire" end
+
+            self.sound_handle = minetest.sound_play({name = furnace_sound},
                 {object = self.object, gain = 0.2,
                     max_hear_distance = 5,
                     loop = true,})

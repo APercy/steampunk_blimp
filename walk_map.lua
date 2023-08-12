@@ -260,7 +260,11 @@ local function get_result_pos(self, player, index)
 
 
         if ctrl.up or ctrl.down or ctrl.left or ctrl.right then
-            player_api.set_animation(player, "walk", 30)
+            if airutils.is_mcl then
+                mcl_player.player_set_animation(player, "walk", 30)
+            else
+                player_api.set_animation(player, "walk", 30)
+            end
 
             local speed = 0.4
 
@@ -285,7 +289,11 @@ local function get_result_pos(self, player, index)
                         ephemeral = true,})
             end
         else
-            player_api.set_animation(player, "stand")
+            if airutils.is_mcl then
+                mcl_player.player_set_animation(player, "stand", 30)
+            else
+                player_api.set_animation(player, "stand", 30)
+            end
         end
     end
     return pos
