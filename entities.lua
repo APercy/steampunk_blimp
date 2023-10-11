@@ -369,7 +369,8 @@ minetest.register_entity("steampunk_blimp:blimp", {
         accel.y = accel_y
 
         newpitch =  velocity.y * math.rad(1.5) * (relative_longit_speed/3)
-        self.object:set_acceleration(accel)
+        --self.object:set_acceleration(accel)
+        self.object:add_velocity(vector.multiply(accel,self.dtime))
         self.object:set_rotation({x=newpitch,y=newyaw,z=newroll})
 
         self.object:set_bone_position("low_rudder", {x=0,y=0,z=0}, {x=0,y=self._rudder_angle,z=0})
