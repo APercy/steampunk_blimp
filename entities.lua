@@ -271,27 +271,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self._last_pos = curr_pos
         self.object:move_to(curr_pos)
 
-        --minetest.chat_send_all(self._energy)
-        --local node_below = airutils.nodeatpos(airutils.pos_shift(curr_pos,{y=-2.8}))
-        --[[local is_flying = true
-        if node_below and node_below.drawtype ~= 'airlike' then is_flying = false end]]--
-
-        --[[local is_attached = false
-        if self.driver_name then
-            local player = minetest.get_player_by_name(self.driver_name)
-
-            if player then
-                is_attached = steampunk_blimp.checkAttach(self, player)
-            end
-        end
-        ]]--
-
         if self.owner == "" then return end
-        --[[if relative_longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
-            self.object:move_to(curr_pos)
-            --self.object:set_acceleration({x=0,y=airutils.gravity,z=0})
-            return
-        end]]--
 
         --fire
         if self._engine_running == true then

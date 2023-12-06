@@ -69,6 +69,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 		if ctrl.jump then
             if self._boiler_pressure > 0 then
                 self._baloon_buoyancy = 1.02
+                if self.isinliquid then self._baloon_buoyancy = 1.10 end
             end
             self._is_going_up = true
 		elseif ctrl.sneak then
@@ -85,6 +86,12 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 		end
 	end
 
+    --make the blimp loss height when without pressure (and not anchored)
+    if self.anchored == false and not self.isinliquid then
+        if self._boiler_pressure <= 0 then
+            self._baloon_buoyancy = -0.2
+        end
+    end
 
     --engine acceleration calc
     local engineacc = (self._power_lever * steampunk_blimp.max_engine_acc) / 100;
