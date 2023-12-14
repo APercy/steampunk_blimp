@@ -64,7 +64,7 @@ function steampunk_blimp.logo_formspec(name)
         "size[6,4]",
 	}, "")
 
-    local logos = {"blimp_clover.png","blimp_liz.png","blimp_shotting_star.png","blimp_skull.png", "blimp_jack.png",}
+    local logos = {"blimp_clover.png","blimp_liz.png","blimp_shotting_star.png","blimp_skull.png", "blimp_jack.png", "blimp_xmas.png"}
     local logolist = ""
     for k, v in pairs(logos) do
         logolist = logolist .. v .. ","
