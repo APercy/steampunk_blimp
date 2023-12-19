@@ -1,8 +1,3 @@
-
---------------
--- Manual --
---------------
-
 function steampunk_blimp.getPlaneFromPlayer(player)
     local seat = player:get_attach()
     if seat then
@@ -432,7 +427,7 @@ minetest.register_chatcommand("blimp_logo", {
                 local entity = seat:get_luaentity()
                 if entity then
                     if entity.name == "steampunk_blimp:blimp" then
-                        if entity.owner == name then
+                        if entity.owner == name or minetest.check_player_privs(name, {protection_bypass=true}) then
                             steampunk_blimp.logo_formspec(name)
                             --minetest.chat_send_all(dump(entity._shared_owners))
                         else
@@ -445,6 +440,47 @@ minetest.register_chatcommand("blimp_logo", {
             end
 		else
 			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+		end
+	end
+})
+
+minetest.register_chatcommand("blimp_logo_ext", {
+	params = "<image_name.png>",
+	description = "Changes blimp logo",
+	privs = {interact = true},
+	func = function(name, param)
+        local image_name = param --"blimp_alpha.png^"..param
+        local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
+        local player = minetest.get_player_by_name(name)
+        local attached_to = player:get_attach()
+
+		if attached_to ~= nil then
+            local seat = attached_to:get_attach()
+            if seat ~= nil then
+                local entity = seat:get_luaentity()
+                if entity then
+                    if entity.name == "steampunk_blimp:blimp" then
+                        if entity.owner == name or minetest.check_player_privs(name, {protection_bypass=true}) then
+                            if airutils.isTextureLoaded then
+                                if airutils.isTextureLoaded(image_name) then
+                                    steampunk_blimp.set_logo(entity, image_name)
+                                    minetest.chat_send_player(name,core.colorize('#00ff00', " >>> texture '"..image_name.."' set"))
+                                else
+                                    minetest.chat_send_player(name,core.colorize('#ff0000', " >>> texture '"..image_name.."' not found"))
+                                end
+                            else
+                                minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are using an old version of airutils, update it first"))
+                            end
+                        else
+                            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
+                        end
+                    else
+			            minetest.chat_send_player(name,colorstring)
+                    end
+                end
+            end
+		else
+			minetest.chat_send_player(name,colorstring)
 		end
 	end
 })
