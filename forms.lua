@@ -527,7 +527,8 @@ minetest.register_chatcommand("blimp_logo", {
                                 if param == '' then
                                     steampunk_blimp.logo_ext_formspec(name)
                                 else
-                                    if airutils.isTextureLoaded(image_name) or default_logos[image_name] then
+                                    local logo_list = set_list(default_logos)
+                                    if airutils.isTextureLoaded(image_name) or logo_list[image_name] then
                                         steampunk_blimp.set_logo(entity, image_name)
                                         minetest.chat_send_player(name,core.colorize('#00ff00', " >>> texture '"..image_name.."' set"))
                                     else
