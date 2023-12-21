@@ -72,31 +72,38 @@ function steampunk_blimp.logo_formspec(name)
     minetest.show_formspec(name, "steampunk_blimp:logo_main", basic_form)
 end
 
-function steampunk_blimp.logo_ext_formspec(name, t_index, t_page)
+function steampunk_blimp.logo_ext_formspec(name, t_index, t_page, t_type)
     t_index = t_index or 1
     t_page = t_page or 1
+    t_type = t_type or 1
 --[[
-        formspec_version[3]
-        size[12,8]
-        textlist[0.5,0.5;4.5,6;;;1;false]   --textlist[<X>,<Y>;<W>,<H>;<name>;<listelem 1>,<listelem 2>,...,<listelem n>;<selected idx>;<transparent>]
-        image[5.5,0.5;6,6;]
-        label[0.6,7.1;Page]
-        dropdown[1.8,6.7;2,0.8;;1,2,3;1]
-        button[8.5,6.7;3,0.8;set;Set Texture]
+    formspec_version[4]
+    size[12,9]
+    label[0.5,0.9;Type]
+    dropdown[2,0.5;3,0.8;t_type;Nodes,Entities,Items;1]
+    textlist[0.5,1.5;4.5,6;;;1;false]
+    image[5.5,1.5;6,6;]
+    label[0.5,8.2;Page]
+    dropdown[1.8,7.8;1.9,0.8;t_page;1,2,3;1]
+    button[8.5,7.8;3,0.8;set;Set Texture]
 ]]--
     if airutils.isTextureLoaded then
-        airutils.isTextureLoaded('') --force the textures first load
+        airutils.isTextureLoaded('heart.png') --force the textures first load
     else
         minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are using an old version of airutils, update it first"))
         return
     end
 
     local basic_form = table.concat({
-        "formspec_version[3]",
-        "size[12,8]",
+        "formspec_version[4]",
+        "size[12,9]",
 	}, "")
 
-    local textures = airutils.all_game_textures
+    local textures = {}
+    if t_type == "1" or t_type == 1 then textures = airutils.all_game_textures end
+    if t_type == "2" or t_type == 2 then textures = airutils.all_entities_textures end
+    if t_type == "3" or t_type == 3 then textures = airutils.all_items_textures end
+
     local text_count = #textures
     local items_per_page = 50
     local pages = math.ceil(text_count / items_per_page)
@@ -117,14 +124,18 @@ function steampunk_blimp.logo_ext_formspec(name, t_index, t_page)
        pages_list = pages_list .. i .. ","
     end
 
-    basic_form = basic_form.."textlist[0.5,0.5;4.5,6;logos;"..logolist..";"..t_index..";false]"
+    basic_form = basic_form.."label[0.5,0.9;Type]"
+    basic_form = basic_form.."dropdown[2,0.5;3,0.8;t_type;Nodes,Entities,Items;"..t_type..";true]"
+    basic_form = basic_form.."textlist[0.5,1.5;4.5,6;logos;"..logolist..";"..t_index..";false]"
     local curr_real_index = (items_per_page * (t_page-1)) + t_index
-    local texture_name = airutils.all_game_textures[curr_real_index]
-    basic_form = basic_form.."image[5.5,0.5;6,6;"..texture_name.."]"
-    basic_form = basic_form.."label[0.6,7.1;Page]"
-    basic_form = basic_form.."dropdown[1.8,6.7;2,0.8;page;"..pages_list..";"..t_page.."]"
-    basic_form = basic_form.."button[8.5,6.7;3,0.8;set_texture;Set Texture]"
-    basic_form = basic_form.."field[5.3,22.0;3,0.8;texture_name;;"..texture_name.."]"
+    local texture_name = textures[curr_real_index] or ""
+    basic_form = basic_form.."image[5.5,1.5;6,6;"..texture_name.."]"
+    basic_form = basic_form.."label[0.6,8.2;Page]"
+    basic_form = basic_form.."dropdown[1.8,7.8;1.9,0.8;t_page;"..pages_list..";"..t_page..";true]"
+    basic_form = basic_form.."button[8.5,7.8;3,0.8;set_texture;Set Texture]"
+
+    basic_form = basic_form.."field[5.3,20.0;3,0.8;texture_name;;"..texture_name.."]"
+    basic_form = basic_form.."field[5.3,21.0;3,0.8;last_type;;"..t_type.."]"
 
     minetest.show_formspec(name, "steampunk_blimp:logo_ext", basic_form)
 end
@@ -235,19 +246,21 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                     end
                 end
             end
-		    if fields.logos then
+		    if fields.logos or fields.t_page then
                 --minetest.close_formspec(name, "steampunk_blimp:logo_ext")
                 --steampunk_blimp.logo_ext_formspec(name,fields.logos)
                 local result = minetest.explode_textlist_event(fields.logos)
                 if result.type == "CHG" then
                     --minetest.chat_send_all(dump(result.index))
                     --minetest.close_formspec(name, "steampunk_blimp:logo_ext")
-                    steampunk_blimp.logo_ext_formspec(name,result.index,fields.page)
+                    steampunk_blimp.logo_ext_formspec(name,result.index,fields.t_page,fields.last_type)
                     return
                 end
+                steampunk_blimp.logo_ext_formspec(name,1,fields.t_page,fields.last_type)
+                return
 		    end
-            if fields.page then
-                steampunk_blimp.logo_ext_formspec(name,1,fields.page)
+            if fields.t_type then
+                steampunk_blimp.logo_ext_formspec(name,1,1,fields.t_type)
                 return
             end
         end
