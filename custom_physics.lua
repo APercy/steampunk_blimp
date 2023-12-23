@@ -62,6 +62,7 @@ function steampunk_blimp.physics(self)
     self.water_drag = 0.1
     self.object:move_to(self.object:get_pos())
     local time_correction = (self.dtime/steampunk_blimp.ideal_step)
+    if time_correction < 1 then time_correction = 1 end
     local y_accel = self._baloon_buoyancy*time_correction
     local max_y_acell = 0.6
     if y_accel > max_y_acell then y_accel = max_y_acell end
