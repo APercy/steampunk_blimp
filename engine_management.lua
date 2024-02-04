@@ -66,7 +66,10 @@ end
 local function furnace_step(self, accel)
     if self._energy > 0 and self._engine_running then
         local consumed_power = (1/steampunk_blimp.FUEL_CONSUMPTION)
-        self._boiler_pressure = self._boiler_pressure + gained_pressure --pressure for the boiler
+        local time_correction = (self.dtime/steampunk_blimp.ideal_step)
+        if time_correction < 1 then time_correction = 1 end
+        local dtimed_pressure = gained_pressure*time_correction
+        self._boiler_pressure = self._boiler_pressure + dtimed_pressure --pressure for the boiler
         self._energy = self._energy - consumed_power; --removes energy
     end
     if self._energy <= 0 or self._water_level <= 0 then
