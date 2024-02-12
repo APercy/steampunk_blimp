@@ -242,6 +242,12 @@ local function paint(self)
         if indx then
             l_textures[_] = self.logo
         end
+        if airutils._use_signs_api then
+            indx = texture:find('airutils_name_canvas.png')
+            if indx then
+                l_textures[_] = "airutils_name_canvas.png^"..airutils.convert_text_to_texture(self._ship_name, self._name_color or 0, self._name_hor_aligment or 0.8)
+            end
+        end
     end
     self.object:set_properties({textures=l_textures})
 end

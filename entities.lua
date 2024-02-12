@@ -108,6 +108,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _disconnection_check_time = 0,
     _inv = nil,
     _inv_id = "",
+    _ship_name = "",
+    _name_color = 0,
+    _name_hor_aligment = 0.8,
     item = "steampunk_blimp:blimp",
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
@@ -128,6 +131,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             stored_inv_id = self._inv_id,
             stored_passengers = self._passengers, --passengers list
             stored_passengers_locked = self._passengers_locked,
+            stored_ship_name = self._ship_name,
         })
     end,
 
@@ -159,6 +163,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self._inv_id = data.stored_inv_id
             self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             self._passengers_locked = data.stored_passengers_locked
+            self._ship_name = data.stored_ship_name
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"
@@ -274,10 +279,12 @@ minetest.register_entity("steampunk_blimp:blimp", {
         if self.owner == "" then return end
 
         --fire
-        if self._engine_running == true then
-            self.fire:set_properties({textures={"default_furnace_fire_fg.png"},glow=15})
-        else
-            self.fire:set_properties({textures={"steampunk_blimp_alpha.png"},glow=0})
+        if self.fire then
+            if self._engine_running == true then
+                self.fire:set_properties({textures={"default_furnace_fire_fg.png"},glow=15})
+            else
+                self.fire:set_properties({textures={"steampunk_blimp_alpha.png"},glow=0})
+            end
         end
 
         --detect collision

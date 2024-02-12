@@ -37,6 +37,7 @@ steampunk_blimp.textures = {
             "wool_yellow.png", --faixas brancas nariz
             "wool_blue.png", --faixas azuis nariz
             steampunk_blimp.metal_texture, --pontas do balão
+            "airutils_name_canvas.png",
             steampunk_blimp.black_texture, --caldeira
             steampunk_blimp.forno_texture, --caldeira
             "default_junglewood.png", --casco
