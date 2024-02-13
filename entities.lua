@@ -110,7 +110,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
     _inv_id = "",
     _ship_name = "",
     _name_color = 0,
-    _name_hor_aligment = 0.8,
+    _name_hor_aligment = 3.4,
     item = "steampunk_blimp:blimp",
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
