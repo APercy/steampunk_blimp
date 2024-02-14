@@ -266,13 +266,13 @@ end
 function steampunk_blimp.paint(self, colstr)
     if colstr then
         self.color = colstr
-        paint(self, true)
+        paint(self)
     end
 end
 function steampunk_blimp.paint2(self, colstr)
     if colstr then
         self.color2 = colstr
-        paint(self)
+        paint(self,true)
     end
 end
 
