@@ -239,30 +239,15 @@ function steampunk_blimp.remove_hud(player)
         local player_name = player:get_player_name()
         --minetest.chat_send_all(player_name)
         local ids = steampunk_blimp.hud_list[player_name]
+        --minetest.chat_send_all(dump(ids))
         if ids then
             --player:hud_remove(ids["altitude"])
             --player:hud_remove(ids["time"])
-            player:hud_remove(ids["title"])
-            player:hud_remove(ids["bg"])
-            player:hud_remove(ids["coal_1"])
-            player:hud_remove(ids["coal_2"])
-            player:hud_remove(ids["throttle"])
-            player:hud_remove(ids["water_pt_7"])
-            player:hud_remove(ids["water_pt_6"])
-            player:hud_remove(ids["water_pt_5"])
-            player:hud_remove(ids["water_pt_4"])
-            player:hud_remove(ids["water_pt_3"])
-            player:hud_remove(ids["water_pt_2"])
-            player:hud_remove(ids["water_pt_1"])
-            player:hud_remove(ids["press_pt_7"])
-            player:hud_remove(ids["press_pt_6"])
-            player:hud_remove(ids["press_pt_5"])
-            player:hud_remove(ids["press_pt_4"])
-            player:hud_remove(ids["press_pt_3"])
-            player:hud_remove(ids["press_pt_2"])
-            player:hud_remove(ids["press_pt_1"])
+            for key in pairs(ids) do
+                player:hud_remove(ids[key])
+            end
+            steampunk_blimp.hud_list[player_name] = nil
         end
-        steampunk_blimp.hud_list[player_name] = nil
     end
 
 end

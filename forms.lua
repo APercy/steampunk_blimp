@@ -312,8 +312,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 --  dettach player
                 --=========================
                 -- eject passenger if the plane is on ground
-                ent.driver_name = nil
-                ent._at_control = false
 
                 steampunk_blimp.dettach_pax(ent, player, "l")
 
@@ -323,8 +321,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 --  dettach player
                 --=========================
                 -- eject passenger if the plane is on ground
-                ent.driver_name = nil
-                ent._at_control = false
 
                 steampunk_blimp.dettach_pax(ent, player, "r")
 
