@@ -168,6 +168,10 @@ minetest.register_entity("steampunk_blimp:blimp", {
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"
             self.object:set_properties(properties)
+            if data.remove then
+                self.object:remove()
+                return
+            end
         end
 
         local colstr = steampunk_blimp.colors[self.color]
