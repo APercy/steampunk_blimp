@@ -365,10 +365,16 @@ minetest.register_entity("steampunk_blimp:blimp", {
         self.object:add_velocity(vector.multiply(accel,self.dtime))
         self.object:set_rotation({x=newpitch,y=newyaw,z=newroll})
 
+        local compass_angle = newyaw
+        local rem_obj = self.object:get_attach()
+        if rem_obj then
+            compass_angle = rem_obj:get_rotation().y
+        end
+
         self.object:set_bone_position("low_rudder", {x=0,y=0,z=0}, {x=0,y=self._rudder_angle,z=0})
         self.object:set_bone_position("rudder", {x=0,y=97,z=-148}, {x=0,y=self._rudder_angle,z=0})
         self.object:set_bone_position("timao", {x=0,y=27,z=-25}, {x=0,y=0,z=self._rudder_angle*8})
-        self.object:set_bone_position("compass_axis", {x=0,y=30.2,z=-21.243}, {x=0, y=(math.deg(newyaw)), z=0})
+        self.object:set_bone_position("compass_axis", {x=0,y=30.2,z=-21.243}, {x=0, y=(math.deg(compass_angle)), z=0})
 
         --saves last velocy for collision detection (abrupt stop)
         self._last_vel = self.object:get_velocity()
