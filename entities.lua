@@ -169,6 +169,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             properties.infotext = data.stored_owner .. " nice blimp"
             self.object:set_properties(properties)
             if data.remove then
+                airutils.destroy_inventory(self)
                 self.object:remove()
                 return
             end
