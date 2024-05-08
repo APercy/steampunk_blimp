@@ -291,47 +291,31 @@ function steampunk_blimp.destroy(self, overload)
     local pos = self.object:get_pos()
     if self.fire then self.fire:remove() end
 
-    if self._passengers_base[1] then self._passengers_base[1]:remove() end
-    if self._passengers_base[2] then self._passengers_base[2]:remove() end
-    if self._passengers_base[3] then self._passengers_base[3]:remove() end
-    if self._passengers_base[4] then self._passengers_base[4]:remove() end
-    if self._passengers_base[5] then self._passengers_base[5]:remove() end
-    if self._passengers_base[6] then self._passengers_base[6]:remove() end
-    if self._passengers_base[7] then self._passengers_base[7]:remove() end
+    for i = steampunk_blimp.max_seats,1,-1 
+    do
+        if self._passengers_base[i] then self._passengers_base[i]:remove() end
+    end
 
     airutils.destroy_inventory(self)
+    local remove_it = self._remove or false    
     self.object:remove()
 
-    pos.y=pos.y+2
-    --[[for i=1,7 do
-        minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:steel_ingot')
-    end
-
-    for i=1,7 do
-        minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:mese_crystal')
-    end]]--
-
-    --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'steampunk_blimp:boat')
-    --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:diamond')
-
-    if overload then
-        local stack = ItemStack(self.item)
-        local item_def = stack:get_definition()
-
-        if item_def.overload_drop then
-            for _,item in pairs(item_def.overload_drop) do
-                minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},item)
-            end
-            return
+    if remove_it == false then
+        pos.y=pos.y+2
+        --[[for i=1,7 do
+            minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:steel_ingot')
         end
+
+        for i=1,7 do
+            minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:mese_crystal')
+        end]]--
+
+        --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'steampunk_blimp:boat')
+        --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:diamond')
+
+        local stack = ItemStack(self.item)
+        minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5}, stack)
     end
-    local stack = ItemStack(self.item)
-    local item_def = stack:get_definition()
-    if self.hull_integrity then
-        local boat_wear = math.floor(65535*(1-(self.hull_integrity/item_def.hull_integrity)))
-        stack:set_wear(boat_wear)
-    end
-    minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5}, stack)
 end
 
 --returns 0 for old, 1 for new

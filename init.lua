@@ -155,6 +155,47 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
 	end,
 })
 
+-- ephemeral blimp
+minetest.register_craftitem("steampunk_blimp:ephemeral_blimp", {
+	description = "Ephemeral Blimp",
+	inventory_image = "steampunk_blimp_ephemeral_icon.png",
+    liquids_pointable = true,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		if pointed_thing.type ~= "node" then
+			return
+		end
+
+        local pointed_pos = pointed_thing.under
+        --local node_below = minetest.get_node(pointed_pos).name
+        --local nodedef = minetest.registered_nodes[node_below]
+
+		pointed_pos.y=pointed_pos.y+3
+		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
+		if blimp and placer then
+            local ent = blimp:get_luaentity()
+            ent._passengers = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
+            --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
+            local owner = placer:get_player_name()
+            ent.owner = owner
+            ent._remove = true
+            ent._water_level = steampunk_blimp.MAX_WATER --start it full loaded
+            ent._energy = steampunk_blimp.MAX_FUEL  --start it full loaded
+            steampunk_blimp.paint(ent, "orange")
+			blimp:set_yaw(placer:get_look_horizontal())
+			itemstack:take_item()
+            airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
+
+            local properties = ent.object:get_properties()
+            properties.infotext = owner .. " nice blimp"
+            blimp:set_properties(properties)
+            --steampunk_blimp.attach_pax(ent, placer)
+		end
+
+		return itemstack
+	end,
+})
+
 if minetest.settings:get_bool('steampunk_blimp.enable_wind') then
     steampunk_blimp.wind_enabled = true
 else

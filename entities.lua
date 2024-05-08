@@ -132,6 +132,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             stored_passengers = self._passengers, --passengers list
             stored_passengers_locked = self._passengers_locked,
             stored_ship_name = self._ship_name,
+            remove = self._remove or false,
         })
     end,
 
@@ -164,11 +165,13 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             self._passengers_locked = data.stored_passengers_locked
             self._ship_name = data.stored_ship_name
+            self._remove = data.remove or false
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"
             self.object:set_properties(properties)
-            if data.remove then
+
+            if self._remove == true then
                 airutils.destroy_inventory(self)
                 self.object:remove()
                 return
