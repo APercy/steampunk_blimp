@@ -289,7 +289,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         --fire
         if self.fire then
             if self._engine_running == true then
-                self.fire:set_properties({textures={"default_furnace_fire_fg.png"},glow=15})
+                self.fire:set_properties({textures={steampunk_blimp.fire_tex},glow=15})
             else
                 self.fire:set_properties({textures={"steampunk_blimp_alpha.png"},glow=0})
             end
@@ -402,6 +402,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
         local itmstck=puncher:get_wielded_item()
         local item_name = ""
         if itmstck then item_name = itmstck:get_name() end
+        --minetest.chat_send_all(item_name)
 
         if is_attached == true then
             --refuel
@@ -420,11 +421,15 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         -- deal with painting or destroying
         if itmstck then
-            local _,indx = item_name:find('dye:')
+            local find_str = 'dye:'
+            local _,indx = item_name:find(find_str)
             if indx then
 
                 --lets paint!!!!
-                local color = item_name:sub(indx+1)
+                local color = nil
+                if not airutils.is_repixture then
+                    color = item_name:sub(indx+1)
+                end
                 local colstr = steampunk_blimp.colors[color]
                 --minetest.chat_send_all(color ..' '.. dump(colstr))
                 if colstr and (name == self.owner or minetest.check_player_privs(puncher, {protection_bypass=true})) then

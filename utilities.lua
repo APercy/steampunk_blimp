@@ -70,6 +70,8 @@ local function do_attach(self, player, slot)
         
         if airutils.is_mcl then
             mcl_player.player_attached[name] = true
+        elseif airutils.is_repixture then
+            rp_player.player_attached[name] = true
         else
             player_api.player_attached[name] = true
         end
@@ -104,6 +106,8 @@ function steampunk_blimp.rescueConnectionFailedPassengers(self)
                     local is_attached = nil
                     if airutils.is_mcl then
                         is_attached = mcl_player.player_attached[self._passengers[i]]
+                    elseif airutils.is_repixture then
+                        is_attached = rp_player.player_attached[self._passengers[i]]
                     else
                         is_attached = player_api.player_attached[self._passengers[i]]
                     end
@@ -197,6 +201,9 @@ function steampunk_blimp.dettach_pax(self, player, side)
         if airutils.is_mcl then
             mcl_player.player_attached[name] = nil
             mcl_player.player_set_animation(player, "stand", 30)
+        elseif airutils.is_repixture then
+            rp_player.player_attached[name] = nil
+            rp_player.player_set_animation(player, "stand", 30)
         else
             player_api.player_attached[name] = nil
             player_api.set_animation(player, "stand")
@@ -232,18 +239,29 @@ function steampunk_blimp.textures_copy()
     return tablecopy
 end
 
+--this function needs an urgent refactory to be independent, but not today :(
 local function paint(self, write_prefix)
     write_prefix = write_prefix or false
+
     local l_textures = steampunk_blimp.textures_copy()
     for _, texture in ipairs(l_textures) do
-        local indx = texture:find('wool_blue.png')
+        local indx = texture:find(steampunk_blimp.color1_texture)
         if indx then
-            l_textures[_] = "wool_".. self.color..".png"
+            if not airutils.is_repixture then
+                l_textures[_] = "wool_".. self.color..".png"
+            else
+                l_textures[_] = "rp_default_reed_block_side.png^[colorize:"..airutils.colors[self.color]
+            end
         end
-        indx = texture:find('wool_yellow.png')
+        indx = texture:find(steampunk_blimp.color2_texture)
         if indx then
-            l_textures[_] = "wool_".. self.color2..".png"
+            if not airutils.is_repixture then
+                l_textures[_] = "wool_".. self.color2..".png"
+            else
+                l_textures[_] = "rp_default_reed_block_side.png^[colorize:"..airutils.colors[self.color2]
+            end
         end
+
         indx = texture:find('steampunk_blimp_alpha_logo.png')
         if indx then
             l_textures[_] = self.logo
@@ -377,15 +395,16 @@ function steampunk_blimp.engineSoundPlay(self)
     if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
     if self.object then
         local furnace_sound = "default_furnace_active"
-        if airutils.is_mcl then furnace_sound = "fire_fire" end
-        self.sound_handle = minetest.sound_play({name = furnace_sound},
-            {object = self.object, gain = 0.2,
-                max_hear_distance = 5,
-                loop = true,})
+        if steampunk_blimp.furnace_sound then
+            self.sound_handle = minetest.sound_play({name = steampunk_blimp.furnace_sound.name},
+                {object = self.object, gain = steampunk_blimp.furnace_sound.gain,
+                    max_hear_distance = 5,
+                    loop = true,})
+        end
 
-        self.sound_handle_pistons = minetest.sound_play({name = "default_cool_lava"},--"default_item_smoke"},
-            {object = self.object, gain = 0.05,
-                pitch = 0.4+((math.abs(self._power_lever)/100)/2),
+        self.sound_handle_pistons = minetest.sound_play({name = steampunk_blimp.piston_sound.name},--"default_item_smoke"},
+            {object = self.object, gain = steampunk_blimp.piston_sound.gain,
+                pitch = steampunk_blimp.piston_sound.pitch+((math.abs(self._power_lever)/100)/2),
                 max_hear_distance = 32,
                 loop = true,})
     end
@@ -428,10 +447,12 @@ function steampunk_blimp.start_furnace(self)
             local furnace_sound = "default_furnace_active"
             if airutils.is_mcl then furnace_sound = "fire_fire" end
 
-            self.sound_handle = minetest.sound_play({name = furnace_sound},
-                {object = self.object, gain = 0.2,
-                    max_hear_distance = 5,
-                    loop = true,})
+            if steampunk_blimp.furnace_sound then
+                self.sound_handle = minetest.sound_play({name = steampunk_blimp.furnace_sound.name},
+                    {object = self.object, gain = steampunk_blimp.furnace_sound.gain,
+                        max_hear_distance = 5,
+                        loop = true,})
+            end
         end
     end
 end

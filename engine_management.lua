@@ -21,9 +21,9 @@ function steampunk_blimp.start_boiler(self)
         --minetest.chat_send_all(dump(self.sound_handle_pistons))
         if self.sound_handle_pistons == nil then
             if self.object then
-                self.sound_handle_pistons = minetest.sound_play({name = "default_cool_lava"},--"default_item_smoke"},
-                    {object = self.object, gain = 0.05,
-                        pitch = 0.4,
+                self.sound_handle_pistons = minetest.sound_play({name = steampunk_blimp.piston_sound.name},--"default_item_smoke"},
+                    {object = self.object, gain = steampunk_blimp.piston_sound.gain,
+                        pitch = steampunk_blimp.piston_sound.pitch,
                         max_hear_distance = 32,
                         loop = true,})
             end

@@ -75,6 +75,7 @@ function steampunk_blimp.load_water(self, player)
 
             local bucket_name = 'bucket:bucket'
             if airutils.is_mcl then bucket_name = "mcl_buckets:bucket" end
+            if airutils.is_repixture then bucket_name = "rp_default:bucket_" end
             local indx = item_name:find(bucket_name)
             if indx then
                 itemstack = ItemStack(bucket_name.."_empty")

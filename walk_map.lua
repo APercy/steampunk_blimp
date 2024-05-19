@@ -149,42 +149,6 @@ function steampunk_blimp.boat_lower_deck_map(pos, dpos)
     return new_pos
 end
 
---[[function steampunk_blimp.passengers_deck_map(pos, dpos)
-    local orig_pos = steampunk_blimp.copy_vector(pos)
-    local position = steampunk_blimp.copy_vector(dpos)
-    local new_pos = steampunk_blimp.copy_vector(dpos)
-    local ladder_zone = is_ladder_zone(pos)
-
-    if ladder_zone then
-        --limiting ladder space
-        new_pos.z = steampunk_blimp.clamp(new_pos.z, 3, 118)
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -8.42, -2)
-    else
-        --limiting upper deck
-        new_pos.z = steampunk_blimp.clamp(new_pos.z, 3, 109)
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -43, 43)
-
-        new_pos = is_obstacle_zone(new_pos, {x=30, z=10}, {x=2, z=48})
-        new_pos = is_obstacle_zone(new_pos, {x=-30, z=10}, {x=-2, z=48})
-
-        new_pos = function steampunk_blimp.ladder_map(pos, dpos)
-    local orig_pos = steampunk_blimp.copy_vector(pos)
-    local position = steampunk_blimp.copy_vector(dpos)
-    local new_pos = steampunk_blimp.copy_vector(dpos)
-    new_pos.z = steampunk_blimp.clamp(new_pos.z, -18, -12)
-    if position.z > -20 and position.z < -10 then --limit 10
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, 4, 12)
-    end
-    return new_pos
-endis_obstacle_zone(new_pos, {x=30, z=55}, {x=2, z=90})
-        new_pos = is_obstacle_zone(new_pos, {x=-30, z=55}, {x=-2, z=90})
-    end
-    new_pos.y = 0
-
-    --minetest.chat_send_all("x: "..new_pos.x.." - z: "..new_pos.z)
-    return new_pos
-end]]--
-
 function steampunk_blimp.ladder_map(pos, dpos)
     local position = steampunk_blimp.copy_vector(dpos)
     local new_pos = steampunk_blimp.copy_vector(dpos)
@@ -194,16 +158,6 @@ function steampunk_blimp.ladder_map(pos, dpos)
     end
     return new_pos
 end
-
---[[function steampunk_blimp.ladder_map(pos, dpos)
-    local orig_pos = steampunk_blimp.copy_vector(pos)
-    local position = steampunk_blimp.copy_vector(dpos)
-    local new_pos = steampunk_blimp.copy_vector(dpos)
-    new_pos.z = steampunk_blimp.clamp(new_pos.z, 112, 117)
-    new_pos.x = steampunk_blimp.clamp(new_pos.x, -8.42, -2)
-
-    return new_pos
-end]]--
 
 function steampunk_blimp.navigate_deck(pos, dpos, player)
     local pos_d = dpos
@@ -262,6 +216,8 @@ local function get_result_pos(self, player, index)
         if ctrl.up or ctrl.down or ctrl.left or ctrl.right then
             if airutils.is_mcl then
                 mcl_player.player_set_animation(player, "walk", 30)
+            elseif airutils.is_repixture then
+                rp_player.player_set_animation(player, "walk", 30)
             else
                 player_api.set_animation(player, "walk", 30)
             end
@@ -283,14 +239,16 @@ local function get_result_pos(self, player, index)
             self._passengers_base_pos[index].dist_moved = self._passengers_base_pos[index].dist_moved + move;
             if math.abs(self._passengers_base_pos[index].dist_moved) > 5 then
                 self._passengers_base_pos[index].dist_moved = 0
-                minetest.sound_play({name = "default_wood_footstep"},
-                    {object = player, gain = 0.1,
+                minetest.sound_play({name = steampunk_blimp.steps_sound.name},
+                    {object = player, gain = steampunk_blimp.steps_sound.gain,
                         max_hear_distance = 5,
                         ephemeral = true,})
             end
         else
             if airutils.is_mcl then
                 mcl_player.player_set_animation(player, "stand", 30)
+            elseif airutils.is_repixture then
+                rp_player.player_set_animation(player, "stand", 30)
             else
                 player_api.set_animation(player, "stand", 30)
             end
