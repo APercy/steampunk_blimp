@@ -276,7 +276,14 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
 
     local item_name = "steampunk_blimp:cylinder_part"
     if airutils.is_repixture then
-        --
+        crafting.register_craft({
+            output = item_name,
+            items = {
+                "group:fuzzy 8",
+                "rp_default:stick 4",
+                "group:planks 1",
+            }
+        })
     elseif airutils.is_mcl then
         minetest.register_craft({
 	        output = item_name,
@@ -297,16 +304,33 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
         })
     end
 
-    minetest.register_craft({
-	    output = "steampunk_blimp:cylinder",
-	    recipe = {
-		    {"steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part"},
-	    }
-    })
+    item_name = "steampunk_blimp:cylinder"
+    if airutils.is_repixture then
+        crafting.register_craft({
+            output = item_name,
+            items = {
+                "steampunk_blimp:cylinder_part 3",
+            }
+        })
+    else
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part"},
+	        }
+        })
+    end
 
     item_name = "steampunk_blimp:rotor"
     if airutils.is_repixture then
-        --
+        crafting.register_craft({
+            output = item_name,
+            items = {
+                "group:fuzzy 3",
+                "rp_default:stick 3",
+                "rp_default:block_wrought_iron 1",
+            }
+        })
     elseif airutils.is_mcl then
         minetest.register_craft({
 	        output = item_name,
@@ -329,7 +353,13 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
 
     item_name = "steampunk_blimp:boiler"
     if airutils.is_repixture then
-        --
+        crafting.register_craft({
+            output = item_name,
+            items = {
+                "rp_default:ingot_wrought_iron 4",
+                "rp_default:block_wrought_iron 2",
+            }
+        })
     elseif airutils.is_mcl then
         minetest.register_craft({
 	        output = item_name,
@@ -350,22 +380,46 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
         })
     end
 
-    minetest.register_craft({
-	    output = "steampunk_blimp:boat",
-	    recipe = {
-		    {"group:wood", "group:wood", "steampunk_blimp:rotor"},
-		    {"group:wood", "steampunk_blimp:boiler", "group:wood"},
-		    {"group:wood", "group:wood", "steampunk_blimp:rotor"},
-	    }
-    })
+    item_name = "steampunk_blimp:boat"
+    if airutils.is_repixture then
+        crafting.register_craft({
+            output = item_name,
+            items = {
+                "group:planks 6",
+                "steampunk_blimp:rotor 2",
+                "steampunk_blimp:boiler 1",
+            }
+        })
+    else
+        minetest.register_craft({
+	        output = item_name,
+	        recipe = {
+		        {"group:wood", "group:wood", "steampunk_blimp:rotor"},
+		        {"group:wood", "steampunk_blimp:boiler", "group:wood"},
+		        {"group:wood", "group:wood", "steampunk_blimp:rotor"},
+	        }
+        })
+    end
 
-	minetest.register_craft({
-		output = "steampunk_blimp:blimp",
-		recipe = {
-			{"steampunk_blimp:cylinder",},
-			{"steampunk_blimp:boat",},
-		}
-	})
+    item_name = "steampunk_blimp:blimp"
+    if airutils.is_repixture then
+        crafting.register_craft({
+            output = item_name,
+            items = {
+                "steampunk_blimp:cylinder 1",
+                "steampunk_blimp:boat 1",
+            }
+        })
+    else
+	    minetest.register_craft({
+		    output = item_name,
+		    recipe = {
+			    {"steampunk_blimp:cylinder",},
+			    {"steampunk_blimp:boat",},
+		    }
+	    })
+    end
+
 
     -- cylinder section
     minetest.register_craftitem("steampunk_blimp:cylinder_part",{
