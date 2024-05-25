@@ -580,3 +580,50 @@ minetest.register_chatcommand("blimp_eject", {
 		end
 	end
 })
+
+if airutils.is_repixture then
+    local available_text = "The available colors are: black, blue, brown, cyan, dark_green, dark_grey, green, grey, magenta, orange, pink, red, violet, white or yellow"
+    minetest.register_chatcommand("blimp_paint", {
+	    params = "<color1> <color2>",
+	    description = "Paints the blimp with a primary and secondary colors. "..available_text,
+	    privs = {interact = true},
+	    func = function(name, param)
+            local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
+            local player = minetest.get_player_by_name(name)
+            local attached_to = player:get_attach()
+
+		    if attached_to ~= nil then
+                local seat = attached_to:get_attach()
+                if seat ~= nil then
+                    local entity = seat:get_luaentity()
+                    if entity then
+                        if entity.name == "steampunk_blimp:blimp" then
+                            if entity.owner == name or minetest.check_player_privs(name, {protection_bypass=true}) then
+                                --lets paint!!!!
+                                local color1, color2 = param:match("^([%a%d_-]+) (.+)$")
+
+                                --minetest.chat_send_all(dump(color1).." - "..dump(color2))
+                                local colstr = steampunk_blimp.colors[color1]
+                                local colstr2 = steampunk_blimp.colors[color2 or "white"]
+                                --minetest.chat_send_all(color ..' '.. dump(colstr))
+                                if colstr and colstr2 then
+                                    steampunk_blimp.paint2(entity, colstr)
+                                    steampunk_blimp.paint(entity, colstr2)
+                                    minetest.chat_send_player(name,core.colorize('#00ff00', " >>> colors set successfully"))
+                                else
+                                    minetest.chat_send_player(name,core.colorize('#ff0000', " >>> some of the colors wasn't specified correctly. "..available_text))
+                                end
+                            else
+                                minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
+                            end
+                        else
+			                minetest.chat_send_player(name,colorstring)
+                        end
+                    end
+                end
+		    else
+			    minetest.chat_send_player(name,colorstring)
+		    end
+	    end
+    })
+end
