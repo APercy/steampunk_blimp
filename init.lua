@@ -2,7 +2,7 @@ steampunk_blimp={}
 steampunk_blimp.gravity = tonumber(minetest.settings:get("movement_gravity")) or 9.8
 steampunk_blimp.trunk_slots = 50
 steampunk_blimp.fuel = {['default:coal_lump'] = {amount=1},['default:coalblock'] = {amount=10}, ['rp_default:lump_coal'] = {amount=1}, ['rp_default:block_coal'] = {amount=10},
-    ['mcl_core:coal_lump'] = {amount=1},['mcl_core:coalblock'] = {amount=10}}
+    ['mcl_core:coal_lump'] = {amount=1},['mcl_core:coalblock'] = {amount=10}, ['default:coal_lump'] = {amount=1}, ['default:coalblock'] = {amount=10}}
 steampunk_blimp.water = {['default:water_source'] = {amount=1},['default:river_water_source'] = {amount=1},
     ['bucket:bucket_water'] = {amount=1}, ['bucket:bucket_river_water'] = {amount=1},
     ['mcl_buckets:bucket_water'] = {amount=1}, ['mcl_buckets:bucket_river_water'] = {amount=1}, ['mcl_core:water_source'] = {amount=1},
