@@ -315,7 +315,15 @@ function steampunk_blimp.destroy(self, overload)
     end
 
     airutils.destroy_inventory(self)
-    local remove_it = self._remove or false    
+    self.inv = nil
+    self._inv_id = nil
+    
+    local remove_it = self._remove or false
+
+    local lua_ent = self.object:get_luaentity()
+    local staticdata = lua_ent:get_staticdata(self)
+    local player = minetest.get_player_by_name(self.owner)
+
     self.object:remove()
 
     if remove_it == false then
@@ -332,7 +340,21 @@ function steampunk_blimp.destroy(self, overload)
         --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:diamond')
 
         local stack = ItemStack(self.item)
-        minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5}, stack)
+        local stack_meta = stack:get_meta()
+        stack_meta:set_string("staticdata", staticdata)
+
+        if player then
+            local inv = player:get_inventory()
+            if inv then
+                if inv:room_for_item("main", stack) then
+                    inv:add_item("main", stack)
+                else
+                    minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5}, stack)
+                end
+            end
+        else
+            minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5}, stack)
+        end
     end
 end
 

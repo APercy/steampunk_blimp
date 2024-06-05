@@ -27,7 +27,9 @@ function steampunk_blimp.pilot_formspec(name)
 
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop the fire]"
     basic_form = basic_form.."button[1,2.0;4,1;water;Load water from below]"
-    basic_form = basic_form.."button[1,3.0;4,1;inventory;Open inventory]"
+    if ent._remove ~= true then
+        basic_form = basic_form.."button[1,3.0;4,1;inventory;Open inventory]"
+    end
     basic_form = basic_form.."button[1,4.0;4,1;manual;Show Manual Menu]"
 
     basic_form = basic_form.."checkbox[1,5.6;take_control;Take the Control;"..take_control.."]"
@@ -65,17 +67,7 @@ function steampunk_blimp.logo_ext_formspec(name, t_index, t_page, t_type)
     t_index = t_index or 1
     t_page = t_page or 1
     t_type = t_type or 1
---[[
-    formspec_version[4]
-    size[12,9]
-    label[0.5,0.9;Type]
-    dropdown[2,0.5;3,0.8;t_type;Default,Nodes,Entities,Items;1]
-    textlist[0.5,1.5;4.5,6;;;1;false]
-    image[5.5,1.5;6,6;]
-    label[0.5,8.2;Page]
-    dropdown[1.8,7.8;1.9,0.8;t_page;1,2,3;1]
-    button[8.5,7.8;3,0.8;set;Set Texture]
-]]--
+
     if airutils.isTextureLoaded then
         airutils.isTextureLoaded('heart.png') --force the textures first load
     else
@@ -278,7 +270,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 end
             end
             if fields.inventory then
-                airutils.show_vehicle_trunk_formspec(ent, player, steampunk_blimp.trunk_slots)
+                if ent._remove ~= true then
+                    airutils.show_vehicle_trunk_formspec(ent, player, steampunk_blimp.trunk_slots)
+                end
             end
             if fields.manual then
                 steampunk_blimp.manual_formspec(name)

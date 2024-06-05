@@ -183,30 +183,34 @@ end
 -----------
 -- items
 -----------
-
 -- blimp
-minetest.register_craftitem("steampunk_blimp:blimp", {
-	description = "Steampunk Blimp",
-	inventory_image = "steampunk_blimp_icon.png",
+minetest.register_tool("steampunk_blimp:blimp", {
+    description = "Steampunk Blimp",
+    inventory_image = "steampunk_blimp_icon.png",
     liquids_pointable = true,
+    stack_max = 1,
 
 	on_place = function(itemstack, placer, pointed_thing)
 		if pointed_thing.type ~= "node" then
 			return
 		end
 
+        local stack_meta = itemstack:get_meta()
+        local staticdata = stack_meta:get_string("staticdata")
+
         local pointed_pos = pointed_thing.under
         --local node_below = minetest.get_node(pointed_pos).name
         --local nodedef = minetest.registered_nodes[node_below]
 
 		pointed_pos.y=pointed_pos.y+3
-		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp")
+		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
 		if blimp and placer then
             local ent = blimp:get_luaentity()
             ent._passengers = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
             local owner = placer:get_player_name()
             ent.owner = owner
+            ent.hp = 50 --reset hp
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
             airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
@@ -220,6 +224,7 @@ minetest.register_craftitem("steampunk_blimp:blimp", {
 		return itemstack
 	end,
 })
+
 
 -- ephemeral blimp
 minetest.register_craftitem("steampunk_blimp:ephemeral_blimp", {
@@ -250,7 +255,6 @@ minetest.register_craftitem("steampunk_blimp:ephemeral_blimp", {
             steampunk_blimp.paint(ent, "orange")
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
-            airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
 
             local properties = ent.object:get_properties()
             properties.infotext = owner .. " nice blimp"

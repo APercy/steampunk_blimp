@@ -137,7 +137,9 @@ minetest.register_entity("steampunk_blimp:blimp", {
     end,
 
 	on_deactivate = function(self)
-        airutils.save_inventory(self)
+        if self._remove ~= true then
+            airutils.save_inventory(self)
+        end
         if self.sound_handle then minetest.sound_stop(self.sound_handle) end
         if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
 	end,
@@ -153,7 +155,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self._boiler_pressure = data.stored_boiler_pressure or 0
             self.owner = data.stored_owner or ""
             self._shared_owners = data.stored_shared_owners or {}
-            self.hp = data.stored_hp or 50
+            self.hp = 50 --data.stored_hp or 50
             self.color = data.stored_color or "blue"
             self.color2 = data.stored_color2 or "white"
             self.logo = data.stored_logo or "steampunk_blimp_alpha_logo.png"
@@ -161,11 +163,13 @@ minetest.register_entity("steampunk_blimp:blimp", {
             self.buoyancy = data.stored_buoyancy or 0.15
             self.hull_integrity = data.stored_hull_integrity
             self.item = data.stored_item
-            self._inv_id = data.stored_inv_id
             self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             self._passengers_locked = data.stored_passengers_locked
             self._ship_name = data.stored_ship_name
             self._remove = data.remove or false
+            if self._remove ~= true then
+                self._inv_id = data.stored_inv_id
+            end
             --minetest.debug("loaded: ", self._energy)
             local properties = self.object:get_properties()
             properties.infotext = data.stored_owner .. " nice blimp"
@@ -214,12 +218,14 @@ minetest.register_entity("steampunk_blimp:blimp", {
 
         self.object:set_armor_groups({immortal=1})
 
-		local inv = minetest.get_inventory({type = "detached", name = self._inv_id})
-		-- if the game was closed the inventories have to be made anew, instead of just reattached
-		if not inv then
-            airutils.create_inventory(self, steampunk_blimp.trunk_slots)
-		else
-		    self.inv = inv
+        if self._remove ~= true then
+		    local inv = minetest.get_inventory({type = "detached", name = self._inv_id})
+		    -- if the game was closed the inventories have to be made anew, instead of just reattached
+		    if not inv then
+                airutils.create_inventory(self, steampunk_blimp.trunk_slots)
+		    else
+		        self.inv = inv
+            end
         end
 
         steampunk_blimp.engine_step(self, 0)
@@ -460,11 +466,7 @@ minetest.register_entity("steampunk_blimp:blimp", {
             if not has_passengers and toolcaps and toolcaps.damage_groups and
                     toolcaps.groupcaps and (toolcaps.groupcaps.choppy or toolcaps.groupcaps.axey_dig) then
 
-                local is_empty = true --[[false
-                local inventory = airutils.get_inventory(self)
-                if inventory then
-                    if inventory:is_empty("main") then is_empty = true end
-                end]]--
+                local is_empty = true
 
                 --airutils.make_sound(self,'hit')
                 if is_empty == true then
