@@ -429,7 +429,8 @@ core.register_entity("steampunk_blimp:blimp", {
         if itmstck then
             --core.chat_send_all(dump(item_name))
             local find_str = 'dye:'
-            if airutils.is_mcl then
+            if airutils.is_mcl and not core.get_modpath("mcl_playerplus") then
+                --mineclonia
                 find_str = 'mcl_dyes:'
             end
             local _,indx = item_name:find(find_str)
