@@ -252,6 +252,7 @@ minetest.register_craftitem("steampunk_blimp:ephemeral_blimp", {
             ent._remove = true
             ent._water_level = steampunk_blimp.MAX_WATER --start it full loaded
             ent._energy = steampunk_blimp.MAX_FUEL  --start it full loaded
+            ent._vehicle_name = "Ephemeral Blimp",
             steampunk_blimp.paint(ent, "orange")
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()

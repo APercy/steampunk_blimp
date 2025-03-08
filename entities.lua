@@ -112,6 +112,7 @@ core.register_entity("steampunk_blimp:blimp", {
     _name_color = 0,
     _name_hor_aligment = 3.0,
     item = "steampunk_blimp:blimp",
+    _vehicle_name = "Steampunk Blimp",
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
         return core.serialize({
@@ -132,6 +133,7 @@ core.register_entity("steampunk_blimp:blimp", {
             stored_passengers = self._passengers, --passengers list
             stored_passengers_locked = self._passengers_locked,
             stored_ship_name = self._ship_name,
+            stored_vehicle_name = self._vehicle_name,
             remove = self._remove or false,
         })
     end,
@@ -166,6 +168,7 @@ core.register_entity("steampunk_blimp:blimp", {
             self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             self._passengers_locked = data.stored_passengers_locked
             self._ship_name = data.stored_ship_name
+            self._vehicle_name = data.stored_vehicle_name
             self._remove = data.remove or false
             if self._remove ~= true then
                 self._inv_id = data.stored_inv_id
@@ -190,6 +193,10 @@ core.register_entity("steampunk_blimp:blimp", {
         steampunk_blimp.paint(self, self.color)
         steampunk_blimp.paint2(self, self.color2)
         local pos = self.object:get_pos()
+
+        if airutils.debug_log then
+            core.log("action","activating: "..self._vehicle_name.." from "..self.owner.." at position "..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z))
+        end
 
         local fire=core.add_entity(pos,'steampunk_blimp:fire')
         fire:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
@@ -600,4 +607,6 @@ core.register_entity("steampunk_blimp:blimp", {
         end
 
     end,
+
+    on_deactivate = airutils.on_deactivate,
 })
