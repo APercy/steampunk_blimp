@@ -90,7 +90,14 @@ function steampunk_blimp.physics(self)
             self.object:set_velocity(velocity)
         end
         --minetest.chat_send_all("_baloon_buoyancy: "..self._baloon_buoyancy.." - dtime: "..self.dtime.." - ideal: "..steampunk_blimp.ideal_step)
-        airutils.set_acceleration(self.object,{x=0,y=y_accel,z=0})
+        local max_y_speed = 3
+        if self._has_cannons == true then max_y_speed = 1.8 end
+        local curr_y_speed = vel.y
+        if curr_y_speed < max_y_speed then
+            airutils.set_acceleration(self.object,{x=0,y=y_accel,z=0})
+        else
+            airutils.set_acceleration(self.object,{x=0,y=0,z=0})
+        end
     end
 
 end

@@ -55,6 +55,33 @@ function steampunk_blimp.pax_formspec(name)
     minetest.show_formspec(name, "steampunk_blimp:passenger_main", basic_form)
 end
 
+function steampunk_blimp.prepare_cannon_formspec(self, name)
+    --[[local basic_form = table.concat({
+        "formspec_version[3]",
+        "size[8,9]",
+	    "list[detached:" .. self._cannon_id .. ";ammo;0,1;1,1;] label[0,0.5;Ammo:]",
+	    "list[detached;" .. self._cannon_powder_id .. ";gunpowder;0,3;1,1;] label[0,2.5;Gunpowder:]",
+	    "list[current_player;main;0,5;8,4;]",
+	}, "")
+    minetest.show_formspec(name, "steampunk_blimp:cannon", basic_form)]]--
+    local basic_form = table.concat({
+        "formspec_version[3]",
+        "size[5,3]",
+	    "button[1,1.2;3,1;load_powder;Put Gunpowder]",
+        "button[1,3.2;3,1;load_ammo;Load Ammo]",
+	}, "")
+    minetest.show_formspec(name, "steampunk_blimp:prep_cannon", basic_form)
+end
+
+function steampunk_blimp.cannon_formspec(self, name)
+    local basic_form = table.concat({
+        "formspec_version[3]",
+        "size[5,3]",
+	    "label[1,7.0;Cannon is already armed]",
+	}, "")
+    minetest.show_formspec(name, "steampunk_blimp:cannon", basic_form)
+end
+
 local default_logos = {
     "blimp_clover.png",
     "blimp_liz.png",

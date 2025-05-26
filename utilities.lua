@@ -308,6 +308,8 @@ function steampunk_blimp.destroy(self, overload)
 
     local pos = self.object:get_pos()
     if self.fire then self.fire:remove() end
+    if self.wings then self.wings:remove() end
+    if self.cannons then self.cannons:remove() end
 
     for i = steampunk_blimp.max_seats,1,-1 
     do
@@ -502,4 +504,94 @@ function steampunk_blimp.table_copy(table_here)
     return tablecopy
 end
 
+local function play_cannon_sound(self)
+    core.sound_play("steampunk_blimp_explode", {
+        --to_player = self.driver_name,
+        object = self.object,
+        max_hear_distance = 120,
+        gain = 5.0,
+        fade = 0.0,
+        pitch = 1.0,
+    }, true)
+end
 
+local function smoke_particle(self, object)
+    core.add_particlespawner({
+	    amount = 20,
+	    time = 0.5,
+	    --minpos = pos,
+	    --maxpos = pos,
+	    minvel = {x = -1, y = -1, z = -1},
+	    maxvel = {x = 1, y = 5, z = 1},
+	    minacc = vector.new(),
+	    maxacc = vector.new(),
+        attached = object,
+	    minexptime = 3,
+	    maxexptime = 5.5,
+	    minsize = 10,
+	    maxsize = 15,
+	    texture = "steampunk_blimp_smoke.png",
+    })
+end
+
+local function rot_to_dir(rot) -- keep rot within <-pi/2,pi/2>
+	local dir = minetest.yaw_to_dir(rot.y)
+	dir.y = dir.y+math.tan(rot.x)*vector.length(dir)
+	return vector.normalize(dir)
+end
+
+function steampunk_blimp.cannon_shot(self, dest_obj)
+    play_cannon_sound(self)
+
+    local pos=self.object:get_pos()
+    local rel_pos=steampunk_blimp.cannons_loc
+    local dir=rot_to_dir(self.object:get_rotation())
+
+    local direction = dir.y
+    local x_pos = rel_pos.x
+    local y_pos = rel_pos.y
+    local z_pos = rel_pos.z
+    
+    --right
+    local move_x = rel_pos.x/10
+    local move_z = 150/10
+    local move_y = rel_pos.y/10
+    local smk_pos_r = vector.new(pos)
+    smk_pos_r.x = smk_pos_r.x + move_x * math.cos(direction)
+    smk_pos_r.z = smk_pos_r.z + move_z * math.sin(direction)
+    smk_pos_r.y = smk_pos_r.y + move_y
+
+    --left
+    local smk_pos_l = vector.new(pos)
+    smk_pos_l.x = smk_pos_l.x + (move_x*-1) * math.cos(direction)
+    smk_pos_l.z = smk_pos_l.z + move_z * math.sin(direction)
+    smk_pos_l.y = smk_pos_l.y + move_y
+    
+    smoke_particle(self, dest_obj)
+
+    if core.get_modpath("cannons") then
+        --[[TODO
+        timer set just for tests
+        in the final version it
+        will be function/work for tripulation
+        ]]--
+        core.after(0.5, function(self)
+            self._l_armed = true
+            self._r_armed = true
+        end, self)
+        -- end TODO
+
+        local ammo_name = "cannons:ball_wood_stack_1" --TODO detect and set the correct ammo
+	    local settings = cannons.get_settings(ammo_name)
+	    local obj=nil
+        if dest_obj == self._cannon_r then
+            obj = minetest.add_entity(smk_pos_r, cannons.get_entity(ammo_name))
+        else
+            obj = minetest.add_entity(smk_pos_l, cannons.get_entity(ammo_name))
+        end
+	    obj:set_velocity({x=dir.x*settings.velocity, y=-1, z=dir.z*settings.velocity})
+	    obj:set_acceleration({x=dir.x*-3, y=-settings.gravity, z=dir.z*-3})
+        return 1
+    end
+    return 0
+end

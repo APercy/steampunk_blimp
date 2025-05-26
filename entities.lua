@@ -24,6 +24,7 @@ initial_properties = {
     on_activate = function(self,std)
 	    self.sdata = core.deserialize(std) or {}
 	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
     end,
 
     get_staticdata=function(self)
@@ -32,6 +33,68 @@ initial_properties = {
     end,
 
 })
+
+local default_wood_texture = "default_wood.png"
+if airutils.is_repixture then
+    default_wood_texture = "default_wood_oak.png"
+end
+
+core.register_entity('steampunk_blimp:wings',{
+initial_properties = {
+	physical = false,
+	collide_with_objects=false,
+	pointable=false,
+    glow = 0,
+	visual = "mesh",
+    backface_culling = false,
+	mesh = "steampunk_blimp_wings.b3d",
+    textures = {
+            default_wood_texture, --asa
+            steampunk_blimp.canvas_texture, --asa
+        },
+	},
+
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
+    end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+
+})
+
+core.register_entity('steampunk_blimp:cannons',{
+initial_properties = {
+	physical = false,
+	collide_with_objects=false,
+	pointable=false,
+    glow = 0,
+	visual = "mesh",
+    backface_culling = false,
+	mesh = "steampunk_blimp_cannons.b3d",
+    textures = {
+            "steampunk_blimp_cannon.png", --canhão
+            default_wood_texture, --canhão
+        },
+	},
+
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
+    end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+
+})
+
 
 --
 -- seat pivot
@@ -51,6 +114,55 @@ core.register_entity('steampunk_blimp:stand_base',{
     on_activate = function(self,std)
 	    self.sdata = core.deserialize(std) or {}
 	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
+    end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+})
+
+core.register_entity('steampunk_blimp:cannon_mouth',{
+    initial_properties = {
+	    physical = false,
+	    collide_with_objects=true,
+        collisionbox = {-0.5, -0.5, -0.5, 0.5, 0.5, 0.5},
+	    pointable=false,
+	    visual = "mesh",
+	    mesh = "steampunk_blimp_stand_base.b3d",
+        textures = {"steampunk_blimp_alpha.png",},
+	},
+    dist_moved = 0,
+
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
+    end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+})
+
+core.register_entity('steampunk_blimp:cannon_interactor',{
+    initial_properties = {
+	    physical = false,
+	    collide_with_objects=true,
+        collisionbox = {-0.8, -0.8, -0.8, 0.8, 0.8, 0.8},
+	    pointable=true,
+	    visual = "mesh",
+	    mesh = "steampunk_blimp_stand_base.b3d",
+        textures = {"steampunk_blimp_alpha.png",},
+	},
+    dist_moved = 0,
+
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
     end,
 
     get_staticdata=function(self)
@@ -111,6 +223,7 @@ core.register_entity("steampunk_blimp:blimp", {
     _ship_name = "",
     _name_color = 0,
     _name_hor_aligment = 3.0,
+    _has_cannons = false,
     item = "steampunk_blimp:blimp",
     _vehicle_name = "Steampunk Blimp",
 
@@ -134,6 +247,7 @@ core.register_entity("steampunk_blimp:blimp", {
             stored_passengers_locked = self._passengers_locked,
             stored_ship_name = self._ship_name,
             stored_vehicle_name = self._vehicle_name,
+            stored_has_cannons = self._has_cannons or false,
             remove = self._remove or false,
         })
     end,
@@ -169,6 +283,7 @@ core.register_entity("steampunk_blimp:blimp", {
             self._passengers_locked = data.stored_passengers_locked
             self._ship_name = data.stored_ship_name
             self._vehicle_name = data.stored_vehicle_name
+            self._has_cannons = data.stored_has_cannons
             self._remove = data.remove or false
             if self._remove ~= true then
                 self._inv_id = data.stored_inv_id
@@ -183,6 +298,7 @@ core.register_entity("steampunk_blimp:blimp", {
                 self.object:remove()
                 return
             end
+            --core.chat_send_all(dump(staticdata))
         end
 
         local colstr = steampunk_blimp.colors[self.color]
@@ -201,6 +317,30 @@ core.register_entity("steampunk_blimp:blimp", {
         local fire=core.add_entity(pos,'steampunk_blimp:fire')
         fire:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
 	    self.fire = fire
+
+        if self._has_cannons == true then
+            local cannons = core.add_entity(pos, 'steampunk_blimp:cannons')
+            cannons:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
+            self.cannons = cannons
+
+            self._cannon_r_interactor = core.add_entity(pos, 'steampunk_blimp:cannon_interactor')
+            self._cannon_r_interactor:set_attach(self.object,'',{x=steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z},{x=0,y=0,z=0})
+            self._cannon_l_interactor = core.add_entity(pos, 'steampunk_blimp:cannon_interactor')
+            self._cannon_l_interactor:set_attach(self.object,'',{x=-steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z},{x=0,y=0,z=0})
+
+            self._cannon_r = core.add_entity(pos, 'steampunk_blimp:cannon_mouth')
+            self._cannon_r:set_attach(self.object,'',{x=steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z+steampunk_blimp.cannons_sz},{x=0,y=0,z=0})
+            self._cannon_l = core.add_entity(pos, 'steampunk_blimp:cannon_mouth')
+            self._cannon_l:set_attach(self.object,'',{x=-steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z+steampunk_blimp.cannons_sz})
+
+            --for tests
+            self._l_armed = true
+            self._r_armed = true
+        else
+            local wings = core.add_entity(pos, 'steampunk_blimp:wings')
+            wings:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
+            self.wings = wings
+        end
 
         --passengers positions
         self._passenger_is_sit = steampunk_blimp.copy_vector({})

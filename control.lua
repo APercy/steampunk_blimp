@@ -44,6 +44,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 
 	-- player control
     local ctrl = nil
+    local shot = 0 --to force a recoil after cannon shot
 	if player and self._at_control == true then
 		ctrl = player:get_player_control()
 
@@ -68,7 +69,11 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         self._is_going_up = false
 		if ctrl.jump then
             if self._boiler_pressure > 0 then
-                self._baloon_buoyancy = 1.02
+                if self._has_cannons then
+                    self._baloon_buoyancy = 1.005
+                else
+                    self._baloon_buoyancy = 1.02
+                end
                 if self.isinliquid then self._baloon_buoyancy = 1.10 end
             end
             self._is_going_up = true
@@ -79,11 +84,33 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 		-- rudder
         local rudder_limit = 30
         local speed = 10
-		if ctrl.right then
-			self._rudder_angle = math.max(self._rudder_angle-speed*dtime,-rudder_limit)
-		elseif ctrl.left then
-			self._rudder_angle = math.min(self._rudder_angle+speed*dtime,rudder_limit)
-		end
+        if not ctrl.dig then
+		    if ctrl.right then
+		        self._rudder_angle = math.max(self._rudder_angle-speed*dtime,-rudder_limit)
+		    elseif ctrl.left then
+		        self._rudder_angle = math.min(self._rudder_angle+speed*dtime,rudder_limit)
+		    end
+        else
+            if ctrl.right and self._cannon_r and self._r_armed == true then
+                if ctrl.dig then shot = steampunk_blimp.cannon_shot(self, self._cannon_r) end
+                self._r_armed = false
+            end
+            if ctrl.left and self._cannon_l and self._l_armed == true then
+                if ctrl.dig then shot = steampunk_blimp.cannon_shot(self, self._cannon_l) end
+                self._l_armed = false
+            end
+            if ctrl.down then
+                if (self._cannon_l and self._cannon_r) then
+                    local l_shot = 0
+                    local r_shot = 0
+                    if self._l_armed == true then l_shot = steampunk_blimp.cannon_shot(self, self._cannon_l) end
+                    if self._r_armed == true then r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r) end
+                    self._l_armed = false
+                    self._r_armed = false
+                    shot = l_shot + r_shot
+                end
+            end
+        end
 	end
 
     --make the blimp loss height when without pressure (and not anchored)
@@ -105,12 +132,12 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     if engineacc ~= nil then
         retval_accel=vector.add(accel,vector.multiply(hull_direction,engineacc))
     end
-    --minetest.chat_send_all('paddle: '.. paddleacc)
-
+    local recoil = shot*-60;
+    retval_accel=vector.add(retval_accel,vector.multiply(hull_direction,recoil))
 
     if longit_speed > 0 then
         if ctrl then
-            if not ctrl.right or not ctrl.left then
+            if not ctrl.right or not ctrl.left or not ctrl.zoom then
                 steampunk_blimp.rudder_auto_correction(self, longit_speed, dtime)
             end
         else

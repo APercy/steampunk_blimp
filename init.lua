@@ -50,8 +50,6 @@ if airutils.is_repixture then
     local ladder_texture = "default_ladder.png"
     steampunk_blimp.textures = {
                 steampunk_blimp.black_texture, --alimentacao balao
-                "default_wood_oak.png", --asa
-                steampunk_blimp.canvas_texture, --asa
                 steampunk_blimp.canvas_texture, --balao
                 steampunk_blimp.color2_texture, --faixas brancas nariz
                 steampunk_blimp.color1_texture, --faixas azuis nariz
@@ -69,7 +67,7 @@ if airutils.is_repixture then
                 ladder_texture, --escada
                 "default_wood_oak.png", --mureta
                 steampunk_blimp.wood_texture, --mureta
-                steampunk_blimp.black_texture, --nacele rotores
+                "steampunk_blimp_engine.png", --nacele rotores
                 steampunk_blimp.wood_texture, --quilha
                 "default_wood_oak.png", --rotores
                 steampunk_blimp.rotor_texture, --"steampunk_blimp_rotor.png", --rotores
@@ -96,8 +94,6 @@ else
     if airutils.is_mcl then ladder_texture = "default_ladder.png" end
     steampunk_blimp.textures = {
                 steampunk_blimp.black_texture, --alimentacao balao
-                "default_wood.png", --asa
-                steampunk_blimp.canvas_texture, --asa
                 steampunk_blimp.canvas_texture, --balao
                 steampunk_blimp.color2_texture, --faixas brancas nariz
                 steampunk_blimp.color1_texture, --faixas azuis nariz
@@ -115,7 +111,7 @@ else
                 ladder_texture, --escada
                 "default_wood.png", --mureta
                 steampunk_blimp.wood_texture, --mureta
-                steampunk_blimp.black_texture, --nacele rotores
+                "steampunk_blimp_engine.png", --nacele rotores
                 steampunk_blimp.wood_texture, --quilha
                 "default_wood.png", --rotores
                 steampunk_blimp.rotor_texture, --"steampunk_blimp_rotor.png", --rotores
@@ -148,6 +144,9 @@ steampunk_blimp.colors ={
     white='white',
     yellow='yellow',
 }
+
+steampunk_blimp.cannons_loc = {x=24, y=-2, z=0}
+steampunk_blimp.cannons_sz = 15
 
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "walk_map.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "utilities.lua")
@@ -217,6 +216,55 @@ minetest.register_tool("steampunk_blimp:blimp", {
 
             local properties = ent.object:get_properties()
             properties.infotext = owner .. " nice blimp"
+            blimp:set_properties(properties)
+            --steampunk_blimp.attach_pax(ent, placer)
+		end
+
+		return itemstack
+	end,
+})
+
+
+-- tactical steampunk blimp
+minetest.register_tool("steampunk_blimp:cannon_blimp", {
+    description = "Tactical Steampunk Blimp",
+    inventory_image = "steampunk_blimp_icon.png",
+    liquids_pointable = true,
+    stack_max = 1,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		if pointed_thing.type ~= "node" then
+			return
+		end
+
+        local owner = placer:get_player_name()
+
+        local stack_meta = itemstack:get_meta()
+        local staticdata = stack_meta:get_string("staticdata")
+        if staticdata == nil or staticdata == "" then
+            staticdata = 'return {stored_has_cannons=true,stored_owner="'..owner..'",}'
+        end
+
+        local pointed_pos = pointed_thing.under
+        --local node_below = minetest.get_node(pointed_pos).name
+        --local nodedef = minetest.registered_nodes[node_below]
+
+		pointed_pos.y=pointed_pos.y+3
+		local blimp = minetest.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
+		if blimp and placer then
+            local ent = blimp:get_luaentity()
+            ent._passengers = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
+            --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
+            ent.owner = owner
+            ent.hp = 50 --reset hp
+            ent._vehicle_name = "Tactical Steampunk Blimp",
+            steampunk_blimp.paint(ent, "black")
+			blimp:set_yaw(placer:get_look_horizontal())
+			itemstack:take_item()
+            airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
+
+            local properties = ent.object:get_properties()
+            properties.infotext = owner .. " war blimp"
             blimp:set_properties(properties)
             --steampunk_blimp.attach_pax(ent, placer)
 		end
