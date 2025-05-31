@@ -171,12 +171,79 @@ core.register_entity('steampunk_blimp:cannon_interactor',{
     end,
 })
 
+core.register_entity('steampunk_blimp:helm_interactor',{
+    initial_properties = {
+	    physical = false,
+	    collide_with_objects=false,
+        collisionbox = {-0.3, -0.3, -0.3, 0.3, 1, 0.3},
+	    pointable=true,
+	    visual = "mesh",
+	    mesh = "steampunk_blimp_stand_base.b3d",
+        textures = {"steampunk_blimp_alpha.png",},
+	},
+    dist_moved = 0,
+
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
+    end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+
+    on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
+        --minetest.chat_send_all("punch")
+        if not puncher or not puncher:is_player() then
+            return
+        end
+    end,
+
+    on_rightclick = steampunk_blimp.right_click_helm,
+})
+
+core.register_entity('steampunk_blimp:hull_interactor',{
+    initial_properties = {
+	    physical = false,
+	    collide_with_objects=false,
+        collisionbox = {-3, -2.5, -3, 3, 0, 3},
+	    pointable=true,
+	    visual = "mesh",
+	    mesh = "steampunk_blimp_stand_base.b3d",
+        textures = {"steampunk_blimp_alpha.png",},
+	},
+    dist_moved = 0,
+
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
+    end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+
+    on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
+        --minetest.chat_send_all("punch")
+        if not puncher or not puncher:is_player() then
+            return
+        end
+    end,
+
+    on_rightclick = steampunk_blimp.right_click_hull,
+})
+
+
 core.register_entity("steampunk_blimp:blimp", {
     initial_properties = {
         physical = true,
         collide_with_objects = true, --true,
         collisionbox = {-4, -2.5, -4, 4, 9, 4}, --{-1,0,-1, 1,0.3,1},
-        --selectionbox = {-0.6,0.6,-0.6, 0.6,1,0.6},
+        selectionbox = {-0.6,-0.6,-0.6, 0.6,1.6,0.6},
         visual = "mesh",
         backface_culling = false,
         mesh = "steampunk_blimp.b3d",
@@ -331,7 +398,7 @@ core.register_entity("steampunk_blimp:blimp", {
             self._cannon_r = core.add_entity(pos, 'steampunk_blimp:cannon_mouth')
             self._cannon_r:set_attach(self.object,'',{x=steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z+steampunk_blimp.cannons_sz},{x=0,y=0,z=0})
             self._cannon_l = core.add_entity(pos, 'steampunk_blimp:cannon_mouth')
-            self._cannon_l:set_attach(self.object,'',{x=-steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z+steampunk_blimp.cannons_sz})
+            self._cannon_l:set_attach(self.object,'',{x=-steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z+steampunk_blimp.cannons_sz},{x=0,y=0,z=0})
 
             --for tests
             self._l_armed = true
@@ -341,6 +408,14 @@ core.register_entity("steampunk_blimp:blimp", {
             wings:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
             self.wings = wings
         end
+
+        self._helm_interactor = core.add_entity(pos, 'steampunk_blimp:helm_interactor')
+        local helm_interactor_pos = vector.new(steampunk_blimp.pilot_base_pos)
+        helm_interactor_pos.z = helm_interactor_pos.z + 7
+        self._helm_interactor:set_attach(self.object,'',helm_interactor_pos,{x=0,y=0,z=0})
+
+        self._hull_interactor = core.add_entity(pos, 'steampunk_blimp:hull_interactor')
+        self._hull_interactor:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
 
         --passengers positions
         self._passenger_is_sit = steampunk_blimp.copy_vector({})
@@ -517,6 +592,14 @@ core.register_entity("steampunk_blimp:blimp", {
         accel.y = accel_y
 
         newpitch =  velocity.y * math.rad(1.5) * (relative_longit_speed/3)
+
+        local pitch_by_accel = steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
+
+        newpitch = newpitch + pitch_by_accel
+        local limit_pitch = math.rad(60)
+        if newpitch > limit_pitch then newpitch = limit_pitch end
+        if limit_pitch < -limit_pitch then newpitch = -limit_pitch end
+
         --self.object:set_acceleration(accel)
         self.object:add_velocity(vector.multiply(accel,self.dtime))
         self.object:set_rotation({x=newpitch,y=newyaw,z=newroll})
@@ -641,112 +724,7 @@ core.register_entity("steampunk_blimp:blimp", {
 
     end,
 
-    on_rightclick = function(self, clicker)
-		if not clicker or not clicker:is_player() then
-			return
-		end
-
-        local name = clicker:get_player_name()
-
-        if self.owner == "" then
-            self.owner = name
-        end
-
-        --core.chat_send_all('passengers: '.. dump(self._passengers))
-        --=========================
-        --  form to pilot
-        --=========================
-        local is_attached = false
-        local seat = clicker:get_attach()
-        if seat then
-            local plane = seat:get_attach()
-            if plane == self.object then is_attached = true end
-        end
-
-        --check error after being shot for any other mod
-        if is_attached == false then
-            for i = steampunk_blimp.max_seats,1,-1
-            do
-                if self._passengers[i] == name then
-                    self._passengers[i] = nil --clear the wrong information
-                    break
-                end
-            end
-        end
-
-        --shows pilot formspec
-        if name == self.driver_name then
-            if is_attached then
-                steampunk_blimp.pilot_formspec(name)
-            else
-                self.driver_name = nil
-            end
-        --=========================
-        --  attach passenger
-        --=========================
-        else
-            local pass_is_attached = steampunk_blimp.check_passenger_is_attached(self, name)
-
-            if pass_is_attached then
-                local can_bypass = core.check_player_privs(clicker, {protection_bypass=true})
-                if clicker:get_player_control().aux1 == true then --lets see the inventory
-                    local is_shared = false
-                    if name == self.owner or can_bypass then is_shared = true end
-                    for k, v in pairs(self._shared_owners) do
-                        if v == name then
-                            is_shared = true
-                            break
-                        end
-                    end
-                    if is_shared then
-                        airutils.show_vehicle_trunk_formspec(self, clicker, steampunk_blimp.trunk_slots)
-                    end
-                else
-                    if self.driver_name ~= nil and self.driver_name ~= "" then
-                        --lets take the control by force
-                        if name == self.owner or can_bypass then
-                            --require the pilot position now
-                            steampunk_blimp.owner_formspec(name)
-                        else
-                            steampunk_blimp.pax_formspec(name)
-                        end
-                    else
-                        --check if is on owner list
-                        local is_shared = false
-                        if name == self.owner or can_bypass then is_shared = true end
-                        for k, v in pairs(self._shared_owners) do
-                            if v == name then
-                                is_shared = true
-                                break
-                            end
-                        end
-                        --normal user
-                        if is_shared == false then
-                            steampunk_blimp.pax_formspec(name)
-                        else
-                            --owners
-                            steampunk_blimp.pilot_formspec(name)
-                        end
-                    end
-                end
-            else
-                --first lets clean the boat slots
-                --note that when it happens, the "rescue" function will lost the historic
-                for i = steampunk_blimp.max_seats,1,-1
-                do
-                    if self._passengers[i] ~= nil then
-                        local old_player = core.get_player_by_name(self._passengers[i])
-                        if not old_player then self._passengers[i] = nil end
-                    end
-                end
-                --attach normal passenger
-                --if self._door_closed == false then
-                    steampunk_blimp.attach_pax(self, clicker)
-                --end
-            end
-        end
-
-    end,
+    on_rightclick = steampunk_blimp.right_click,
 
     on_deactivate = airutils.on_deactivate,
 })

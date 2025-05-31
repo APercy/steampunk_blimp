@@ -310,6 +310,12 @@ function steampunk_blimp.destroy(self, overload)
     if self.fire then self.fire:remove() end
     if self.wings then self.wings:remove() end
     if self.cannons then self.cannons:remove() end
+    if self._cannon_r_interactor then self._cannon_r_interactor:remove() end
+    if self._cannon_l_interactor then self._cannon_l_interactor:remove() end
+    if self._cannon_r then self._cannon_r:remove() end
+    if self._cannon_l then self._cannon_l:remove() end
+    if self._helm_interactor then self._helm_interactor:remove() end
+    if self._hull_interactor then self._hull_interactor:remove() end
 
     for i = steampunk_blimp.max_seats,1,-1 
     do
@@ -535,7 +541,7 @@ local function smoke_particle(self, object)
 end
 
 local function rot_to_dir(rot) -- keep rot within <-pi/2,pi/2>
-	local dir = minetest.yaw_to_dir(rot.y)
+	local dir = core.yaw_to_dir(rot.y)
 	dir.y = dir.y+math.tan(rot.x)*vector.length(dir)
 	return vector.normalize(dir)
 end
@@ -545,26 +551,26 @@ function steampunk_blimp.cannon_shot(self, dest_obj)
 
     local pos=self.object:get_pos()
     local rel_pos=steampunk_blimp.cannons_loc
-    local dir=rot_to_dir(self.object:get_rotation())
+    local rotation = self.object:get_rotation()
+    local dir=rot_to_dir(rotation)
 
-    local direction = dir.y
     local x_pos = rel_pos.x
     local y_pos = rel_pos.y
     local z_pos = rel_pos.z
     
     --right
-    local move_x = rel_pos.x/10
-    local move_z = 150/10
+    local move_x = rel_pos.x/5
+    local move_z = 0 --steampunk_blimp.cannons_sz
     local move_y = rel_pos.y/10
     local smk_pos_r = vector.new(pos)
-    smk_pos_r.x = smk_pos_r.x + move_x * math.cos(direction)
-    smk_pos_r.z = smk_pos_r.z + move_z * math.sin(direction)
+    smk_pos_r.x = smk_pos_r.x + move_x * dir.x
+    smk_pos_r.z = smk_pos_r.z + move_z * dir.z
     smk_pos_r.y = smk_pos_r.y + move_y
 
     --left
     local smk_pos_l = vector.new(pos)
-    smk_pos_l.x = smk_pos_l.x + (move_x*-1) * math.cos(direction)
-    smk_pos_l.z = smk_pos_l.z + move_z * math.sin(direction)
+    smk_pos_l.x = smk_pos_l.x + (move_x*-1) * dir.x
+    smk_pos_l.z = smk_pos_l.z + move_z * dir.z
     smk_pos_l.y = smk_pos_l.y + move_y
     
     smoke_particle(self, dest_obj)
@@ -575,13 +581,14 @@ function steampunk_blimp.cannon_shot(self, dest_obj)
         in the final version it
         will be function/work for tripulation
         ]]--
-        core.after(0.5, function(self)
+        --[[core.after(0.5, function(self)
             self._l_armed = true
             self._r_armed = true
-        end, self)
+        end, self)]]--
         -- end TODO
 
-        local ammo_name = "cannons:ball_wood_stack_1" --TODO detect and set the correct ammo
+        --local ammo_name = "cannons:ball_wood_stack_1"
+        local ammo_name = "cannons:ball_steel_stack_1" --TODO detect and set the correct ammo
 	    local settings = cannons.get_settings(ammo_name)
 	    local obj=nil
         if dest_obj == self._cannon_r then
@@ -589,9 +596,226 @@ function steampunk_blimp.cannon_shot(self, dest_obj)
         else
             obj = minetest.add_entity(smk_pos_l, cannons.get_entity(ammo_name))
         end
-	    obj:set_velocity({x=dir.x*settings.velocity, y=-1, z=dir.z*settings.velocity})
+        local curr_speed = self.object:get_velocity()
+	    obj:set_velocity({x=dir.x*settings.velocity+curr_speed.x, y=-1, z=dir.z*settings.velocity+curr_speed.z})
 	    obj:set_acceleration({x=dir.x*-3, y=-settings.gravity, z=dir.z*-3})
         return 1
     end
     return 0
+end
+
+function steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
+    local longit_accel = steampunk_blimp.dot(accel,hull_direction)
+    local pitch_to_add = math.rad(5)*longit_accel
+    if self._pitch_accel_accumulator == nil then self._pitch_accel_accumulator = 0 end
+    self._pitch_accel_accumulator = self._pitch_accel_accumulator + pitch_to_add --accumulate
+    if self._pitch_last_error == nil then self._pitch_last_error = 0 end
+    --airutils.pid_controller(current_value, setpoint, last_error, d_time, kp, ki, kd, integrative)
+    local kp = 25
+    local ki = 0.001
+    local kd = 0.05
+    local output, last_error = airutils.pid_controller(self._pitch_accel_accumulator, 0.0, self._pitch_last_error, self.dtime, kp, ki, kd)
+    self._pitch_last_error = last_error
+    if output == output then --detect nan
+        self._pitch_accel_accumulator = self._pitch_accel_accumulator + (output*self.dtime)
+    else
+        self._pitch_accel_accumulator = 0
+    end
+
+    return self._pitch_accel_accumulator
+end
+
+function steampunk_blimp.right_click_helm(self, clicker)
+    local message = ""
+	if not clicker or not clicker:is_player() then
+		return
+	end
+
+    local name = clicker:get_player_name()
+    local ship_self = nil
+
+    local is_attached = false
+    local seat = clicker:get_attach()
+    if seat then
+        ship_attach = seat:get_attach()
+        if ship_attach then
+            ship_self = ship_attach:get_luaentity()
+            is_attached = true
+        end
+    end
+
+    if is_attached then
+        --minetest.chat_send_all('passengers: '.. dump(ship_self._passengers))
+        --=========================
+        --  form to pilot
+        --=========================
+        if ship_self.owner == "" then
+            ship_self.owner = name
+        end
+        local can_bypass = minetest.check_player_privs(clicker, {protection_bypass=true})
+        if ship_self.driver_name ~= nil and ship_self.driver_name ~= "" then
+            --shows pilot formspec
+            if name == ship_self.driver_name then
+                steampunk_blimp.pilot_formspec(name)
+                return
+            end
+            --lets take the control by force
+            if name == ship_self.owner or can_bypass then
+                --require the pilot position now
+                steampunk_blimp.owner_formspec(name)
+                return
+            end
+        else
+            --check if is on owner list
+            local is_shared = false
+            if name == ship_self.owner or can_bypass then is_shared = true end
+            for k, v in pairs(ship_self._shared_owners) do
+                if v == name then
+                    is_shared = true
+                    break
+                end
+            end
+            --normal user
+            if is_shared == false then
+                steampunk_blimp.pax_formspec(name)
+            else
+                --owners
+                steampunk_blimp.pilot_formspec(name)
+            end
+        end
+    end
+end
+
+local function clear_passengers(self)
+    for i = steampunk_blimp.max_seats,1,-1
+    do
+        if self._passengers[i] ~= nil then
+            local old_player = core.get_player_by_name(self._passengers[i])
+            if not old_player then self._passengers[i] = nil end
+        end
+    end
+end
+
+function steampunk_blimp.right_click(self, clicker)
+	if not clicker or not clicker:is_player() then
+		return
+	end
+
+    local name = clicker:get_player_name()
+
+    if self.owner == "" then
+        self.owner = name
+    end
+
+    --core.chat_send_all('passengers: '.. dump(self._passengers))
+    --=========================
+    --  form to pilot
+    --=========================
+    local is_attached = false
+    local seat = clicker:get_attach()
+    if seat then
+        local plane = seat:get_attach()
+        if plane == self.object then is_attached = true end
+    end
+
+    --check error after being shot for any other mod
+    if is_attached == false then
+        for i = steampunk_blimp.max_seats,1,-1
+        do
+            if self._passengers[i] == name then
+                self._passengers[i] = nil --clear the wrong information
+                break
+            end
+        end
+    end
+
+    --shows pilot formspec
+    if name == self.driver_name then
+        if is_attached then
+            steampunk_blimp.pilot_formspec(name)
+        else
+            self.driver_name = nil
+        end
+    --=========================
+    --  attach passenger
+    --=========================
+    else
+        local pass_is_attached = steampunk_blimp.check_passenger_is_attached(self, name)
+
+        if pass_is_attached then
+            local can_bypass = core.check_player_privs(clicker, {protection_bypass=true})
+            if clicker:get_player_control().aux1 == true then --lets see the inventory
+                local is_shared = false
+                if name == self.owner or can_bypass then is_shared = true end
+                for k, v in pairs(self._shared_owners) do
+                    if v == name then
+                        is_shared = true
+                        break
+                    end
+                end
+                if is_shared then
+                    airutils.show_vehicle_trunk_formspec(self, clicker, steampunk_blimp.trunk_slots)
+                end
+            else
+                if self.driver_name ~= nil and self.driver_name ~= "" then
+                    --lets take the control by force
+                    if name == self.owner or can_bypass then
+                        --require the pilot position now
+                        steampunk_blimp.owner_formspec(name)
+                    else
+                        steampunk_blimp.pax_formspec(name)
+                    end
+                else
+                    --check if is on owner list
+                    local is_shared = false
+                    if name == self.owner or can_bypass then is_shared = true end
+                    for k, v in pairs(self._shared_owners) do
+                        if v == name then
+                            is_shared = true
+                            break
+                        end
+                    end
+                    --normal user
+                    if is_shared == false then
+                        steampunk_blimp.pax_formspec(name)
+                    else
+                        --owners
+                        steampunk_blimp.pilot_formspec(name)
+                    end
+                end
+            end
+        else
+            --first lets clean the boat slots
+            --note that when it happens, the "rescue" function will lost the historic
+            clear_passengers(self)
+
+            --attach normal passenger
+            --if self._door_closed == false then
+                steampunk_blimp.attach_pax(self, clicker)
+            --end
+        end
+    end
+
+end
+
+function steampunk_blimp.right_click_hull(self, clicker)
+	if not clicker or not clicker:is_player() then
+		return
+	end
+
+    local name = clicker:get_player_name()
+
+    local is_attached = false
+    local airship = self.object:get_attach()
+    airship_ent = airship:get_luaentity()
+    if airship_ent then
+        local pass_is_attached = steampunk_blimp.check_passenger_is_attached(airship_ent, name)
+
+        if not pass_is_attached then        
+            --first lets clean the boat slots
+            --note that when it happens, the "rescue" function will lost the historic
+            clear_passengers(airship_ent)
+            steampunk_blimp.attach_pax(airship_ent, clicker)
+        end
+    end
 end
