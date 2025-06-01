@@ -245,7 +245,7 @@ core.register_entity("steampunk_blimp:blimp", {
         physical = true,
         collide_with_objects = true, --true,
         collisionbox = {-4, -2.5, -4, 4, 9, 4}, --{-1,0,-1, 1,0.3,1},
-        selectionbox = {-0.6,-0.6,-0.6, 0.6,1.6,0.6},
+        selectionbox = {-0.6,-0.6,-0.6, 0.6,3,0.6},
         visual = "mesh",
         backface_culling = false,
         mesh = "steampunk_blimp.b3d",
@@ -515,6 +515,17 @@ core.register_entity("steampunk_blimp:blimp", {
         self.object:move_to(curr_pos)
 
         if self.owner == "" then return end
+        if self.hp <= 10 then
+            self._engine_running = false
+            if ent._boiler_pressure > 0 then
+                minetest.sound_play({name = "default_cool_lava"},
+                    {object = ent.object, gain = 1.0,
+                        pitch = 1.0,
+                        max_hear_distance = 32,
+                        loop = false,}, true)
+                ent._boiler_pressure = 0
+            end
+        end --stop all when damaged
 
         --fire
         if self.fire then
@@ -625,9 +636,14 @@ core.register_entity("steampunk_blimp:blimp", {
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
+        self.hp = self.hp - damage
+        if self.hp < 10 then self.hp = 10 end
+        --core.chat_send_all("hp: "..dump(self.hp).." - damage: "..dump(damage))
+
         if not puncher or not puncher:is_player() then
             return
         end
+        
         local is_admin
         is_admin = core.check_player_privs(puncher, {server=true})
 		local name = puncher:get_player_name()
@@ -700,7 +716,7 @@ core.register_entity("steampunk_blimp:blimp", {
             end
 
 
-            if not has_passengers and toolcaps and toolcaps.damage_groups and
+            --[[if not has_passengers and toolcaps and toolcaps.damage_groups and
                     toolcaps.groupcaps and (toolcaps.groupcaps.choppy or toolcaps.groupcaps.axey_dig) then
 
                 local is_empty = true
@@ -720,7 +736,7 @@ core.register_entity("steampunk_blimp:blimp", {
 
             if self.hp <= 0 then
                 steampunk_blimp.get_blimp_back(self, puncher, false)
-            end
+            end]]--
 
         end
 
