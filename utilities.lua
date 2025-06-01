@@ -299,53 +299,42 @@ function steampunk_blimp.paint2(self, colstr)
     end
 end
 
--- destroy the boat
-function steampunk_blimp.destroy(self, overload)
+--remove blimp objects
+function steampunk_blimp.remove_blimp(self)
     if self.sound_handle then
         core.sound_stop(self.sound_handle)
         self.sound_handle = nil
     end
-
-    local pos = self.object:get_pos()
-    if self.fire then self.fire:remove() end
-    if self.wings then self.wings:remove() end
-    if self.cannons then self.cannons:remove() end
-    if self._cannon_r_interactor then self._cannon_r_interactor:remove() end
-    if self._cannon_l_interactor then self._cannon_l_interactor:remove() end
-    if self._cannon_r then self._cannon_r:remove() end
-    if self._cannon_l then self._cannon_l:remove() end
-    if self._helm_interactor then self._helm_interactor:remove() end
-    if self._hull_interactor then self._hull_interactor:remove() end
 
     for i = steampunk_blimp.max_seats,1,-1 
     do
         if self._passengers_base[i] then self._passengers_base[i]:remove() end
     end
 
+    local obj_children = self.object:get_children()
+    for _, child in ipairs(obj_children) do
+        child:remove()
+    end
+
     airutils.destroy_inventory(self)
     self.inv = nil
     self._inv_id = nil
     
-    local remove_it = self._remove or false
+    self.object:remove()
+end
 
+function steampunk_blimp.get_blimp_back(self, player, overload)
+    if not player then return end
+    local remove_it = self._remove or false --for efemeral blimp
+    local pos = self.object:get_pos()
     local lua_ent = self.object:get_luaentity()
     local staticdata = lua_ent:get_staticdata(self)
-    local player = core.get_player_by_name(self.owner)
+    --local player = core.get_player_by_name(self.owner)
 
-    self.object:remove()
+    steampunk_blimp.remove_blimp(self)
 
     if remove_it == false then
         pos.y=pos.y+2
-        --[[for i=1,7 do
-            core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:steel_ingot')
-        end
-
-        for i=1,7 do
-            core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:mese_crystal')
-        end]]--
-
-        --core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'steampunk_blimp:boat')
-        --core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:diamond')
 
         local stack = ItemStack(self.item)
         local stack_meta = stack:get_meta()
@@ -363,6 +352,31 @@ function steampunk_blimp.destroy(self, overload)
         else
             core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5}, stack)
         end
+    end
+end
+
+-- destroy the boat
+function steampunk_blimp.destroy(self, overload)
+    local remove_it = self._remove or false --for efemeral blimp
+    local pos = self.object:get_pos()
+    local lua_ent = self.object:get_luaentity()
+    local staticdata = lua_ent:get_staticdata(self)
+    local player = core.get_player_by_name(self.owner)
+
+    steampunk_blimp.remove_blimp(self)
+
+    if remove_it == false then
+        pos.y=pos.y+2
+        for i=1,7 do
+            core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:steel_ingot')
+        end
+
+        for i=1,7 do
+            core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:mese_crystal')
+        end
+
+        core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'steampunk_blimp:boat')
+        core.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:diamond')
     end
 end
 
@@ -811,11 +825,36 @@ function steampunk_blimp.right_click_hull(self, clicker)
     if airship_ent then
         local pass_is_attached = steampunk_blimp.check_passenger_is_attached(airship_ent, name)
 
-        if not pass_is_attached then        
+        if not pass_is_attached then
+            local itmstck=clicker:get_wielded_item()
+	        if itmstck then
+                local item_name = ""
+                if itmstck then item_name = itmstck:get_name() end
+                --remove
+                if (item_name == "airutils:repair_tool" or item_name == "keys:skeleton_key" or item_name == "default:skeleton_key") and
+                    airship_ent._engine_running == false and (airship_ent.owner == name or core.check_player_privs(clicker, {protection_bypass=true})) then
+                    local has_passengers = false
+                    for i = steampunk_blimp.max_seats,1,-1
+                    do
+                        if airship_ent._passengers[i] ~= nil then
+                            has_passengers = true
+                            break
+                        end
+                    end
+
+                    if not has_passengers then
+                        steampunk_blimp.get_blimp_back(airship_ent, clicker, false)
+                        return
+                    end
+                    return
+                end
+            end
+
             --first lets clean the boat slots
             --note that when it happens, the "rescue" function will lost the historic
             clear_passengers(airship_ent)
             steampunk_blimp.attach_pax(airship_ent, clicker)
+            ---------------------------------------------
         end
     end
 end

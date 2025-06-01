@@ -719,7 +719,7 @@ core.register_entity("steampunk_blimp:blimp", {
             end
 
             if self.hp <= 0 then
-                steampunk_blimp.destroy(self, false)
+                steampunk_blimp.get_blimp_back(self, puncher, false)
             end
 
         end
