@@ -819,3 +819,27 @@ function steampunk_blimp.right_click_hull(self, clicker)
         end
     end
 end
+
+function steampunk_blimp.right_click_cannon(self, clicker)
+	if not clicker or not clicker:is_player() then
+		return
+	end
+
+    local name = clicker:get_player_name()
+
+    local is_attached = false
+    local airship = self.object:get_attach()
+    airship_ent = airship:get_luaentity()
+    if airship_ent then
+        local pass_is_attached = steampunk_blimp.check_passenger_is_attached(airship_ent, name)
+
+        if pass_is_attached then
+            local side = "r"
+            if self.object == airship_ent._cannon_l_interactor then
+                side = "l"
+            end
+                
+            steampunk_blimp.prepare_cannon_formspec(self, name, side)
+        end
+    end
+end

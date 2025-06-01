@@ -55,31 +55,16 @@ function steampunk_blimp.pax_formspec(name)
     minetest.show_formspec(name, "steampunk_blimp:passenger_main", basic_form)
 end
 
-function steampunk_blimp.prepare_cannon_formspec(self, name)
-    --[[local basic_form = table.concat({
-        "formspec_version[3]",
-        "size[8,9]",
-	    "list[detached:" .. self._cannon_id .. ";ammo;0,1;1,1;] label[0,0.5;Ammo:]",
-	    "list[detached;" .. self._cannon_powder_id .. ";gunpowder;0,3;1,1;] label[0,2.5;Gunpowder:]",
-	    "list[current_player;main;0,5;8,4;]",
-	}, "")
-    minetest.show_formspec(name, "steampunk_blimp:cannon", basic_form)]]--
+function steampunk_blimp.prepare_cannon_formspec(self, name, side)
     local basic_form = table.concat({
         "formspec_version[3]",
         "size[5,3]",
-	    "button[1,1.2;3,1;load_powder;Put Gunpowder]",
-        "button[1,3.2;3,1;load_ammo;Load Ammo]",
+        "checkbox[1.0,1.0;load_powder;Put Gunpowder]",
+        "checkbox[1.0,2.0;load_ammo;Load Ammo]",
+        "field[1.0,6.0;1.5,0.8;side;Side;"..side.."]",
+        '["key_enter"]="false"',
 	}, "")
     minetest.show_formspec(name, "steampunk_blimp:prep_cannon", basic_form)
-end
-
-function steampunk_blimp.cannon_formspec(self, name)
-    local basic_form = table.concat({
-        "formspec_version[3]",
-        "size[5,3]",
-	    "label[1,7.0;Cannon is already armed]",
-	}, "")
-    minetest.show_formspec(name, "steampunk_blimp:cannon", basic_form)
 end
 
 local default_logos = {
@@ -375,6 +360,48 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
         end
         minetest.close_formspec(name, "steampunk_blimp:pilot_main")
+    end
+    if formname == "steampunk_blimp:prep_cannon" then
+        local name = player:get_player_name()
+        local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
+        if plane_obj == nil then
+            minetest.close_formspec(name, "steampunk_blimp:pilot_main")
+            return
+        end
+        local ent = plane_obj:get_luaentity()
+        if ent then
+            if fields.load_powder then
+                if fields.load_powder == "true" then
+                    if fields.side == "l" then
+                        ent._l_armed = true
+                    else
+                        ent._r_armed = true
+                    end
+                else
+                    if fields.side == "l" then
+                        ent._l_armed = false
+                    else
+                        ent._r_armed = false
+                    end
+                end
+            end
+            if fields.load_ammo then
+                if fields.load_ammo == "true" then
+                    if fields.side == "l" then
+                        ent._l_armed = true
+                    else
+                        ent._r_armed = true
+                    end
+                else
+                    if fields.side == "l" then
+                        ent._l_armed = false
+                    else
+                        ent._r_armed = false
+                    end
+                end
+            end
+        end
+        --minetest.close_formspec(name, "steampunk_blimp:prep_cannon")
     end
 end)
 

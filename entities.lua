@@ -169,6 +169,8 @@ core.register_entity('steampunk_blimp:cannon_interactor',{
       self.sdata.remove=true
       return core.serialize(self.sdata)
     end,
+
+    on_rightclick = steampunk_blimp.right_click_cannon,
 })
 
 core.register_entity('steampunk_blimp:helm_interactor',{

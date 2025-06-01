@@ -62,7 +62,8 @@ function steampunk_blimp.boat_upper_deck_map(pos, dpos)
 
     new_pos.z = steampunk_blimp.clamp(new_pos.z, -47, -16)
     new_pos = is_obstacle_zone(new_pos, {x=4, z=-28}, {x=-4, z=-20}) --timao
-    new_pos = is_obstacle_zone(new_pos, {x=-30, z=-24}, {x=4, z=-12})
+    --new_pos = is_obstacle_zone(new_pos, {x=-30, z=-24}, {x=4, z=-12})
+    --core.chat_send_all(dump(position.z))
 
     if position.z >= -49 and position.z < -32 then --limit 10
         new_pos.y = 20.821
@@ -80,6 +81,7 @@ function steampunk_blimp.boat_upper_deck_map(pos, dpos)
         end
         return new_pos
     end
+    
     return new_pos
 end
 
