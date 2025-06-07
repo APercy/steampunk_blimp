@@ -561,7 +561,7 @@ local function rot_to_dir(rot) -- keep rot within <-pi/2,pi/2>
 end
 
 function steampunk_blimp.cannon_shot(self, dest_obj)
-    play_cannon_sound(self)
+    --play_cannon_sound(self)
 
     local pos=self.object:get_pos()
     local rel_pos=steampunk_blimp.cannons_loc
@@ -577,45 +577,42 @@ function steampunk_blimp.cannon_shot(self, dest_obj)
     local move_z = 0 --steampunk_blimp.cannons_sz
     local move_y = rel_pos.y/10
     local smk_pos_r = vector.new(pos)
-    smk_pos_r.x = smk_pos_r.x + move_x * dir.x
-    smk_pos_r.z = smk_pos_r.z + move_z * dir.z
+    smk_pos_r.x = smk_pos_r.x + (move_x * dir.x)
+    smk_pos_r.z = smk_pos_r.z + (move_z * dir.z)
     smk_pos_r.y = smk_pos_r.y + move_y
 
     --left
     local smk_pos_l = vector.new(pos)
-    smk_pos_l.x = smk_pos_l.x + (move_x*-1) * dir.x
-    smk_pos_l.z = smk_pos_l.z + move_z * dir.z
+    smk_pos_l.x = smk_pos_l.x + ((move_x*-1) * dir.x)
+    smk_pos_l.z = smk_pos_l.z + (move_z * dir.z)
     smk_pos_l.y = smk_pos_l.y + move_y
     
     smoke_particle(self, dest_obj)
 
-    if core.get_modpath("cannons") then
-        --[[TODO
-        timer set just for tests
-        in the final version it
-        will be function/work for tripulation
-        ]]--
-        --[[core.after(0.5, function(self)
-            self._l_armed = true
-            self._r_armed = true
-        end, self)]]--
-        -- end TODO
+    --[[TODO
+    timer set just for tests
+    in the final version it
+    will be function/work for tripulation
+    ]]--
+    core.after(0.5, function(self)
+        self._l_armed = true
+        self._r_armed = true
+    end, self)
+    -- end TODO
 
-        --local ammo_name = "cannons:ball_wood_stack_1"
-        local ammo_name = "cannons:ball_steel_stack_1" --TODO detect and set the correct ammo
-	    local settings = cannons.get_settings(ammo_name)
-	    local obj=nil
-        if dest_obj == self._cannon_r then
-            obj = minetest.add_entity(smk_pos_r, cannons.get_entity(ammo_name))
-        else
-            obj = minetest.add_entity(smk_pos_l, cannons.get_entity(ammo_name))
-        end
-        local curr_speed = self.object:get_velocity()
-	    obj:set_velocity({x=dir.x*settings.velocity+curr_speed.x, y=-1, z=dir.z*settings.velocity+curr_speed.z})
-	    obj:set_acceleration({x=dir.x*-3, y=-settings.gravity, z=dir.z*-3})
-        return 1
+    --local ammo_name = "cannons:ball_wood_stack_1"
+    local ammo_name = "steampunk_blimp:shell1" --TODO detect and set the correct ammo
+    --local obj=nil
+    local speed = 50
+    if dest_obj == self._cannon_r then
+        --core.chat_send_all("R")
+        steampunk_blimp.spawn_shell(self, smk_pos_r, dir, self.driver_name, ammo_name, speed)
+    else
+        --core.chat_send_all("L")
+        steampunk_blimp.spawn_shell(self, smk_pos_l, dir, self.driver_name, ammo_name, speed)
     end
-    return 0
+
+    return 1
 end
 
 function steampunk_blimp.pitch_by_accel(self, accel, hull_direction)

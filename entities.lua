@@ -436,11 +436,7 @@ core.register_entity("steampunk_blimp:blimp", {
 
         self.object:set_bone_position("low_rudder_a", {x=0,y=0,z=-40}, {x=-5.35,y=0,z=0})
 
-        self.object:set_armor_groups({immortal=1})
-
         airutils.actfunc(self, staticdata, dtime_s)
-
-        self.object:set_armor_groups({immortal=1})
 
         if self._remove ~= true then
 		    local inv = core.get_inventory({type = "detached", name = self._inv_id})
@@ -517,13 +513,13 @@ core.register_entity("steampunk_blimp:blimp", {
         if self.owner == "" then return end
         if self.hp <= 10 then
             self._engine_running = false
-            if ent._boiler_pressure > 0 then
+            if self._boiler_pressure > 0 then
                 minetest.sound_play({name = "default_cool_lava"},
-                    {object = ent.object, gain = 1.0,
+                    {object = self.object, gain = 1.0,
                         pitch = 1.0,
                         max_hear_distance = 32,
                         loop = false,}, true)
-                ent._boiler_pressure = 0
+                self._boiler_pressure = 0
             end
         end --stop all when damaged
 
@@ -636,10 +632,20 @@ core.register_entity("steampunk_blimp:blimp", {
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
-        self.hp = self.hp - damage
-        if self.hp < 10 then self.hp = 10 end
-        --core.chat_send_all("hp: "..dump(self.hp).." - damage: "..dump(damage))
-
+        if puncher and not puncher:is_player() then
+            local got_damage = damage
+            if got_damage == 0 then
+                local ent = puncher:get_luaentity()
+                if ent then
+                    if ent.damage then got_damage = ent.damage end
+                end
+            end
+            self.hp = self.hp - got_damage
+            if self.hp <= 10 then
+                self.hp = 10
+                self.object:set_armor_groups({immortal=1})
+            end
+        end
         if not puncher or not puncher:is_player() then
             return
         end

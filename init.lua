@@ -148,6 +148,7 @@ steampunk_blimp.colors ={
 steampunk_blimp.cannons_loc = {x=24, y=-2, z=0}
 steampunk_blimp.cannons_sz = 15
 
+dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "cannon_balls.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "walk_map.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "utilities.lua")
 dofile(minetest.get_modpath("steampunk_blimp") .. DIR_DELIM .. "control.lua")
