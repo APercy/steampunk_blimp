@@ -301,6 +301,18 @@ end
 
 --remove blimp objects
 function steampunk_blimp.remove_blimp(self)
+    if self._engine_running == true then
+        steampunk_blimp.start_furnace(self)
+    end
+    if self._boiler_pressure > 0 then
+        minetest.sound_play({name = "default_cool_lava"},
+            {object = self.object, gain = 1.0,
+                pitch = 1.0,
+                max_hear_distance = 32,
+                loop = false,}, true)
+    end
+    self._boiler_pressure = 0
+
     if self.sound_handle then
         core.sound_stop(self.sound_handle)
         self.sound_handle = nil
