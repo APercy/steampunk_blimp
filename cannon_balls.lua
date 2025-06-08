@@ -284,6 +284,85 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
 	})
 end
 
+local function play_cannon_sound(self)
+    core.sound_play("steampunk_blimp_explode", {
+        --to_player = self.driver_name,
+        object = self.object,
+        max_hear_distance = 120,
+        gain = 5.0,
+        fade = 0.0,
+        pitch = 1.0,
+    }, true)
+end
+
+local function smoke_particle(self, object)
+    core.add_particlespawner({
+	    amount = 20,
+	    time = 0.5,
+	    --minpos = pos,
+	    --maxpos = pos,
+	    minvel = {x = -1, y = -1, z = -1},
+	    maxvel = {x = 1, y = 5, z = 1},
+	    minacc = vector.new(),
+	    maxacc = vector.new(),
+        attached = object,
+	    minexptime = 3,
+	    maxexptime = 5.5,
+	    minsize = 10,
+	    maxsize = 15,
+	    texture = "steampunk_blimp_smoke.png",
+    })
+end
+
+function steampunk_blimp.cannon_shot(self, dest_obj)
+    --play_cannon_sound(self)
+
+    local ammo_name = "steampunk_blimp:shell1" --TODO detect and set the correct ammo
+    local speed = 50
+
+    local pos=self.object:get_pos()
+    local rel_pos=steampunk_blimp.cannons_loc
+    local rotation = self.object:get_rotation()
+    local dir=rot_to_dir(rotation) --core.yaw_to_dir(self.object:get_yaw())
+
+    local cannons = {vector.new(rel_pos),vector.new(rel_pos)}
+    cannons[2].x = cannons[2].x * -1
+    local yaw = self.object:get_yaw()
+    for i = 1,2,1 do
+        local orig_x = cannons[i].x/10
+        local orig_z = cannons[i].z/10
+        cannons[i].x = (orig_x * math.cos(yaw)) - (orig_z * math.sin(yaw))
+        cannons[i].z = (orig_x * math.sin(yaw)) + (orig_z * math.cos(yaw))
+    end
+
+    local shot_pos = vector.new(pos)
+    --right
+    if dest_obj == self._cannon_r then
+        shot_pos = vector.add(shot_pos, cannons[1])
+    end
+
+    --left
+    if dest_obj == self._cannon_l then
+        shot_pos = vector.add(shot_pos, cannons[2])
+    end
+    steampunk_blimp.spawn_shell(self, shot_pos, dir, self.driver_name, ammo_name, speed)
+    
+    smoke_particle(self, dest_obj)
+
+    --[[TODO
+    timer set just for tests
+    in the final version it
+    will be function/work for tripulation
+    ]]--
+    core.after(0.5, function(self)
+        self._l_armed = true
+        self._r_armed = true
+    end, self)
+    -- end TODO
+
+    return 1
+end
+
 local direct_impact_damage = 30
 local speed = 100
 local radius = 3
