@@ -373,15 +373,15 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             if fields.load_powder then
                 if fields.load_powder == "true" then
                     if fields.side == "l" then
-                        ent._l_armed = true
+                        ent._l_pload = true
                     else
-                        ent._r_armed = true
+                        ent._r_pload = true
                     end
                 else
                     if fields.side == "l" then
-                        ent._l_armed = false
+                        ent._l_pload = false
                     else
-                        ent._r_armed = false
+                        ent._r_pload = false
                     end
                 end
             end

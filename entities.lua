@@ -403,8 +403,8 @@ core.register_entity("steampunk_blimp:blimp", {
             self._cannon_l:set_attach(self.object,'',{x=-steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z+steampunk_blimp.cannons_sz},{x=0,y=0,z=0})
 
             --for tests
-            self._l_armed = true
-            self._r_armed = true
+            --self._l_armed = true
+            --self._r_armed = true
         else
             local wings = core.add_entity(pos, 'steampunk_blimp:wings')
             wings:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})

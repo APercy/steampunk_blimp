@@ -91,22 +91,16 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 		        self._rudder_angle = math.min(self._rudder_angle+speed*dtime,rudder_limit)
 		    end
         else
-            if ctrl.right and self._cannon_r and self._r_armed == true then
+            if ctrl.right and self._cannon_r then
                 if ctrl.dig then shot = steampunk_blimp.cannon_shot(self, self._cannon_r) end
-                self._r_armed = false
             end
-            if ctrl.left and self._cannon_l and self._l_armed == true then
+            if ctrl.left and self._cannon_l then
                 if ctrl.dig then shot = steampunk_blimp.cannon_shot(self, self._cannon_l) end
-                self._l_armed = false
             end
             if ctrl.down then
                 if (self._cannon_l and self._cannon_r) then
-                    local l_shot = 0
-                    local r_shot = 0
-                    if self._l_armed == true then l_shot = steampunk_blimp.cannon_shot(self, self._cannon_l) end
-                    if self._r_armed == true then r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r) end
-                    self._l_armed = false
-                    self._r_armed = false
+                    local l_shot = steampunk_blimp.cannon_shot(self, self._cannon_l)
+                    local r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r)
                     shot = l_shot + r_shot
                 end
             end
@@ -132,7 +126,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     if engineacc ~= nil then
         retval_accel=vector.add(accel,vector.multiply(hull_direction,engineacc))
     end
-    local recoil = shot*-60;
+    local recoil = shot*-70;
     retval_accel=vector.add(retval_accel,vector.multiply(hull_direction,recoil))
 
     if longit_speed > 0 then
