@@ -8,6 +8,7 @@ steampunk_blimp.water = {['default:water_source'] = {amount=1},['default:river_w
     ['mcl_buckets:bucket_water'] = {amount=1}, ['mcl_buckets:bucket_river_water'] = {amount=1}, ['mcl_core:water_source'] = {amount=1},
     ['rp_default:bucket_water'] = {amount=1}, ['rp_default:bucket_river_water'] = {amount=1}, }  --bucket:bucket_empty
 steampunk_blimp.ideal_step = 0.02
+steampunk_blimp.min_hp = 10
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.max_engine_acc = 3

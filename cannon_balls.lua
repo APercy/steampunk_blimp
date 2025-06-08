@@ -315,10 +315,8 @@ local function smoke_particle(self, object)
     })
 end
 
-function steampunk_blimp.cannon_shot(self, dest_obj)
-    --play_cannon_sound(self)
-
-    local ammo_name = "steampunk_blimp:cannon_ball1" --TODO detect and set the correct ammo
+function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
+    ammo_name = ammo_name or "steampunk_blimp:cannon_ball1"
     local speed = 50
 
     local pos=self.object:get_pos()

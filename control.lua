@@ -107,13 +107,6 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         end
 	end
 
-    --make the blimp loss height when without pressure (and not anchored)
-    if self.anchored == false and not self.isinliquid then
-        if self._boiler_pressure <= 0 then
-            self._baloon_buoyancy = -0.2
-        end
-    end
-
     --engine acceleration calc
     local engineacc = (self._power_lever * steampunk_blimp.max_engine_acc) / 100;
 
@@ -139,7 +132,20 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         end
     end
 
-    steampunk_blimp.buoyancy_auto_correction(self, self.dtime)
+    if self.hp > steampunk_blimp.min_hp then
+        steampunk_blimp.buoyancy_auto_correction(self, self.dtime)
+    end
+
+    --make the blimp loss height when without pressure (and not anchored)
+    if self.anchored == false and not self.isinliquid then
+        if self._boiler_pressure <= 0 then
+            self._baloon_buoyancy = -0.2
+        end
+    end
+    --blimp damaged
+    if self.hp <= steampunk_blimp.min_hp then
+        self._baloon_buoyancy = -0.2
+    end
 
     return retval_accel
 end
@@ -159,7 +165,7 @@ end
 
 function steampunk_blimp.buoyancy_auto_correction(self, dtime)
     local factor = 1
-    --minetest.chat_send_player(self.driver_name, "antes: " .. self._baloon_buoyancy)
+    --core.chat_send_all("antes: " .. self._baloon_buoyancy)
     if self._baloon_buoyancy > 0 then factor = -1 end
     local time_correction = (dtime/steampunk_blimp.ideal_step)
     if time_correction < 1 then time_correction = 1 end
@@ -174,6 +180,6 @@ function steampunk_blimp.buoyancy_auto_correction(self, dtime)
     else
         self._baloon_buoyancy = new_baloon_buoyancy
     end
-    --minetest.chat_send_player(self.driver_name, "depois: " .. self._baloon_buoyancy)
+    --core.chat_send_all("depois: " .. self._baloon_buoyancy)
 end
 

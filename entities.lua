@@ -511,7 +511,7 @@ core.register_entity("steampunk_blimp:blimp", {
         self.object:move_to(curr_pos)
 
         if self.owner == "" then return end
-        if self.hp <= 10 then
+        if self.hp <= steampunk_blimp.min_hp then
             self._engine_running = false
             if self._boiler_pressure > 0 then
                 minetest.sound_play({name = "default_cool_lava"},
