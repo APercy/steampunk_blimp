@@ -293,6 +293,7 @@ core.register_entity("steampunk_blimp:blimp", {
     _name_color = 0,
     _name_hor_aligment = 3.0,
     _has_cannons = false,
+    _rev_can = false,
     item = "steampunk_blimp:blimp",
     _vehicle_name = "Steampunk Blimp",
 

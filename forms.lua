@@ -10,7 +10,7 @@ end
 function steampunk_blimp.pilot_formspec(name)
     local basic_form = table.concat({
         "formspec_version[5]",
-        "size[6,9]",
+        "size[6.0,9.6]",
 	}, "")
 
     local player = minetest.get_player_by_name(name)
@@ -24,6 +24,10 @@ function steampunk_blimp.pilot_formspec(name)
     if ent._at_control then take_control = "true" end
     local anchor = "false"
     if ent.anchored == true then anchor = "true" end
+    local is_driver = false
+    if name == ent.driver_name then is_driver = true end
+    local rev_can = "false"
+    if ent._rev_can == true then rev_can = "true" end
 
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop the fire]"
     basic_form = basic_form.."button[1,2.0;4,1;water;Load water from below]"
@@ -34,10 +38,13 @@ function steampunk_blimp.pilot_formspec(name)
 
     basic_form = basic_form.."checkbox[1,5.6;take_control;Take the Control;"..take_control.."]"
     basic_form = basic_form.."checkbox[1,6.2;anchor;Anchor away;"..anchor.."]"
+    if is_driver then
+        basic_form = basic_form.."checkbox[1,6.8;rev_can;Reverse cannons;"..rev_can.."]"
+    end
 
-    basic_form = basic_form.."label[1,7.0;Disembark:]"
-    basic_form = basic_form.."button[1,7.2;2,1;disembark_l;<< Left]"
-    basic_form = basic_form.."button[3,7.2;2,1;disembark_r;Right >>]"
+    basic_form = basic_form.."label[1,7.6;Disembark:]"
+    basic_form = basic_form.."button[1,7.8;2,1;disembark_l;<< Left]"
+    basic_form = basic_form.."button[3,7.8;2,1;disembark_r;Right >>]"
 
     minetest.show_formspec(name, "steampunk_blimp:pilot_main", basic_form)
 end
@@ -357,6 +364,26 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                     end
                 end
                 --ent._rudder_angle = 0
+            end
+            if fields.rev_can then
+                local override = {}
+                if fields.rev_can == "true" then
+                    ent._rev_can = true
+                    --ent.cannons:set_bone_position("cannon_l", {x=-24,y=-2,z=0}, {x=0,y=0,z=0})
+                    --ent.cannons:set_bone_position("cannon_r", {x= 24,y=-2,z=0}, {x=0,y=0,z=0})
+                    override = {
+                        rotation = { vec={x=math.rad(-180),y=0,z=0}, interpolation = 1, absolute = false }
+                        }
+                else
+                    ent._rev_can = false
+                    --ent.cannons:set_bone_position("cannon_l", {x=-24,y=-2,z=0}, {x=180,y=0,z=0})
+                    --ent.cannons:set_bone_position("cannon_r", {x= 24,y=-2,z=0}, {x=180,y=0,z=0})
+                    override = {
+                        rotation = { vec={x=math.rad(360),y=0,z=0}, interpolation = 1, absolute = false }
+                        }
+                end
+                ent.cannons:set_bone_override("cannon_l", override)
+                ent.cannons:set_bone_override("cannon_r", override)
             end
         end
         minetest.close_formspec(name, "steampunk_blimp:pilot_main")

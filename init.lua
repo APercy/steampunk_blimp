@@ -235,7 +235,7 @@ minetest.register_tool("steampunk_blimp:blimp", {
 -- tactical steampunk blimp
 minetest.register_tool("steampunk_blimp:cannon_blimp", {
     description = "Gunboat Steampunk Blimp",
-    inventory_image = "steampunk_blimp_icon.png",
+    inventory_image = "steampunk_blimp_gunboat_icon.png",
     liquids_pointable = true,
     stack_max = 1,
 

@@ -119,7 +119,11 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     if engineacc ~= nil then
         retval_accel=vector.add(accel,vector.multiply(hull_direction,engineacc))
     end
-    local recoil = shot*-70;
+    local recoil_intensity = -70
+    if self._rev_can == true then
+        recoil_intensity = recoil_intensity * -1
+    end
+    local recoil = shot*recoil_intensity;
     retval_accel=vector.add(retval_accel,vector.multiply(hull_direction,recoil))
 
     if longit_speed > 0 then

@@ -322,6 +322,9 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
     local pos=self.object:get_pos()
     local rel_pos=steampunk_blimp.cannons_loc
     local rotation = self.object:get_rotation()
+    if self._rev_can == true then
+        rotation.y = rotation.y + math.rad(180)
+    end
     local dir=rot_to_dir(rotation) --core.yaw_to_dir(self.object:get_yaw())
 
     local cannons = {vector.new(rel_pos),vector.new(rel_pos)}
