@@ -689,7 +689,6 @@ core.register_entity("steampunk_blimp:blimp", {
             end
             local _,indx = item_name:find(find_str)
             if indx then
-
                 --lets paint!!!!
                 local color = nil
                 if not airutils.is_repixture then
@@ -709,6 +708,22 @@ core.register_entity("steampunk_blimp:blimp", {
                 end
                 -- end painting
             end
+
+            local repair = airutils.contains(steampunk_blimp.rep_material, item_name)
+            if repair then
+                local stack = ItemStack(item_name .. " 1")
+                if self.hp < steampunk_blimp.max_hp then
+                    itmstck:set_count(1)
+                    local inv = puncher:get_inventory()
+                    inv:remove_item("main", itmstck)
+                    if repair then
+                        self.hp = self.hp + repair.amount
+                    end
+                    if self.hp > steampunk_blimp.max_hp then self.hp = steampunk_blimp.max_hp end
+                end
+                if self.hp >= steampunk_blimp.max_hp then core.chat_send_player(name, "The blimp has already been fixed!") end
+            end
+
         end
 
         if is_attached == false then

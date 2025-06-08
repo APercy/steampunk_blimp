@@ -7,8 +7,11 @@ steampunk_blimp.water = {['default:water_source'] = {amount=1},['default:river_w
     ['bucket:bucket_water'] = {amount=1}, ['bucket:bucket_river_water'] = {amount=1},
     ['mcl_buckets:bucket_water'] = {amount=1}, ['mcl_buckets:bucket_river_water'] = {amount=1}, ['mcl_core:water_source'] = {amount=1},
     ['rp_default:bucket_water'] = {amount=1}, ['rp_default:bucket_river_water'] = {amount=1}, }  --bucket:bucket_empty
+steampunk_blimp.rep_material = {['default:gold_lump'] = {amount=5},['default:gold_ingot'] = {amount=10}, ['mcl_core:gold_ingot'] = {amount=10}}
+
 steampunk_blimp.ideal_step = 0.02
 steampunk_blimp.min_hp = 10
+steampunk_blimp.max_hp = 50
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.max_engine_acc = 3
@@ -145,6 +148,8 @@ steampunk_blimp.colors ={
     white='white',
     yellow='yellow',
 }
+
+
 
 steampunk_blimp.cannons_loc = {x=24, y=-2, z=0}
 steampunk_blimp.cannons_sz = 15

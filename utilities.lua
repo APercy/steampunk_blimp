@@ -26,6 +26,8 @@ function steampunk_blimp.testDamage(self, velocity, position)
     if collision then
         --self.object:set_velocity({x=0,y=0,z=0})
         local damage = impact -- / 2
+        self.hp = self.hp - damage
+        if self.hp < steampunk_blimp.min_hp then self.hp = steampunk_blimp.min_hp end
         core.sound_play("steampunk_blimp_collision", {
             --to_player = self.driver_name,
             object = self.object,
@@ -538,7 +540,7 @@ end
 
 function steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
     local longit_accel = steampunk_blimp.dot(accel,hull_direction)
-    local pitch_to_add = math.rad(5)*longit_accel
+    local pitch_to_add = math.rad(3)*longit_accel
     if self._pitch_accel_accumulator == nil then self._pitch_accel_accumulator = 0 end
     self._pitch_accel_accumulator = self._pitch_accel_accumulator + pitch_to_add --accumulate
     if self._pitch_last_error == nil then self._pitch_last_error = 0 end
