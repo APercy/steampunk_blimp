@@ -234,7 +234,7 @@ minetest.register_tool("steampunk_blimp:blimp", {
 
 -- tactical steampunk blimp
 minetest.register_tool("steampunk_blimp:cannon_blimp", {
-    description = "Tactical Steampunk Blimp",
+    description = "Gunboat Steampunk Blimp",
     inventory_image = "steampunk_blimp_icon.png",
     liquids_pointable = true,
     stack_max = 1,
@@ -264,7 +264,7 @@ minetest.register_tool("steampunk_blimp:cannon_blimp", {
             --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
             ent.owner = owner
             ent.hp = 50 --reset hp
-            ent._vehicle_name = "Tactical Steampunk Blimp",
+            ent._vehicle_name = "Gunboat Steampunk Blimp",
             steampunk_blimp.paint(ent, "black")
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
