@@ -10,7 +10,7 @@ end
 function steampunk_blimp.pilot_formspec(name)
     local basic_form = table.concat({
         "formspec_version[5]",
-        "size[6.0,9.6]",
+        "size[11.0,6.0]",
 	}, "")
 
     local player = core.get_player_by_name(name)
@@ -26,25 +26,28 @@ function steampunk_blimp.pilot_formspec(name)
     if ent.anchored == true then anchor = "true" end
     local is_driver = false
     if name == ent.driver_name then is_driver = true end
+    local unl_can = "false"
+    if ent._unl_can == true then unl_can = "true" end
     local rev_can = "false"
     if ent._rev_can == true then rev_can = "true" end
 
-	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop the fire]"
-    basic_form = basic_form.."button[1,2.0;4,1;water;Load water from below]"
+	basic_form = basic_form.."button[1.0,1.0;4,1;turn_on;Start/Stop the fire]"
+    basic_form = basic_form.."button[1.0,2.0;4,1;water;Load water from below]"
     if ent._remove ~= true then
-        basic_form = basic_form.."button[1,3.0;4,1;inventory;Open inventory]"
+        basic_form = basic_form.."button[1.0,3.0;4,1;inventory;Open inventory]"
     end
-    basic_form = basic_form.."button[1,4.0;4,1;manual;Show Manual Menu]"
+    basic_form = basic_form.."button[1.0,4.0;4,1;manual;Show Manual Menu]"
 
-    basic_form = basic_form.."checkbox[1,5.6;take_control;Take the Control;"..take_control.."]"
-    basic_form = basic_form.."checkbox[1,6.2;anchor;Anchor away;"..anchor.."]"
+    basic_form = basic_form.."checkbox[6.0,1.2;take_control;Take the Control;"..take_control.."]"
+    basic_form = basic_form.."checkbox[6.0,1.8;anchor;Anchor away;"..anchor.."]"
     if is_driver and ent._has_cannons == true then
-        basic_form = basic_form.."checkbox[1,6.8;rev_can;Reverse cannons;"..rev_can.."]"
+        basic_form = basic_form.."checkbox[6,2.4;unlock;Unlock cannons;"..unl_can.."]"
+        basic_form = basic_form.."checkbox[6,3.0;rev_can;Reverse cannons;"..rev_can.."]"
     end
 
-    basic_form = basic_form.."label[1,7.6;Disembark:]"
-    basic_form = basic_form.."button[1,7.8;2,1;disembark_l;<< Left]"
-    basic_form = basic_form.."button[3,7.8;2,1;disembark_r;Right >>]"
+    basic_form = basic_form.."label[6.0,3.8;Disembark:]"
+    basic_form = basic_form.."button[6.0,4.0;2,1;disembark_l;<< Left]"
+    basic_form = basic_form.."button[8.0,4.0;2,1;disembark_r;Right >>]"
 
     core.show_formspec(name, "steampunk_blimp:pilot_main", basic_form)
 end
@@ -387,6 +390,13 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 end
                 ent.cannons:set_bone_override("cannon_l", override)
                 ent.cannons:set_bone_override("cannon_r", override)
+            end
+            if fields.unlock then
+                if fields.unlock == "true" then
+                    ent._unl_can = true
+                else
+                    ent._unl_can = false
+                end
             end
         end
         core.close_formspec(name, "steampunk_blimp:pilot_main")

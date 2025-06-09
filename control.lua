@@ -84,24 +84,26 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 		-- rudder
         local rudder_limit = 30
         local speed = 10
-        if not ctrl.dig then
+        if not ctrl.aux1 then
 		    if ctrl.right then
 		        self._rudder_angle = math.max(self._rudder_angle-speed*dtime,-rudder_limit)
 		    elseif ctrl.left then
 		        self._rudder_angle = math.min(self._rudder_angle+speed*dtime,rudder_limit)
 		    end
         else
-            if ctrl.right and self._cannon_r then
-                if ctrl.dig then shot = steampunk_blimp.cannon_shot(self, self._cannon_r) end
-            end
-            if ctrl.left and self._cannon_l then
-                if ctrl.dig then shot = steampunk_blimp.cannon_shot(self, self._cannon_l) end
-            end
-            if ctrl.down then
-                if (self._cannon_l and self._cannon_r) then
-                    local l_shot = steampunk_blimp.cannon_shot(self, self._cannon_l)
-                    local r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r)
-                    shot = l_shot + r_shot
+            if self._has_cannons == true and self._unl_can == true then
+                if ctrl.right and self._cannon_r then
+                    if ctrl.aux1 then shot = steampunk_blimp.cannon_shot(self, self._cannon_r) end
+                end
+                if ctrl.left and self._cannon_l then
+                    if ctrl.aux1 then shot = steampunk_blimp.cannon_shot(self, self._cannon_l) end
+                end
+                if ctrl.jump and ctrl.aux1 then
+                    if (self._cannon_l and self._cannon_r) then
+                        local l_shot = steampunk_blimp.cannon_shot(self, self._cannon_l)
+                        local r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r)
+                        shot = l_shot + r_shot
+                    end
                 end
             end
         end

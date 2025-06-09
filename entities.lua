@@ -294,6 +294,7 @@ core.register_entity("steampunk_blimp:blimp", {
     _name_color = 0,
     _name_hor_aligment = 3.0,
     _has_cannons = false,
+    _unl_can = false,
     _rev_can = false,
     item = "steampunk_blimp:blimp",
     _vehicle_name = "Steampunk Blimp",
@@ -319,6 +320,7 @@ core.register_entity("steampunk_blimp:blimp", {
             stored_ship_name = self._ship_name,
             stored_vehicle_name = self._vehicle_name,
             stored_has_cannons = self._has_cannons or false,
+            stored_rev_can = self._rev_can or false, --reverse cannons
             remove = self._remove or false,
         })
     end,
@@ -355,6 +357,7 @@ core.register_entity("steampunk_blimp:blimp", {
             self._ship_name = data.stored_ship_name
             self._vehicle_name = data.stored_vehicle_name
             self._has_cannons = data.stored_has_cannons
+            self._rev_can = data.stored_rev_can or false
             self._remove = data.remove or false
             if self._remove ~= true then
                 self._inv_id = data.stored_inv_id
@@ -404,6 +407,18 @@ core.register_entity("steampunk_blimp:blimp", {
             self._cannon_l = core.add_entity(pos, 'steampunk_blimp:cannon_mouth')
             self._cannon_l:set_attach(self.object,'',{x=-steampunk_blimp.cannons_loc.x,y=steampunk_blimp.cannons_loc.y,z=steampunk_blimp.cannons_loc.z+steampunk_blimp.cannons_sz},{x=0,y=0,z=0})
 
+            local override
+            if self._rev_can == true then
+                override = {
+                    rotation = { vec={x=math.rad(-180),y=0,z=0}, interpolation = 1, absolute = false }
+                    }
+            else
+                override = {
+                    rotation = { vec={x=math.rad(360),y=0,z=0}, interpolation = 1, absolute = false }
+                    }
+            end
+            self.cannons:set_bone_override("cannon_l", override)
+            self.cannons:set_bone_override("cannon_r", override)
             --for tests
             --self._l_armed = true
             --self._r_armed = true
@@ -636,7 +651,6 @@ core.register_entity("steampunk_blimp:blimp", {
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
-        airutils.setText(self, self._vehicle_name)
         if puncher and not puncher:is_player() then
             local got_damage = damage
             if got_damage == 0 then
@@ -651,6 +665,7 @@ core.register_entity("steampunk_blimp:blimp", {
                 self.object:set_armor_groups({immortal=1})
             end
         end
+        airutils.setText(self, self._vehicle_name)
         if not puncher or not puncher:is_player() then
             return
         end
