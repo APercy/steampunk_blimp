@@ -38,7 +38,7 @@ function steampunk_blimp.pilot_formspec(name)
 
     basic_form = basic_form.."checkbox[1,5.6;take_control;Take the Control;"..take_control.."]"
     basic_form = basic_form.."checkbox[1,6.2;anchor;Anchor away;"..anchor.."]"
-    if is_driver then
+    if is_driver and ent._has_cannons == true then
         basic_form = basic_form.."checkbox[1,6.8;rev_can;Reverse cannons;"..rev_can.."]"
     end
 
