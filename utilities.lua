@@ -60,6 +60,7 @@ function steampunk_blimp.testDamage(self, velocity, position)
         end
 
     end
+    airutils.setText(self, self._vehicle_name)
 end
 
 local function do_attach(self, player, slot)

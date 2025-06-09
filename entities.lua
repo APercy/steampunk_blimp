@@ -256,6 +256,7 @@ core.register_entity("steampunk_blimp:blimp", {
     sound_handle = nil,
     static_save = true,
     infotext = "A nice blimp",
+    hp_max = steampunk_blimp.max_hp,
     lastvelocity = vector.new(),
     hp = 50,
     color = "blue",
@@ -449,6 +450,8 @@ core.register_entity("steampunk_blimp:blimp", {
             end
         end
 
+        airutils.setText(self, self._vehicle_name)
+
         steampunk_blimp.engine_step(self, 0)
     end,
 
@@ -633,6 +636,7 @@ core.register_entity("steampunk_blimp:blimp", {
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
+        airutils.setText(self, self._vehicle_name)
         if puncher and not puncher:is_player() then
             local got_damage = damage
             if got_damage == 0 then

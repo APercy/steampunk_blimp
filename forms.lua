@@ -13,7 +13,7 @@ function steampunk_blimp.pilot_formspec(name)
         "size[6.0,9.6]",
 	}, "")
 
-    local player = minetest.get_player_by_name(name)
+    local player = core.get_player_by_name(name)
     local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
     if plane_obj == nil then
         return
@@ -46,7 +46,7 @@ function steampunk_blimp.pilot_formspec(name)
     basic_form = basic_form.."button[1,7.8;2,1;disembark_l;<< Left]"
     basic_form = basic_form.."button[3,7.8;2,1;disembark_r;Right >>]"
 
-    minetest.show_formspec(name, "steampunk_blimp:pilot_main", basic_form)
+    core.show_formspec(name, "steampunk_blimp:pilot_main", basic_form)
 end
 
 function steampunk_blimp.pax_formspec(name)
@@ -59,7 +59,7 @@ function steampunk_blimp.pax_formspec(name)
     basic_form = basic_form.."button[1,1.2;2,1;disembark_l;<< Left]"
     basic_form = basic_form.."button[3,1.2;2,1;disembark_r;Right >>]"
 
-    minetest.show_formspec(name, "steampunk_blimp:passenger_main", basic_form)
+    core.show_formspec(name, "steampunk_blimp:passenger_main", basic_form)
 end
 
 function steampunk_blimp.prepare_cannon_formspec(self, name, side)
@@ -71,7 +71,7 @@ function steampunk_blimp.prepare_cannon_formspec(self, name, side)
         "field[1.0,6.0;1.5,0.8;side;Side;"..side.."]",
         '["key_enter"]="false"',
 	}, "")
-    minetest.show_formspec(name, "steampunk_blimp:prep_cannon", basic_form)
+    core.show_formspec(name, "steampunk_blimp:prep_cannon", basic_form)
 end
 
 local default_logos = {
@@ -90,7 +90,7 @@ function steampunk_blimp.logo_ext_formspec(name, t_index, t_page, t_type)
     if airutils.isTextureLoaded then
         airutils.isTextureLoaded('heart.png') --force the textures first load
     else
-        minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are using an old version of airutils, update it first"))
+        core.chat_send_player(name,core.colorize('#ff0000', " >>> you are using an old version of airutils, update it first"))
         return
     end
 
@@ -138,7 +138,7 @@ function steampunk_blimp.logo_ext_formspec(name, t_index, t_page, t_type)
     basic_form = basic_form.."field[5.3,20.0;3,0.8;texture_name;;"..texture_name.."]"
     basic_form = basic_form.."field[5.3,21.0;3,0.8;last_type;;"..t_type.."]"
 
-    minetest.show_formspec(name, "steampunk_blimp:logo_ext", basic_form)
+    core.show_formspec(name, "steampunk_blimp:logo_ext", basic_form)
 end
 
 function steampunk_blimp.owner_formspec(name)
@@ -152,7 +152,7 @@ function steampunk_blimp.owner_formspec(name)
     basic_form = basic_form.."button[1,2.4;2,1;disembark_l;<< Left]"
     basic_form = basic_form.."button[3,2.4;2,1;disembark_r;Right >>]"
 
-    minetest.show_formspec(name, "steampunk_blimp:owner_main", basic_form)
+    core.show_formspec(name, "steampunk_blimp:owner_main", basic_form)
 end
 
 function set_list(list)
@@ -161,12 +161,12 @@ function set_list(list)
   return set
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
     if formname == "steampunk_blimp:owner_main" then
         local name = player:get_player_name()
         local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
         if plane_obj == nil then
-            minetest.close_formspec(name, "steampunk_blimp:owner_main")
+            core.close_formspec(name, "steampunk_blimp:owner_main")
             return
         end
         local ent = plane_obj:get_luaentity()
@@ -194,13 +194,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 ent.driver_name = name
 		    end
         end
-        minetest.close_formspec(name, "steampunk_blimp:owner_main")
+        core.close_formspec(name, "steampunk_blimp:owner_main")
     end
 	if formname == "steampunk_blimp:passenger_main" then
         local name = player:get_player_name()
         local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
         if plane_obj == nil then
-            minetest.close_formspec(name, "steampunk_blimp:passenger_main")
+            core.close_formspec(name, "steampunk_blimp:passenger_main")
             return
         end
         local ent = plane_obj:get_luaentity()
@@ -212,27 +212,27 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 steampunk_blimp.dettach_pax(ent, player, "r")
 		    end
         end
-        minetest.close_formspec(name, "steampunk_blimp:passenger_main")
+        core.close_formspec(name, "steampunk_blimp:passenger_main")
 	end
     if formname == "steampunk_blimp:logo_ext" then
         local name = player:get_player_name()
         local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
         if plane_obj == nil then
-            minetest.close_formspec(name, "steampunk_blimp:logo_ext")
+            core.close_formspec(name, "steampunk_blimp:logo_ext")
             return
         end
         local ent = plane_obj:get_luaentity()
         if ent then
             if fields.set_texture then
                 if ent.name == "steampunk_blimp:blimp" then
-                    if ent.owner == name or minetest.check_player_privs(name, {protection_bypass=true}) then
+                    if ent.owner == name or core.check_player_privs(name, {protection_bypass=true}) then
                         if fields.texture_name then
                             local image_name = fields.texture_name
                             local logo_list = set_list(default_logos)
                             if airutils.isTextureLoaded(image_name) or logo_list[image_name] then
                                 steampunk_blimp.set_logo(ent, image_name)
-                                minetest.chat_send_player(name,core.colorize('#00ff00', " >>> texture '"..image_name.."' set"))
-                                --minetest.close_formspec(name, "steampunk_blimp:logo_ext")
+                                core.chat_send_player(name,core.colorize('#00ff00', " >>> texture '"..image_name.."' set"))
+                                --core.close_formspec(name, "steampunk_blimp:logo_ext")
                                 return
                             end
                         end
@@ -240,12 +240,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 end
             end
 		    if fields.logos or fields.t_page then
-                --minetest.close_formspec(name, "steampunk_blimp:logo_ext")
+                --core.close_formspec(name, "steampunk_blimp:logo_ext")
                 --steampunk_blimp.logo_ext_formspec(name,fields.logos)
-                local result = minetest.explode_textlist_event(fields.logos)
+                local result = core.explode_textlist_event(fields.logos)
                 if result.type == "CHG" then
-                    --minetest.chat_send_all(dump(result.index))
-                    --minetest.close_formspec(name, "steampunk_blimp:logo_ext")
+                    --core.chat_send_all(dump(result.index))
+                    --core.close_formspec(name, "steampunk_blimp:logo_ext")
                     steampunk_blimp.logo_ext_formspec(name,result.index,fields.t_page,fields.last_type)
                     return
                 end
@@ -262,13 +262,16 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local name = player:get_player_name()
         local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
         if plane_obj == nil then
-            minetest.close_formspec(name, "steampunk_blimp:pilot_main")
+            core.close_formspec(name, "steampunk_blimp:pilot_main")
             return
         end
         local ent = plane_obj:get_luaentity()
         if ent then
 		    if fields.turn_on then
                 steampunk_blimp.start_furnace(ent)
+                if ent.hp <= steampunk_blimp.min_hp then
+                    core.chat_send_player(name,core.colorize('#ff0000', " >>> The ship is severely damaged."))
+                end
 		    end
             if fields.water then
                 if ent.isinliquid then
@@ -276,7 +279,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                         steampunk_blimp.start_furnace(ent)
                     end
                     if ent._boiler_pressure > 0 then
-                        minetest.sound_play({name = "default_cool_lava"},
+                        core.sound_play({name = "default_cool_lava"},
                             {object = ent.object, gain = 1.0,
                                 pitch = 1.0,
                                 max_hear_distance = 32,
@@ -285,7 +288,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                     ent._boiler_pressure = 0
                     ent._water_level = steampunk_blimp.MAX_WATER
                 else
-                    minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. The ship needs to be in the water."))
+                    core.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. The ship needs to be in the water."))
                 end
             end
             if fields.inventory then
@@ -307,12 +310,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                                 ent._passengers_base[i]:set_attach(ent.object,'',steampunk_blimp.pilot_base_pos,{x=0,y=0,z=0})
                                 player:set_attach(ent._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
                                 ent.driver_name = name
-                                --minetest.chat_send_all(">>"..ent.driver_name)
+                                --core.chat_send_all(">>"..ent.driver_name)
                                 break
                             end
                         end
                     else
-                        minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. Someone is at the blimp control now."))
+                        core.chat_send_player(name,core.colorize('#ff0000', " >>> Impossible. Someone is at the blimp control now."))
                     end
                 else
                     ent.driver_name = nil
@@ -348,19 +351,19 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                             ent.object:set_acceleration(vector.new())
                             ent.object:set_velocity(vector.new())
                             if name then
-                                minetest.chat_send_player(name,core.colorize('#00ff00', " >>> Anchor away!"))
+                                core.chat_send_player(name,core.colorize('#00ff00', " >>> Anchor away!"))
                             end
                             --ent.buoyancy = 0.1
                         else
                             if name then
-                                minetest.chat_send_player(name,core.colorize('#ff0000', " >>> Too fast to set anchor!"))
+                                core.chat_send_player(name,core.colorize('#ff0000', " >>> Too fast to set anchor!"))
                             end
                         end
                     end
                 else
                     ent.anchored = false
                     if name then
-                        minetest.chat_send_player(name,core.colorize('#00ff00', " >>> Weigh anchor!"))
+                        core.chat_send_player(name,core.colorize('#00ff00', " >>> Weigh anchor!"))
                     end
                 end
                 --ent._rudder_angle = 0
@@ -386,13 +389,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 ent.cannons:set_bone_override("cannon_r", override)
             end
         end
-        minetest.close_formspec(name, "steampunk_blimp:pilot_main")
+        core.close_formspec(name, "steampunk_blimp:pilot_main")
     end
     if formname == "steampunk_blimp:prep_cannon" then
         local name = player:get_player_name()
         local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
         if plane_obj == nil then
-            minetest.close_formspec(name, "steampunk_blimp:pilot_main")
+            core.close_formspec(name, "steampunk_blimp:pilot_main")
             return
         end
         local ent = plane_obj:get_luaentity()
@@ -428,18 +431,18 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 end
             end
         end
-        --minetest.close_formspec(name, "steampunk_blimp:prep_cannon")
+        --core.close_formspec(name, "steampunk_blimp:prep_cannon")
     end
 end)
 
 
-minetest.register_chatcommand("blimp_share", {
+core.register_chatcommand("blimp_share", {
 	params = "name",
 	description = "Share ownewrship with your friends",
 	privs = {interact = true},
 	func = function(name, param)
-        local player = minetest.get_player_by_name(name)
-        local target_player = minetest.get_player_by_name(param)
+        local player = core.get_player_by_name(name)
+        local target_player = core.get_player_by_name(param)
         local attached_to = player:get_attach()
 
 		if attached_to ~= nil and target_player ~= nil then
@@ -458,31 +461,31 @@ minetest.register_chatcommand("blimp_share", {
                             end
                             if exists == false then
                                 table.insert(entity._shared_owners, param)
-                                minetest.chat_send_player(name,core.colorize('#00ff00', " >>> blimp shared"))
-                                --minetest.chat_send_all(dump(entity._shared_owners))
+                                core.chat_send_player(name,core.colorize('#00ff00', " >>> blimp shared"))
+                                --core.chat_send_all(dump(entity._shared_owners))
                             else
-                                minetest.chat_send_player(name,core.colorize('#ff0000', " >>> this user is already registered for blimp share"))
+                                core.chat_send_player(name,core.colorize('#ff0000', " >>> this user is already registered for blimp share"))
                             end
                         else
-                            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can share this blimp"))
+                            core.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can share this blimp"))
                         end
                     else
-			            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			            core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
                     end
                 end
             end
 		else
-			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
 		end
 	end
 })
 
-minetest.register_chatcommand("blimp_remove", {
+core.register_chatcommand("blimp_remove", {
 	params = "name",
 	description = "Removes ownewrship from someone",
 	privs = {interact = true},
 	func = function(name, param)
-        local player = minetest.get_player_by_name(name)
+        local player = core.get_player_by_name(name)
         local attached_to = player:get_attach()
 
 		if attached_to ~= nil then
@@ -498,28 +501,28 @@ minetest.register_chatcommand("blimp_remove", {
                                     break
                                 end
                             end
-                            minetest.chat_send_player(name,core.colorize('#00ff00', " >>> user removed"))
-                            --minetest.chat_send_all(dump(entity._shared_owners))
+                            core.chat_send_player(name,core.colorize('#00ff00', " >>> user removed"))
+                            --core.chat_send_all(dump(entity._shared_owners))
                         else
-                            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
+                            core.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
                         end
                     else
-			            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			            core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
                     end
                 end
             end
 		else
-			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
 		end
 	end
 })
 
-minetest.register_chatcommand("blimp_list", {
+core.register_chatcommand("blimp_list", {
 	params = "",
 	description = "Lists the blimp shared owners",
 	privs = {interact = true},
 	func = function(name, param)
-        local player = minetest.get_player_by_name(name)
+        local player = core.get_player_by_name(name)
         local attached_to = player:get_attach()
 
 		if attached_to ~= nil then
@@ -528,29 +531,29 @@ minetest.register_chatcommand("blimp_list", {
                 local entity = seat:get_luaentity()
                 if entity then
                     if entity.name == "steampunk_blimp:blimp" then
-                        minetest.chat_send_player(name,core.colorize('#ffff00', " >>> Current owners are:"))
-                        minetest.chat_send_player(name,core.colorize('#0000ff', entity.owner))
+                        core.chat_send_player(name,core.colorize('#ffff00', " >>> Current owners are:"))
+                        core.chat_send_player(name,core.colorize('#0000ff', entity.owner))
                         for k, v in pairs(entity._shared_owners) do
-                            minetest.chat_send_player(name,core.colorize('#00ff00', v))
+                            core.chat_send_player(name,core.colorize('#00ff00', v))
                         end
-                        --minetest.chat_send_all(dump(entity._shared_owners))
+                        --core.chat_send_all(dump(entity._shared_owners))
                     else
-			            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			            core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
                     end
                 end
             end
 		else
-			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
 		end
 	end
 })
 
-minetest.register_chatcommand("blimp_lock", {
+core.register_chatcommand("blimp_lock", {
 	params = "true/false",
 	description = "Blocks boarding of non-owners. true to lock, false to unlock",
 	privs = {interact = true},
 	func = function(name, param)
-        local player = minetest.get_player_by_name(name)
+        local player = core.get_player_by_name(name)
         local attached_to = player:get_attach()
 
 		if attached_to ~= nil then
@@ -561,30 +564,30 @@ minetest.register_chatcommand("blimp_lock", {
                     if entity.name == "steampunk_blimp:blimp" then
                         if param == "true" then
                             entity._passengers_locked = true
-                            minetest.chat_send_player(name,core.colorize('#ffff00', " >>> Non owners cannot enter now."))
+                            core.chat_send_player(name,core.colorize('#ffff00', " >>> Non owners cannot enter now."))
                         elseif param == "false" then
                             entity._passengers_locked = false
-                            minetest.chat_send_player(name,core.colorize('#00ff00', " >>> Non owners are free to enter now."))
+                            core.chat_send_player(name,core.colorize('#00ff00', " >>> Non owners are free to enter now."))
                         end
                     else
-			            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			            core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
                     end
                 end
             end
 		else
-			minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
+			core.chat_send_player(name,core.colorize('#ff0000', " >>> you are not inside a blimp to perform this command"))
 		end
 	end
 })
 
-minetest.register_chatcommand("blimp_logo", {
+core.register_chatcommand("blimp_logo", {
 	params = "<image_name.png>",
 	description = "Changes blimp logo",
 	privs = {interact = true},
 	func = function(name, param)
         local image_name = param --"blimp_alpha.png^"..param
         local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
-        local player = minetest.get_player_by_name(name)
+        local player = core.get_player_by_name(name)
         local attached_to = player:get_attach()
 
 		if attached_to ~= nil then
@@ -593,7 +596,7 @@ minetest.register_chatcommand("blimp_logo", {
                 local entity = seat:get_luaentity()
                 if entity then
                     if entity.name == "steampunk_blimp:blimp" then
-                        if entity.owner == name or minetest.check_player_privs(name, {protection_bypass=true}) then
+                        if entity.owner == name or core.check_player_privs(name, {protection_bypass=true}) then
                             if airutils.isTextureLoaded then
                                 if param == '' then
                                     steampunk_blimp.logo_ext_formspec(name)
@@ -601,35 +604,35 @@ minetest.register_chatcommand("blimp_logo", {
                                     local logo_list = set_list(default_logos)
                                     if airutils.isTextureLoaded(image_name) or logo_list[image_name] then
                                         steampunk_blimp.set_logo(entity, image_name)
-                                        minetest.chat_send_player(name,core.colorize('#00ff00', " >>> texture '"..image_name.."' set"))
+                                        core.chat_send_player(name,core.colorize('#00ff00', " >>> texture '"..image_name.."' set"))
                                     else
-                                        minetest.chat_send_player(name,core.colorize('#ff0000', " >>> texture '"..image_name.."' not found"))
+                                        core.chat_send_player(name,core.colorize('#ff0000', " >>> texture '"..image_name.."' not found"))
                                     end
                                 end
                             else
-                                minetest.chat_send_player(name,core.colorize('#ff0000', " >>> you are using an old version of airutils, update it first"))
+                                core.chat_send_player(name,core.colorize('#ff0000', " >>> you are using an old version of airutils, update it first"))
                             end
                         else
-                            minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
+                            core.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
                         end
                     else
-			            minetest.chat_send_player(name,colorstring)
+			            core.chat_send_player(name,colorstring)
                     end
                 end
             end
 		else
-			minetest.chat_send_player(name,colorstring)
+			core.chat_send_player(name,colorstring)
 		end
 	end
 })
 
-minetest.register_chatcommand("blimp_eject", {
+core.register_chatcommand("blimp_eject", {
 	params = "",
 	description = "Ejects from the blimp - useful for clients before 5.3",
 	privs = {interact = true},
 	func = function(name, param)
         local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
-        local player = minetest.get_player_by_name(name)
+        local player = core.get_player_by_name(name)
         local attached_to = player:get_attach()
 
 		if attached_to ~= nil then
@@ -646,25 +649,25 @@ minetest.register_chatcommand("blimp_eject", {
                             end
                         end
                     else
-			            minetest.chat_send_player(name,colorstring)
+			            core.chat_send_player(name,colorstring)
                     end
                 end
             end
 		else
-			minetest.chat_send_player(name,colorstring)
+			core.chat_send_player(name,colorstring)
 		end
 	end
 })
 
 if airutils.is_repixture then
     local available_text = "The available colors are: black, blue, brown, cyan, dark_green, dark_grey, green, grey, magenta, orange, pink, red, violet, white or yellow"
-    minetest.register_chatcommand("blimp_paint", {
+    core.register_chatcommand("blimp_paint", {
 	    params = "<color1> <color2>",
 	    description = "Paints the blimp with a primary and secondary colors. "..available_text,
 	    privs = {interact = true},
 	    func = function(name, param)
             local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
-            local player = minetest.get_player_by_name(name)
+            local player = core.get_player_by_name(name)
             local attached_to = player:get_attach()
 
 		    if attached_to ~= nil then
@@ -673,31 +676,31 @@ if airutils.is_repixture then
                     local entity = seat:get_luaentity()
                     if entity then
                         if entity.name == "steampunk_blimp:blimp" then
-                            if entity.owner == name or minetest.check_player_privs(name, {protection_bypass=true}) then
+                            if entity.owner == name or core.check_player_privs(name, {protection_bypass=true}) then
                                 --lets paint!!!!
                                 local color1, color2 = param:match("^([%a%d_-]+) (.+)$")
 
-                                --minetest.chat_send_all(dump(color1).." - "..dump(color2))
+                                --core.chat_send_all(dump(color1).." - "..dump(color2))
                                 local colstr = steampunk_blimp.colors[color1]
                                 local colstr2 = steampunk_blimp.colors[color2 or "white"]
-                                --minetest.chat_send_all(color ..' '.. dump(colstr))
+                                --core.chat_send_all(color ..' '.. dump(colstr))
                                 if colstr and colstr2 then
                                     steampunk_blimp.paint2(entity, colstr)
                                     steampunk_blimp.paint(entity, colstr2)
-                                    minetest.chat_send_player(name,core.colorize('#00ff00', " >>> colors set successfully"))
+                                    core.chat_send_player(name,core.colorize('#00ff00', " >>> colors set successfully"))
                                 else
-                                    minetest.chat_send_player(name,core.colorize('#ff0000', " >>> some of the colors wasn't specified correctly. "..available_text))
+                                    core.chat_send_player(name,core.colorize('#ff0000', " >>> some of the colors wasn't specified correctly. "..available_text))
                                 end
                             else
-                                minetest.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
+                                core.chat_send_player(name,core.colorize('#ff0000', " >>> only the owner can do this action"))
                             end
                         else
-			                minetest.chat_send_player(name,colorstring)
+			                core.chat_send_player(name,colorstring)
                         end
                     end
                 end
 		    else
-			    minetest.chat_send_player(name,colorstring)
+			    core.chat_send_player(name,colorstring)
 		    end
 	    end
     })
