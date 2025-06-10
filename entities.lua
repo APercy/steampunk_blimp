@@ -250,7 +250,7 @@ local function damage_vehicle(self, toolcaps, ttime, damage)
     end
     damage = damage + value / 10
     self.hp = self.hp - damage
-    if self.hp < 10 then self.hp = 10 end
+    if self.hp < steampunk_blimp.min_hp then self.hp = steampunk_blimp.min_hp end
 
     core.sound_play("steampunk_blimp_collision", {
         --to_player = self.driver_name,
