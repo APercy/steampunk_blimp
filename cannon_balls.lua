@@ -142,6 +142,13 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
                 self.object:remove()
             end
 
+            local puncher = nil
+            if self.shooter_name then
+                puncher = core.get_player_by_name(self.shooter_name)
+            end
+            local p_obj = self.object
+            if puncher then p_obj = puncher end
+
 			local pos = self.object:get_pos()
             if not pos then return end
 			self.old_pos = self.old_pos or pos
@@ -176,8 +183,9 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
                         --core.chat_send_all("acertou "..thing.ref:get_entity_name())
 						local thing_pos = thing.ref:get_pos()
                         --core.chat_send_all("ent dam: "..dump(self.damage))
-						thing.ref:punch(self.object, 1.0, {
-			                full_punch_interval=1.0,
+                        
+						thing.ref:punch(p_obj, 1.0, {
+			                --full_punch_interval=1.0,
 			                damage_groups={fleshy=self.damage, choppy = self.damage},
 			                }, nil)
 

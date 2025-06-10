@@ -1,3 +1,20 @@
+local S = airutils.S
+
+function steampunk_blimp.setText(self, vehicle_name)
+    local properties = self.object:get_properties()
+    local formatted = ""
+    if type(self.hp) ~= "number" then self.hp = 0.1 end --strange error when hpmax is NaN
+    if self.hp then
+        formatted = S(" Current hp: ") .. string.format(
+           "%.2f", self.hp
+        )
+    end
+    if properties then
+        properties.infotext = S("Nice @1 of @2.@3", vehicle_name, self.owner, formatted)
+        self.object:set_properties(properties)
+    end
+end
+
 function steampunk_blimp.testDamage(self, velocity, position)
     if self._last_accell == nil then return end
     local p = position --self.object:get_pos()
@@ -60,7 +77,7 @@ function steampunk_blimp.testDamage(self, velocity, position)
         end
 
     end
-    airutils.setText(self, self._vehicle_name)
+    steampunk_blimp.setText(self, self._vehicle_name)
 end
 
 local function do_attach(self, player, slot)

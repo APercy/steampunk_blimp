@@ -239,6 +239,30 @@ core.register_entity('steampunk_blimp:hull_interactor',{
     on_rightclick = steampunk_blimp.right_click_hull,
 })
 
+local function damage_vehicle(self, toolcaps, ttime, damage)
+    damage = damage or 0
+    if (not toolcaps) then
+        return
+    end
+    local value = toolcaps.damage_groups.fleshy or 0
+    if (toolcaps.damage_groups.vehicle) then
+        value = toolcaps.damage_groups.vehicle
+    end
+    damage = damage + value / 10
+    self.hp = self.hp - damage
+    if self.hp < 10 then self.hp = 10 end
+
+    core.sound_play("steampunk_blimp_collision", {
+        --to_player = self.driver_name,
+        object = self.object,
+        max_hear_distance = 15,
+        gain = 1.0,
+        fade = 0.0,
+        pitch = 1.0,
+    }, true)
+
+    steampunk_blimp.setText(self, self._vehicle_name)
+end
 
 core.register_entity("steampunk_blimp:blimp", {
     initial_properties = {
@@ -465,7 +489,7 @@ core.register_entity("steampunk_blimp:blimp", {
             end
         end
 
-        airutils.setText(self, self._vehicle_name)
+        steampunk_blimp.setText(self, self._vehicle_name)
 
         steampunk_blimp.engine_step(self, 0)
     end,
@@ -665,14 +689,31 @@ core.register_entity("steampunk_blimp:blimp", {
                 self.object:set_armor_groups({immortal=1})
             end
         end
-        airutils.setText(self, self._vehicle_name)
+
+        steampunk_blimp.setText(self, self._vehicle_name)
         if not puncher or not puncher:is_player() then
             return
+        end
+
+        local name = nil
+        if (puncher:is_player()) then
+	        name = puncher:get_player_name()
+            local ppos = puncher:get_pos()
+            if (core.is_protected(ppos, name) and
+                airutils.protect_in_areas) then
+                return
+            end
+        end
+
+        local weapon_name = puncher:get_wielded_item():get_name()
+        if (string.find(weapon_name, "rayweapon") or string.find(weapon_name,"bows:") or
+            string.find(weapon_name, "steampunk_blimp:cannon_")
+            or toolcaps.damage_groups.vehicle) then
+                damage_vehicle(self, toolcaps, ttime, damage)
         end
         
         local is_admin
         is_admin = core.check_player_privs(puncher, {server=true})
-		local name = puncher:get_player_name()
         if self.owner == nil then
             self.owner = name
         end

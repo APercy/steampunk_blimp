@@ -115,7 +115,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     --do not exceed
     local max_speed = 3
     if longit_speed > max_speed then
-        engineacc = engineacc - (longit_speed-max_speed)
+        engineacc = engineacc - (longit_speed-max_speed) --it's an error to subtract speed from acceleration - TODO
     end
 
     if engineacc ~= nil then
