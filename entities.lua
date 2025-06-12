@@ -239,7 +239,7 @@ core.register_entity('steampunk_blimp:hull_interactor',{
     on_rightclick = steampunk_blimp.right_click_hull,
 })
 
-local function damage_vehicle(self, toolcaps, ttime, damage)
+local function damage_vehicle(self, toolcaps, ttime, damage, min_damage_value)
     damage = damage or 0
     if (not toolcaps) then
         return
@@ -248,7 +248,12 @@ local function damage_vehicle(self, toolcaps, ttime, damage)
     if (toolcaps.damage_groups.vehicle) then
         value = toolcaps.damage_groups.vehicle
     end
-    damage = damage + value / 10
+    damage = damage + value
+    if damage < min_damage_value then
+        steampunk_blimp.setText(self, self._vehicle_name)
+        return
+    end
+    damage = damage / 10
     self.hp = self.hp - damage
     if self.hp < steampunk_blimp.min_hp then self.hp = steampunk_blimp.min_hp end
 
@@ -675,21 +680,6 @@ core.register_entity("steampunk_blimp:blimp", {
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
-        if puncher and not puncher:is_player() then
-            local got_damage = damage
-            if got_damage == 0 then
-                local ent = puncher:get_luaentity()
-                if ent then
-                    if ent.damage then got_damage = ent.damage end
-                end
-            end
-            self.hp = self.hp - got_damage
-            if self.hp <= 10 then
-                self.hp = 10
-                self.object:set_armor_groups({immortal=1})
-            end
-        end
-
         steampunk_blimp.setText(self, self._vehicle_name)
         if not puncher or not puncher:is_player() then
             return
@@ -706,11 +696,13 @@ core.register_entity("steampunk_blimp:blimp", {
         end
 
         local weapon_name = puncher:get_wielded_item():get_name()
-        if (string.find(weapon_name, "rayweapon") or string.find(weapon_name,"bows:") or
+        damage_vehicle(self, toolcaps, ttime, damage, steampunk_blimp.min_damage_value )
+
+        --[[if (string.find(weapon_name, "rayweapon") or string.find(weapon_name,"bows:") or
             string.find(weapon_name, "steampunk_blimp:cannon_")
             or toolcaps.damage_groups.vehicle) then
                 damage_vehicle(self, toolcaps, ttime, damage)
-        end
+        end]]--
         
         local is_admin
         is_admin = core.check_player_privs(puncher, {server=true})

@@ -132,6 +132,9 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
         bomb_radius = boom_radius,
 
 		on_activate = function(self)
+    		if not self then
+			    self.object:remove() ; return
+		    end
 			self.object:set_acceleration({x = 0, y = -9.81, z = 0})
 		end,
 
@@ -142,12 +145,18 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
                 self.object:remove()
             end
 
-            local puncher = nil
-            if self.shooter_name then
-                puncher = core.get_player_by_name(self.shooter_name)
-            end
+            --[[local puncher = nil
+            if self.player then
+                if self.shooter_name == self.player:get_player_name() then
+                    puncher = self.player
+                end
+            end]]--
             local p_obj = self.object
-            if puncher then p_obj = puncher end
+            local puncher = core.get_player_by_name(self.shooter_name)
+            
+            if puncher then
+                p_obj = puncher
+            end
 
 			local pos = self.object:get_pos()
             if not pos then return end
@@ -176,7 +185,6 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
                                 end
                             end
                         end
-
                         if driver_name == self.shooter_name then is_the_shooter_vehicle = true end
                     end
 					if (not thing.ref:is_player() or thing.ref:get_player_name() ~= self.shooter_name) and is_the_shooter_vehicle == false then
@@ -186,7 +194,7 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
                         
 						thing.ref:punch(p_obj, 1.0, {
 			                --full_punch_interval=1.0,
-			                damage_groups={fleshy=self.damage, choppy = self.damage},
+			                damage_groups={fleshy=self.damage},
 			                }, nil)
 
 						if thing_pos then
@@ -200,7 +208,7 @@ function steampunk_blimp.register_shell(ent_name, inv_image, bullet_texture, des
                             steampunk_blimp.explode(self.object, self.bomb_radius)
 						end
 
-						self.object:remove()
+						self.object:remove() --removing the cannonball
 
                         --do damage on my old planes
                         --[[if ent then
@@ -379,10 +387,12 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
     in the final version it
     will be function/work for tripulation
     ]]--
-    --[[core.after(0.5, function(self)
+    core.after(0.5, function(self)
+        self._l_pload = true
+        self._r_pload = true
         self._l_armed = true
         self._r_armed = true
-    end, self)]]--
+    end, self)
     -- end TODO
 
     return 0 --for recoil calc
