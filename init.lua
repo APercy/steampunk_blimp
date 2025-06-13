@@ -12,7 +12,7 @@ steampunk_blimp.rep_material = {['default:gold_lump'] = {amount=5},['default:gol
 steampunk_blimp.ideal_step = 0.02
 steampunk_blimp.min_hp = 10
 steampunk_blimp.max_hp = 50
-steampunk_blimp.min_damage_value = 30 --min value to cause damage
+steampunk_blimp.min_damage_value = 20 --min value to cause damage
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.max_engine_acc = 3

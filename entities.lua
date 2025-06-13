@@ -4,6 +4,37 @@
 local LONGIT_DRAG_FACTOR = 0.13*0.13
 local LATER_DRAG_FACTOR = 2.0
 
+local function damage_vehicle(self, toolcaps, ttime, damage, min_damage_value)
+    damage = damage or 0
+    if (not toolcaps) then
+        return
+    end
+    
+    local value = toolcaps.damage_groups.fleshy or 0
+    if (toolcaps.damage_groups.vehicle) then
+        value = toolcaps.damage_groups.vehicle
+    end
+    damage = damage + value
+    if damage < min_damage_value then
+        steampunk_blimp.setText(self, self._vehicle_name)
+        return
+    end
+    damage = damage / 10
+    self.hp = self.hp - damage
+    if self.hp < steampunk_blimp.min_hp then self.hp = steampunk_blimp.min_hp end
+
+    core.sound_play("steampunk_blimp_collision", {
+        --to_player = self.driver_name,
+        object = self.object,
+        max_hear_distance = 15,
+        gain = 1.0,
+        fade = 0.0,
+        pitch = 1.0,
+    }, true)
+
+    steampunk_blimp.setText(self, self._vehicle_name)
+end
+
 --
 -- entity
 --
@@ -234,40 +265,30 @@ core.register_entity('steampunk_blimp:hull_interactor',{
         if not puncher or not puncher:is_player() then
             return
         end
+
+        local name = nil
+        if (puncher:is_player()) then
+	        name = puncher:get_player_name()
+            local ppos = puncher:get_pos()
+            if (core.is_protected(ppos, name) and
+                airutils.protect_in_areas) then
+                return
+            end
+        end
+
+        local weapon_name = puncher:get_wielded_item():get_name()
+        local ship_attach = self.object:get_attach()
+        local parent_ent = nil
+        if ship_attach then
+            parent_ent = ship_attach:get_luaentity()
+        end
+        if parent_ent then
+            damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value*2 )
+        end
     end,
 
     on_rightclick = steampunk_blimp.right_click_hull,
 })
-
-local function damage_vehicle(self, toolcaps, ttime, damage, min_damage_value)
-    damage = damage or 0
-    if (not toolcaps) then
-        return
-    end
-    local value = toolcaps.damage_groups.fleshy or 0
-    if (toolcaps.damage_groups.vehicle) then
-        value = toolcaps.damage_groups.vehicle
-    end
-    damage = damage + value
-    if damage < min_damage_value then
-        steampunk_blimp.setText(self, self._vehicle_name)
-        return
-    end
-    damage = damage / 10
-    self.hp = self.hp - damage
-    if self.hp < steampunk_blimp.min_hp then self.hp = steampunk_blimp.min_hp end
-
-    core.sound_play("steampunk_blimp_collision", {
-        --to_player = self.driver_name,
-        object = self.object,
-        max_hear_distance = 15,
-        gain = 1.0,
-        fade = 0.0,
-        pitch = 1.0,
-    }, true)
-
-    steampunk_blimp.setText(self, self._vehicle_name)
-end
 
 core.register_entity("steampunk_blimp:blimp", {
     initial_properties = {
