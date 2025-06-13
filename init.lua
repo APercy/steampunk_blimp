@@ -1,5 +1,5 @@
 steampunk_blimp={}
-steampunk_blimp.gravity = tonumber(minetest.settings:get("movement_gravity")) or 9.8
+steampunk_blimp.gravity = 9.8
 steampunk_blimp.trunk_slots = 50
 steampunk_blimp.fuel = {['default:coal_lump'] = {amount=1},['default:coalblock'] = {amount=10}, ['rp_default:lump_coal'] = {amount=1}, ['rp_default:block_coal'] = {amount=10},
     ['mcl_core:coal_lump'] = {amount=1},['mcl_core:coalblock'] = {amount=10}, ['default:coal_lump'] = {amount=1}, ['default:coalblock'] = {amount=10}}
@@ -323,17 +323,23 @@ minetest.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 	end,
 })
 
-if minetest.settings:get_bool('steampunk_blimp.enable_wind') then
+if core.settings:get_bool('steampunk_blimp.enable_wind') then
     steampunk_blimp.wind_enabled = true
 else
     steampunk_blimp.wind_enabled = false
+end
+
+if core.settings:get_bool('steampunk_blimp.enable_cannons') then
+    steampunk_blimp.cannons_enabled = true
+else
+    steampunk_blimp.cannons_enabled = false
 end
 
 --
 -- crafting
 --
 
-if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
+if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 
     local item_name = "steampunk_blimp:cylinder_part"
     if airutils.is_repixture then
@@ -441,6 +447,38 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
         })
     end
 
+    if steampunk_blimp.cannons_enabled == true then
+        item_name = "steampunk_blimp:cannon"
+        if airutils.is_repixture then
+            crafting.register_craft({
+                output = item_name,
+                items = {
+                    "rp_default:ingot_wrought_iron 2",
+                    "rp_default:block_wrought_iron 4",
+                    "group:planks 3",
+                }
+            })
+        elseif airutils.is_mcl then
+            minetest.register_craft({
+	            output = item_name,
+	            recipe = {
+		            {"mcl_core:ironblock","mcl_core:ironblock","group:wood"},
+		            {"mcl_core:iron_ingot","mcl_core:iron_ingot","group:wood"},
+		            {"mcl_core:ironblock","mcl_core:ironblock","group:wood"},
+	            }
+            })
+        else
+            minetest.register_craft({
+	            output = item_name,
+	            recipe = {
+		            {"default:steelblock","default:steelblock","group:wood"},
+		            {"default:steel_ingot","default:steel_ingot","group:wood"},
+		            {"default:steelblock","default:steelblock","group:wood"},
+	            }
+            })
+        end
+    end
+
     item_name = "steampunk_blimp:boat"
     if airutils.is_repixture then
         crafting.register_craft({
@@ -482,6 +520,26 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
     end
 
 
+    if steampunk_blimp.cannons_enabled == true then
+        item_name = "steampunk_blimp:cannon_blimp"
+        if airutils.is_repixture then
+            crafting.register_craft({
+                output = item_name,
+                items = {
+                    "steampunk_blimp:blimp 1",
+                    "steampunk_blimp:cannon 2",
+                }
+            })
+        else
+	        minetest.register_craft({
+		        output = item_name,
+		        recipe = {
+			        {"steampunk_blimp:cannon","steampunk_blimp:blimp","steampunk_blimp:cannon",},
+		        }
+	        })
+        end
+    end
+
     -- cylinder section
     minetest.register_craftitem("steampunk_blimp:cylinder_part",{
 	    description = "steampunk_blimp cylinder section",
@@ -500,7 +558,13 @@ if not minetest.settings:get_bool('steampunk_blimp.disable_craftitems') then
 	    inventory_image = "steampunk_blimp_boiler.png",
     })
 
-    -- boiler
+    -- cannon
+    minetest.register_craftitem("steampunk_blimp:cannon",{
+	    description = "steampunk_blimp cannon",
+	    inventory_image = "steampunk_blimp_cannon_ico.png",
+    })
+
+    -- rotor
     minetest.register_craftitem("steampunk_blimp:rotor",{
 	    description = "steampunk_blimp rotor",
 	    inventory_image = "steampunk_blimp_rotor.png",
