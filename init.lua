@@ -338,23 +338,14 @@ minetest.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 	end,
 })
 
-if core.settings:get_bool('steampunk_blimp.enable_wind', false) then
-    steampunk_blimp.wind_enabled = true
-else
-    steampunk_blimp.wind_enabled = false
-end
-
-if core.settings:get_bool('steampunk_blimp.enable_cannons', true) then
-    steampunk_blimp.cannons_enabled = true
-else
-    steampunk_blimp.cannons_enabled = false
-end
+steampunk_blimp.wind_enabled = core.settings:get_bool('steampunk_blimp.enable_wind')
+steampunk_blimp.cannons_enabled = core.settings:get_bool('steampunk_blimp.enable_cannons')
 
 --
 -- crafting
 --
 
-if not core.settings:get_bool('steampunk_blimp.disable_craftitems', false) then
+if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 
     local item_name = "steampunk_blimp:cylinder_part"
     if airutils.is_repixture then

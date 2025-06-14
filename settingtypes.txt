@@ -7,4 +7,4 @@ steampunk_blimp.enable_wind (enables wind) bool false
 steampunk_blimp.disable_craftitems (airships cannot be built) bool false
 
 # Enables building the gunboat version of the airship
-steampunk_blimp.cannons_enabled (enables building the gunboat version) bool false
+steampunk_blimp.enable_cannons (enables building the gunboat version) bool false
