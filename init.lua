@@ -8,6 +8,20 @@ steampunk_blimp.water = {['default:water_source'] = {amount=1},['default:river_w
     ['mcl_buckets:bucket_water'] = {amount=1}, ['mcl_buckets:bucket_river_water'] = {amount=1}, ['mcl_core:water_source'] = {amount=1},
     ['rp_default:bucket_water'] = {amount=1}, ['rp_default:bucket_river_water'] = {amount=1}, }  --bucket:bucket_empty
 steampunk_blimp.rep_material = {['default:gold_lump'] = {amount=5},['default:gold_ingot'] = {amount=10}, ['mcl_core:gold_ingot'] = {amount=10}}
+steampunk_blimp.avail_ammo = {"steampunk_blimp:cannon_ball1",}
+
+if core.get_modpath("cannons") then
+    local cannons_entities = {
+        "cannons:ball_wood_stack_1",
+        "cannons:ball_stone_stack_1",
+        "cannons:ball_steel_stack_1",
+        "cannons:ball_fire_stack_1",
+        "cannons:ball_exploding_stack_1",
+        }
+	for _, v in ipairs(cannons_entities) do
+		table.insert(steampunk_blimp.avail_ammo, v)
+	end
+end
 
 steampunk_blimp.ideal_step = 0.02
 steampunk_blimp.min_hp = 10
@@ -323,13 +337,13 @@ minetest.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 	end,
 })
 
-if core.settings:get_bool('steampunk_blimp.enable_wind') then
+if core.settings:get_bool('steampunk_blimp.enable_wind', false) then
     steampunk_blimp.wind_enabled = true
 else
     steampunk_blimp.wind_enabled = false
 end
 
-if core.settings:get_bool('steampunk_blimp.enable_cannons') then
+if core.settings:get_bool('steampunk_blimp.enable_cannons', true) then
     steampunk_blimp.cannons_enabled = true
 else
     steampunk_blimp.cannons_enabled = false
@@ -339,7 +353,7 @@ end
 -- crafting
 --
 
-if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
+if not core.settings:get_bool('steampunk_blimp.disable_craftitems', false) then
 
     local item_name = "steampunk_blimp:cylinder_part"
     if airutils.is_repixture then
@@ -537,6 +551,16 @@ if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 			        {"steampunk_blimp:cannon","steampunk_blimp:blimp","steampunk_blimp:cannon",},
 		        }
 	        })
+        end
+        if airutils.is_minetest then
+            minetest.register_craft({
+	            output = 'steampunk_blimp:cannon_ball1',
+	            recipe = {
+		            {"", "default:steel_ingot",""},
+		            {"default:steel_ingot","tnt:tnt_stick","default:steel_ingot"},
+		            {"", "default:steel_ingot",""},
+	            }
+            })
         end
     end
 

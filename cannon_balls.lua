@@ -6,18 +6,27 @@ local function rot_to_dir(rot) -- keep rot within <-pi/2,pi/2>
 end
 
 function steampunk_blimp.spawn_shell(self, pos, dir, player_name, ent_name, velocity)
+    if ent_name == nil or ent_name == "" then return end
     local rotation = self.object:get_rotation()
     local curr_speed = self.object:get_velocity() --we could be flying
 	local bullet_obj = nil
-	bullet_obj = core.add_entity(pos, ent_name)
+    local entity = ent_name
+    if core.get_modpath("cannons") then
+        if string.sub(ent_name, 1, 12) == "cannons:ball" then
+            entity = cannons.get_entity(ent_name)
+        end
+    end
+	bullet_obj = core.add_entity(pos, entity)
 
 	if not bullet_obj then
 		return
 	end
 
 	local lua_ent = bullet_obj:get_luaentity()
-	lua_ent.shooter_name = player_name
-    lua_ent.damage = lua_ent.damage * (math.random(5, 15)/10)
+    if lua_ent then
+	    lua_ent.shooter_name = player_name
+        lua_ent.damage = lua_ent.damage * (math.random(5, 15)/10)
+    end
 
     bullet_obj:set_velocity({x=dir.x*velocity+curr_speed.x, y=-1, z=dir.z*velocity+curr_speed.z})
     bullet_obj:set_acceleration({x=dir.x*-3, y=airutils.gravity, z=dir.z*-3})
@@ -332,8 +341,16 @@ local function smoke_particle(self, object)
 end
 
 function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
-    ammo_name = ammo_name or "steampunk_blimp:cannon_ball1"
+    ammo_name = ammo_name or ""
+    if ammo_name == true or ammo_name == false then ammo_name = "" end
     local speed = 50
+    local match = false
+    for item_name, _ in pairs(minetest.registered_items) do
+        if item_name:lower():find(ammo_name, 1, true) then
+            match = true
+        end
+    end
+    if match == false then ammo_name = "" end
 
     local pos=self.object:get_pos()
     local rel_pos=steampunk_blimp.cannons_loc
@@ -360,9 +377,9 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
             smoke_particle(self, dest_obj)
             self._r_pload = false
             shot_pos = vector.add(shot_pos, cannons[1])
-            if self._r_armed == true then
+            if self._r_armed ~= "" then
                 steampunk_blimp.spawn_shell(self, shot_pos, dir, self.driver_name, ammo_name, speed)
-                self._r_armed = false
+                self._r_armed = ""
             end
             return 1 --for recoil calc
         end
@@ -374,26 +391,13 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
             smoke_particle(self, dest_obj)
             self._l_pload = false
             shot_pos = vector.add(shot_pos, cannons[2])
-            if self._l_armed == true then
+            if self._l_armed ~= "" then
                 steampunk_blimp.spawn_shell(self, shot_pos, dir, self.driver_name, ammo_name, speed)
-                self._l_armed = false
+                self._l_armed = ""
             end
             return 1 --for recoil calc
         end
     end
-
-    --[[TODO
-    timer set just for tests
-    in the final version it
-    will be function/work for tripulation
-    ]]--
-    core.after(0.5, function(self)
-        self._l_pload = true
-        self._r_pload = true
-        self._l_armed = true
-        self._r_armed = true
-    end, self)
-    -- end TODO
 
     return 0 --for recoil calc
 end
@@ -402,3 +406,4 @@ local direct_impact_damage = 30
 local speed = 100
 local radius = 3
 steampunk_blimp.register_shell("steampunk_blimp:cannon_ball1", "steampunk_blimp_ball.png", "steampunk_blimp_ball.png", "Cannon Ball 1", direct_impact_damage, radius, speed)
+

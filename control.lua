@@ -93,10 +93,10 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         else
             if self._has_cannons == true and self._unl_can == true then
                 if ctrl.right and self._cannon_r then
-                    if ctrl.aux1 then shot = steampunk_blimp.cannon_shot(self, self._cannon_r) end
+                    if ctrl.aux1 then shot = steampunk_blimp.cannon_shot(self, self._cannon_r, self._r_armed) end
                 end
                 if ctrl.left and self._cannon_l then
-                    if ctrl.aux1 then shot = steampunk_blimp.cannon_shot(self, self._cannon_l) end
+                    if ctrl.aux1 then shot = steampunk_blimp.cannon_shot(self, self._cannon_l, self._l_armed) end
                 end
                 if ctrl.jump and ctrl.aux1 then
                     if (self._cannon_l and self._cannon_r) then

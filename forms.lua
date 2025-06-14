@@ -66,11 +66,54 @@ function steampunk_blimp.pax_formspec(name)
 end
 
 function steampunk_blimp.prepare_cannon_formspec(self, name, side)
+    local player = core.get_player_by_name(name)
+    local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
+    if plane_obj == nil then
+        return
+    end
+    local ent = plane_obj:get_luaentity()
+
     local basic_form = table.concat({
         "formspec_version[3]",
-        "size[5,3]",
-        "checkbox[1.0,1.0;load_powder;Put Gunpowder]",
-        "checkbox[1.0,2.0;load_ammo;Load Ammo]",
+        "size[5,3]",},"")
+
+    local has_powder = false
+    local powder_opt = "false"
+    if side == "l" then
+        if ent._l_pload == true then
+            has_powder = true
+            powder_opt = "true"
+        end
+    else
+        if ent._r_pload == true then
+            has_powder = true
+            powder_opt = "true"
+        end
+    end
+    basic_form = basic_form.."checkbox[1.0,1.0;load_powder;Put Gunpowder;"..powder_opt.."]"
+
+    local ammo_opt = "false"
+    local ammo_name = ""
+    if side == "l" then
+        if ent._l_armed ~= "" then
+            ammo_opt = "true"
+            ammo_name = ent._l_armed
+        end
+    else
+        if ent._r_armed ~= "" then
+            ammo_opt = "true"
+            ammo_name = ent._r_armed
+        end
+    end
+
+    if has_powder == true then
+        basic_form = basic_form.."checkbox[1.0,2.0;load_ammo;Load Ammo;"..ammo_opt.."]"
+        if ammo_name then
+            basic_form = basic_form.."label[1.0,2.4;"..ammo_name.."]"
+        end
+    end
+
+    basic_form = table.concat({ basic_form,
         "field[1.0,6.0;1.5,0.8;side;Side;"..side.."]",
         '["key_enter"]="false"',
 	}, "")
@@ -158,10 +201,81 @@ function steampunk_blimp.owner_formspec(name)
     core.show_formspec(name, "steampunk_blimp:owner_main", basic_form)
 end
 
-function set_list(list)
+local function set_list(list)
   local set = {}
   for _, l in ipairs(list) do set[l] = true end
   return set
+end
+
+local function take_item_from_ship_inventory(self, itemname)
+    local inv = airutils.get_inventory(self)
+    if not inv then return nil end
+
+    local total_taken = 0
+    local stack = ItemStack(itemname.." 1")
+    local taken = inv:remove_item("main", stack)
+    local total_taken = taken:get_count()
+
+    if total_taken > 0 then
+        airutils.save_inventory(self)
+        return taken
+    end
+    return nil
+end
+
+local function find_in_list(item_name)
+    for k, v in pairs(steampunk_blimp.avail_ammo) do
+        if v == item_name then
+            return k
+        end
+    end
+    return 0
+end
+
+local function take_ammo_from_from_last_line(self)
+    local inv = airutils.get_inventory(self)
+    if not inv then return "" end
+
+    local total_taken = 0
+    local curr_stack = nil
+    local taken = nil
+    local ammo_name = ""
+    for i = 41, 50, 1
+    do
+        curr_stack = inv:get_stack("main", i)
+        ammo_name = curr_stack:get_name()
+        --core.chat_send_all(dump(curr_stack))
+        if find_in_list(ammo_name) then
+            --core.chat_send_all("achou "..dump(curr_stack))
+            local stack = ItemStack(ammo_name)
+            taken = inv:remove_item("main", stack)
+            break
+        end
+    end
+    if not taken then return "" end
+    local total_taken = taken:get_count()
+
+    if total_taken > 0 then
+        airutils.save_inventory(self)
+        return ammo_name
+    end
+    return ""
+end
+
+local function add_item_to_ship_inventory(self, itemname)
+    local inv = airutils.get_inventory(self)
+    if not inv then return nil end
+
+    local total_added = 0
+    local stack = ItemStack(itemname.." 1")
+    local added = inv:add_item("main", stack)
+    local total_added = added:get_count()
+
+    if total_added > 0 then
+        airutils.save_inventory(self)
+        return added
+    end
+    return nil
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
@@ -409,16 +523,26 @@ core.register_on_player_receive_fields(function(player, formname, fields)
             return
         end
         local ent = plane_obj:get_luaentity()
-        if ent then
+        local side = fields.side
+
+        if ent and side then
             if fields.load_powder then
-                if fields.load_powder == "true" then
-                    if fields.side == "l" then
+                local powder_item_name = "tnt:gunpowder"
+                if airutils.is_mcl then
+                    powder_item_name = "mcl_mobitems:gunpowder"
+                end
+                local powder = take_item_from_ship_inventory(ent, powder_item_name)
+                if not powder then powder = take_item_from_ship_inventory(ent, "cannons:gunpowder") end
+                if fields.load_powder == "true" and
+                    powder then
+                    if side == "l" then
                         ent._l_pload = true
                     else
                         ent._r_pload = true
                     end
                 else
-                    if fields.side == "l" then
+                    add_item_to_ship_inventory(ent, powder_item_name)
+                    if side == "l" then
                         ent._l_pload = false
                     else
                         ent._r_pload = false
@@ -427,21 +551,26 @@ core.register_on_player_receive_fields(function(player, formname, fields)
             end
             if fields.load_ammo then
                 if fields.load_ammo == "true" then
-                    if fields.side == "l" then
-                        ent._l_armed = true
+                    if side == "l" then
+                        ent._l_armed = take_ammo_from_from_last_line(ent)
                     else
-                        ent._r_armed = true
+                        ent._r_armed = take_ammo_from_from_last_line(ent)
                     end
                 else
-                    if fields.side == "l" then
-                        ent._l_armed = false
+                    if side == "l" then
+                        add_item_to_ship_inventory(ent, ent._l_armed)
+                        ent._l_armed = ""
                     else
-                        ent._r_armed = false
+                        add_item_to_ship_inventory(ent, ent._r_armed)
+                        ent._r_armed = ""
                     end
                 end
             end
         end
-        --core.close_formspec(name, "steampunk_blimp:prep_cannon")
+        core.close_formspec(name, "steampunk_blimp:prep_cannon")
+        if side then
+            steampunk_blimp.prepare_cannon_formspec(ent, name, side)
+        end
     end
 end)
 

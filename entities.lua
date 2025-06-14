@@ -261,8 +261,15 @@ core.register_entity('steampunk_blimp:hull_interactor',{
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
+        local ship_attach = self.object:get_attach()
+        local parent_ent = nil
+        if ship_attach then
+            parent_ent = ship_attach:get_luaentity()
+        end
+
         --minetest.chat_send_all("punch")
         if not puncher or not puncher:is_player() then
+            damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value )
             return
         end
 
@@ -276,12 +283,7 @@ core.register_entity('steampunk_blimp:hull_interactor',{
             end
         end
 
-        local weapon_name = puncher:get_wielded_item():get_name()
-        local ship_attach = self.object:get_attach()
-        local parent_ent = nil
-        if ship_attach then
-            parent_ent = ship_attach:get_luaentity()
-        end
+        --local weapon_name = puncher:get_wielded_item():get_name()
         if parent_ent then
             damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value*2 )
         end
@@ -371,6 +373,10 @@ core.register_entity("steampunk_blimp:blimp", {
             stored_vehicle_name = self._vehicle_name,
             stored_has_cannons = self._has_cannons or false,
             stored_rev_can = self._rev_can or false, --reverse cannons
+            stored_l_pload = self._l_pload or false, --powder left cannon
+            stored_r_pload = self._r_pload or false, --powder right cannon
+            stored_l_armed = self._l_armed or "", --ammo left cannon
+            stored_r_armed = self._r_armed or "", --ammo right cannon
             remove = self._remove or false,
         })
     end,
@@ -406,8 +412,14 @@ core.register_entity("steampunk_blimp:blimp", {
             self._passengers_locked = data.stored_passengers_locked
             self._ship_name = data.stored_ship_name
             self._vehicle_name = data.stored_vehicle_name
+
             self._has_cannons = data.stored_has_cannons
             self._rev_can = data.stored_rev_can or false
+            self._l_pload = data.stored_l_pload or false --powder left cannon
+            self._r_pload = data.stored_r_pload or false --powder right cannon
+            self._l_armed = data.stored_l_armed or "" --ammo left cannon
+            self._r_armed = data.stored_r_armed or "" --ammo right cannon
+
             self._remove = data.remove or false
             if self._remove ~= true then
                 self._inv_id = data.stored_inv_id
@@ -469,9 +481,6 @@ core.register_entity("steampunk_blimp:blimp", {
             end
             self.cannons:set_bone_override("cannon_l", override)
             self.cannons:set_bone_override("cannon_r", override)
-            --for tests
-            --self._l_armed = true
-            --self._r_armed = true
         else
             local wings = core.add_entity(pos, 'steampunk_blimp:wings')
             wings:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
@@ -702,7 +711,9 @@ core.register_entity("steampunk_blimp:blimp", {
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
         steampunk_blimp.setText(self, self._vehicle_name)
+
         if not puncher or not puncher:is_player() then
+            damage_vehicle(self, toolcaps, ttime, damage, steampunk_blimp.min_damage_value )
             return
         end
 
