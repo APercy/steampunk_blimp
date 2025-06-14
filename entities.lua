@@ -680,9 +680,9 @@ core.register_entity("steampunk_blimp:blimp", {
 
         newpitch =  velocity.y * math.rad(1.5) * (relative_longit_speed/3)
 
-        local pitch_by_accel = steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
+        --local pitch_by_accel = steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
 
-        newpitch = newpitch + pitch_by_accel
+        --newpitch = newpitch + pitch_by_accel
         local limit_pitch = math.rad(60)
         if newpitch > limit_pitch then newpitch = limit_pitch end
         if limit_pitch < -limit_pitch then newpitch = -limit_pitch end
