@@ -373,6 +373,7 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
     local shot_pos = vector.new(pos)
     --right
     if dest_obj == self._cannon_r then
+        if self._r_pload == nil then self._r_pload = "" end
         if self._r_pload ~= "" then
             smoke_particle(self, dest_obj)
             self._r_pload = ""
@@ -387,6 +388,7 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
 
     --left
     if dest_obj == self._cannon_l then
+        if self._l_pload == nil then self._l_pload = "" end
         if self._l_pload ~= "" then
             smoke_particle(self, dest_obj)
             self._l_pload = ""

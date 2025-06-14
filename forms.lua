@@ -556,7 +556,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         local ent = plane_obj:get_luaentity()
         local side = fields.side
 
-        if ent and side then
+        if ent and (side == "l" or side == "r") then
             if fields.load_powder then
                 if fields.load_powder == "true" then
                     if side == "l" then
