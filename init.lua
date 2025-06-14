@@ -232,7 +232,7 @@ minetest.register_tool("steampunk_blimp:blimp", {
             --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
             local owner = placer:get_player_name()
             ent.owner = owner
-            ent.hp = 50 --reset hp
+            --ent.hp = 50 --reset hp
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
             airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
@@ -279,7 +279,7 @@ minetest.register_tool("steampunk_blimp:cannon_blimp", {
             ent._passengers = steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
             --minetest.chat_send_all('passengers: '.. dump(ent._passengers))
             ent.owner = owner
-            ent.hp = 50 --reset hp
+            --ent.hp = 50 --reset hp
             ent._vehicle_name = "Gunboat Steampunk Blimp",
             steampunk_blimp.paint(ent, "black")
 			blimp:set_yaw(placer:get_look_horizontal())
