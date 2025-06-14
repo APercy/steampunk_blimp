@@ -8,6 +8,7 @@ steampunk_blimp.water = {['default:water_source'] = {amount=1},['default:river_w
     ['mcl_buckets:bucket_water'] = {amount=1}, ['mcl_buckets:bucket_river_water'] = {amount=1}, ['mcl_core:water_source'] = {amount=1},
     ['rp_default:bucket_water'] = {amount=1}, ['rp_default:bucket_river_water'] = {amount=1}, }  --bucket:bucket_empty
 steampunk_blimp.rep_material = {['default:gold_lump'] = {amount=5},['default:gold_ingot'] = {amount=10}, ['mcl_core:gold_ingot'] = {amount=10}}
+steampunk_blimp.avail_powder = {"tnt:gunpowder","mcl_mobitems:gunpowder", "cannons:gunpowder",}
 steampunk_blimp.avail_ammo = {"steampunk_blimp:cannon_ball1",}
 
 if core.get_modpath("cannons") then

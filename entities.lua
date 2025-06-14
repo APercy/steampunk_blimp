@@ -373,8 +373,8 @@ core.register_entity("steampunk_blimp:blimp", {
             stored_vehicle_name = self._vehicle_name,
             stored_has_cannons = self._has_cannons or false,
             stored_rev_can = self._rev_can or false, --reverse cannons
-            stored_l_pload = self._l_pload or false, --powder left cannon
-            stored_r_pload = self._r_pload or false, --powder right cannon
+            stored_l_pload = self._l_pload or "", --powder left cannon
+            stored_r_pload = self._r_pload or "", --powder right cannon
             stored_l_armed = self._l_armed or "", --ammo left cannon
             stored_r_armed = self._r_armed or "", --ammo right cannon
             remove = self._remove or false,
@@ -415,8 +415,8 @@ core.register_entity("steampunk_blimp:blimp", {
 
             self._has_cannons = data.stored_has_cannons
             self._rev_can = data.stored_rev_can or false
-            self._l_pload = data.stored_l_pload or false --powder left cannon
-            self._r_pload = data.stored_r_pload or false --powder right cannon
+            self._l_pload = data.stored_l_pload or "" --powder left cannon
+            self._r_pload = data.stored_r_pload or "" --powder right cannon
             self._l_armed = data.stored_l_armed or "" --ammo left cannon
             self._r_armed = data.stored_r_armed or "" --ammo right cannon
 

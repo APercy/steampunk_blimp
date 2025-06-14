@@ -373,9 +373,9 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
     local shot_pos = vector.new(pos)
     --right
     if dest_obj == self._cannon_r then
-        if self._r_pload == true then
+        if self._r_pload ~= "" then
             smoke_particle(self, dest_obj)
-            self._r_pload = false
+            self._r_pload = ""
             shot_pos = vector.add(shot_pos, cannons[1])
             if self._r_armed ~= "" then
                 steampunk_blimp.spawn_shell(self, shot_pos, dir, self.driver_name, ammo_name, speed)
@@ -387,9 +387,9 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
 
     --left
     if dest_obj == self._cannon_l then
-        if self._l_pload == true then
+        if self._l_pload ~= "" then
             smoke_particle(self, dest_obj)
-            self._l_pload = false
+            self._l_pload = ""
             shot_pos = vector.add(shot_pos, cannons[2])
             if self._l_armed ~= "" then
                 steampunk_blimp.spawn_shell(self, shot_pos, dir, self.driver_name, ammo_name, speed)

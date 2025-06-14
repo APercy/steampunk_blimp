@@ -77,17 +77,17 @@ function steampunk_blimp.prepare_cannon_formspec(self, name, side)
         "formspec_version[3]",
         "size[5,3]",},"")
 
-    local has_powder = false
     local powder_opt = "false"
+    local powder_name = ""
     if side == "l" then
-        if ent._l_pload == true then
-            has_powder = true
+        if ent._l_pload ~= "" then
             powder_opt = "true"
+            powder_name = ent._l_pload
         end
     else
-        if ent._r_pload == true then
-            has_powder = true
+        if ent._r_pload ~= "" then
             powder_opt = "true"
+            powder_name = ent._r_pload
         end
     end
     basic_form = basic_form.."checkbox[1.0,1.0;load_powder;Put Gunpowder;"..powder_opt.."]"
@@ -106,11 +106,11 @@ function steampunk_blimp.prepare_cannon_formspec(self, name, side)
         end
     end
 
-    if has_powder == true then
+    if powder_name ~= "" then
         basic_form = basic_form.."checkbox[1.0,2.0;load_ammo;Load Ammo;"..ammo_opt.."]"
-        if ammo_name then
+        --[[if ammo_name then
             basic_form = basic_form.."label[1.0,2.4;"..ammo_name.."]"
-        end
+        end]]--
     end
 
     basic_form = table.concat({ basic_form,
@@ -223,8 +223,8 @@ local function take_item_from_ship_inventory(self, itemname)
     return nil
 end
 
-local function find_in_list(item_name)
-    for k, v in pairs(steampunk_blimp.avail_ammo) do
+local function find_in_list(item_name, list)
+    for k, v in pairs(list) do
         if v == item_name then
             return k
         end
@@ -245,7 +245,7 @@ local function take_ammo_from_from_last_line(self)
         curr_stack = inv:get_stack("main", i)
         ammo_name = curr_stack:get_name()
         --core.chat_send_all(dump(curr_stack))
-        if find_in_list(ammo_name) then
+        if find_in_list(ammo_name, steampunk_blimp.avail_ammo) > 0 then
             --core.chat_send_all("achou "..dump(curr_stack))
             local stack = ItemStack(ammo_name)
             taken = inv:remove_item("main", stack)
@@ -262,9 +262,40 @@ local function take_ammo_from_from_last_line(self)
     return ""
 end
 
+local function take_powder_from_from_last_line(self)
+    local inv = airutils.get_inventory(self)
+    if not inv then return "" end
+
+    local total_taken = 0
+    local curr_stack = nil
+    local taken = nil
+    local item_name = ""
+    for i = 1, 50, 1
+    do
+        curr_stack = inv:get_stack("main", i)
+        item_name = curr_stack:get_name()
+        --core.chat_send_all(dump(curr_stack))
+        if find_in_list(item_name, steampunk_blimp.avail_powder) > 0 then
+            --core.chat_send_all("achou "..dump(curr_stack))
+            local stack = ItemStack(item_name)
+            taken = inv:remove_item("main", stack)
+            break
+        end
+    end
+    if not taken then return "" end
+    local total_taken = taken:get_count()
+
+    if total_taken > 0 then
+        airutils.save_inventory(self)
+        return item_name
+    end
+    return ""
+end
+
 local function add_item_to_ship_inventory(self, itemname)
     local inv = airutils.get_inventory(self)
     if not inv then return nil end
+    if itemname == "" or itemname == nil then return end
 
     local total_added = 0
     local stack = ItemStack(itemname.." 1")
@@ -527,25 +558,19 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
         if ent and side then
             if fields.load_powder then
-                local powder_item_name = "tnt:gunpowder"
-                if airutils.is_mcl then
-                    powder_item_name = "mcl_mobitems:gunpowder"
-                end
-                local powder = take_item_from_ship_inventory(ent, powder_item_name)
-                if not powder then powder = take_item_from_ship_inventory(ent, "cannons:gunpowder") end
-                if fields.load_powder == "true" and
-                    powder then
+                if fields.load_powder == "true" then
                     if side == "l" then
-                        ent._l_pload = true
+                        ent._l_pload = take_powder_from_from_last_line(ent)
                     else
-                        ent._r_pload = true
+                        ent._r_pload = take_powder_from_from_last_line(ent)
                     end
                 else
-                    add_item_to_ship_inventory(ent, powder_item_name)
                     if side == "l" then
-                        ent._l_pload = false
+                        add_item_to_ship_inventory(ent, ent._l_pload)
+                        ent._l_pload = ""
                     else
-                        ent._r_pload = false
+                        add_item_to_ship_inventory(ent, ent._r_pload)
+                        ent._r_pload = ""
                     end
                 end
             end

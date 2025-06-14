@@ -100,8 +100,8 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
                 end
                 if ctrl.jump and ctrl.aux1 then
                     if (self._cannon_l and self._cannon_r) then
-                        local l_shot = steampunk_blimp.cannon_shot(self, self._cannon_l)
-                        local r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r)
+                        local l_shot = steampunk_blimp.cannon_shot(self, self._cannon_l, self._l_armed)
+                        local r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r, self._r_armed)
                         shot = l_shot + r_shot
                     end
                 end
