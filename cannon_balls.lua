@@ -341,6 +341,11 @@ local function smoke_particle(self, object)
 end
 
 function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
+    if self.anchored == true then
+        core.chat_send_player(self.driver_name,"Remove the anchor to shot! Cannons are locked again.")
+        self._unl_can = false
+        return 0
+    end
     ammo_name = ammo_name or ""
     if ammo_name == true or ammo_name == false then ammo_name = "" end
     local speed = 50

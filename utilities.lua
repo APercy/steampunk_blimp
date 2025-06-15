@@ -557,11 +557,26 @@ function steampunk_blimp.table_copy(table_here)
 end
 
 function steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
+    local angle = 3
     local longit_accel = steampunk_blimp.dot(accel,hull_direction)
-    local pitch_to_add = math.rad(3)*longit_accel
+    local pitch_to_add = math.rad(angle)*longit_accel
     if self._pitch_accel_accumulator == nil then self._pitch_accel_accumulator = 0 end
     self._pitch_accel_accumulator = self._pitch_accel_accumulator + pitch_to_add --accumulate
-    if self._pitch_last_error == nil then self._pitch_last_error = 0 end
+    
+    if self._last_longit_accel == nil then self._last_longit_accel = 0 end
+    local pitch_to_decrease = math.rad(angle)*self._last_longit_accel
+    if math.abs(self._pitch_accel_accumulator) > 0 and math.abs(pitch_to_decrease) == 0 then
+        pitch_to_decrease = math.rad(angle)
+    end
+    self._last_longit_accel = longit_accel
+
+    local new_pitch = self._pitch_accel_accumulator - pitch_to_decrease
+    if self._pitch_accel_accumulator < 0 and new_pitch > 0 then new_pitch = 0 end
+    if self._pitch_accel_accumulator > 0 and new_pitch < 0 then new_pitch = 0 end
+    self._pitch_accel_accumulator = new_pitch
+    if self.anchored == true then self._pitch_accel_accumulator = 0 end
+
+    --[[if self._pitch_last_error == nil then self._pitch_last_error = 0 end
     --airutils.pid_controller(current_value, setpoint, last_error, d_time, kp, ki, kd, integrative)
     local kp = 25
     local ki = 0.001
@@ -572,7 +587,7 @@ function steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
         self._pitch_accel_accumulator = self._pitch_accel_accumulator + (output*self.dtime)
     else
         self._pitch_accel_accumulator = 0
-    end
+    end]]--
 
     return self._pitch_accel_accumulator
 end
