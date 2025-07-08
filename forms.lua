@@ -264,7 +264,15 @@ end
 
 local function take_powder_from_from_inventory(self)
     if not self then return "" end
-    local inv = airutils.get_inventory(self)
+    local inv = nil
+    if self._inv then
+        inv = minetest.get_inventory({type="detached", name=self._inv_id})
+    end
+    if not inv then
+        return
+    end
+
+    --local inv = airutils.get_inventory(self)
     --core.chat_send_all("antes inventario")
     if not inv then return "" end
     --core.chat_send_all("tem inventario")
@@ -313,14 +321,18 @@ local function add_item_to_ship_inventory(self, itemname)
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
+    if not player then return end
+    local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
+    local ent = nil
+    if plane_obj then
+        ent = plane_obj:get_luaentity()
+    else
+        core.close_formspec(name, formname)
+        return
+    end
+    local name = player:get_player_name()
+
     if formname == "steampunk_blimp:owner_main" then
-        local name = player:get_player_name()
-        local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
-        if plane_obj == nil then
-            core.close_formspec(name, "steampunk_blimp:owner_main")
-            return
-        end
-        local ent = plane_obj:get_luaentity()
         if ent then
 		    if fields.disembark_l then
                 steampunk_blimp.dettach_pax(ent, player, "l")
@@ -348,13 +360,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         core.close_formspec(name, "steampunk_blimp:owner_main")
     end
 	if formname == "steampunk_blimp:passenger_main" then
-        local name = player:get_player_name()
-        local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
-        if plane_obj == nil then
-            core.close_formspec(name, "steampunk_blimp:passenger_main")
-            return
-        end
-        local ent = plane_obj:get_luaentity()
         if ent then
 		    if fields.disembark_l then
                 steampunk_blimp.dettach_pax(ent, player, "l")
@@ -366,13 +371,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         core.close_formspec(name, "steampunk_blimp:passenger_main")
 	end
     if formname == "steampunk_blimp:logo_ext" then
-        local name = player:get_player_name()
-        local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
-        if plane_obj == nil then
-            core.close_formspec(name, "steampunk_blimp:logo_ext")
-            return
-        end
-        local ent = plane_obj:get_luaentity()
         if ent then
             if fields.set_texture then
                 if ent.name == "steampunk_blimp:blimp" then
@@ -410,13 +408,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         end
     end
     if formname == "steampunk_blimp:pilot_main" then
-        local name = player:get_player_name()
-        local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
-        if plane_obj == nil then
-            core.close_formspec(name, "steampunk_blimp:pilot_main")
-            return
-        end
-        local ent = plane_obj:get_luaentity()
         if ent then
 		    if fields.turn_on then
                 steampunk_blimp.start_furnace(ent)
@@ -550,16 +541,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         core.close_formspec(name, "steampunk_blimp:pilot_main")
     end
     if formname == "steampunk_blimp:prep_cannon" then
-        local name = player:get_player_name()
-        local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
-        if plane_obj == nil then
-            core.close_formspec(name, "steampunk_blimp:pilot_main")
-            return
-        end
-        local ent = plane_obj:get_luaentity()
         local side = fields.side
-
         if ent and (side == "l" or side == "r") then
+            airutils.load_inventory(ent)
             if fields.load_powder then
                 if fields.load_powder == "true" then
                     if side == "l" then
