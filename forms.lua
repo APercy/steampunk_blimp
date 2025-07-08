@@ -262,9 +262,12 @@ local function take_ammo_from_from_last_line(self)
     return ""
 end
 
-local function take_powder_from_from_last_line(self)
+local function take_powder_from_from_inventory(self)
+    if not self then return "" end
     local inv = airutils.get_inventory(self)
+    --core.chat_send_all("antes inventario")
     if not inv then return "" end
+    --core.chat_send_all("tem inventario")
 
     local total_taken = 0
     local curr_stack = nil
@@ -560,9 +563,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
             if fields.load_powder then
                 if fields.load_powder == "true" then
                     if side == "l" then
-                        ent._l_pload = take_powder_from_from_last_line(ent)
+                        ent._l_pload = take_powder_from_from_inventory(ent)
                     else
-                        ent._r_pload = take_powder_from_from_last_line(ent)
+                        ent._r_pload = take_powder_from_from_inventory(ent)
                     end
                 else
                     if side == "l" then

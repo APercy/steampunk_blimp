@@ -556,21 +556,32 @@ function steampunk_blimp.table_copy(table_here)
     return tablecopy
 end
 
-function steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
+function steampunk_blimp.pitch_by_accel(self, accel, hull_direction, max_pitch)
     local angle = 3
     local longit_accel = steampunk_blimp.dot(accel,hull_direction)
     local pitch_to_add = math.rad(angle)*longit_accel
     if self._pitch_accel_accumulator == nil then self._pitch_accel_accumulator = 0 end
-    self._pitch_accel_accumulator = self._pitch_accel_accumulator + pitch_to_add --accumulate
+
+    --if math.abs(self._pitch_accel_accumulator + pitch_to_add) > math.abs(math.rad(50)) then pitch_to_add = 0 end
+
+    if math.abs(self._pitch_accel_accumulator) < math.abs(max_pitch) then
+        self._pitch_accel_accumulator = self._pitch_accel_accumulator + pitch_to_add --accumulate
+    end
     
     if self._last_longit_accel == nil then self._last_longit_accel = 0 end
-    local pitch_to_decrease = math.rad(angle)*self._last_longit_accel
-    if math.abs(self._pitch_accel_accumulator) > 0 and math.abs(pitch_to_decrease) == 0 then
-        pitch_to_decrease = math.rad(angle)
+    local pitch_to_decrease = 0
+    local new_pitch = 0
+    if math.abs(self._pitch_accel_accumulator) > 0 then
+        pitch_to_decrease = math.rad(angle)*self._last_longit_accel or math.rad(angle)
+        local abs_difference = self._pitch_accel_accumulator - pitch_to_decrease
+        if math.sign(self._pitch_accel_accumulator) == math.sign(abs_difference) then
+            new_pitch = self._pitch_accel_accumulator - pitch_to_decrease
+        else
+            new_pitch = 0
+        end
     end
     self._last_longit_accel = longit_accel
 
-    local new_pitch = self._pitch_accel_accumulator - pitch_to_decrease
     if self._pitch_accel_accumulator < 0 and new_pitch > 0 then new_pitch = 0 end
     if self._pitch_accel_accumulator > 0 and new_pitch < 0 then new_pitch = 0 end
     self._pitch_accel_accumulator = new_pitch
@@ -589,7 +600,7 @@ function steampunk_blimp.pitch_by_accel(self, accel, hull_direction)
         self._pitch_accel_accumulator = 0
     end]]--
 
-    return self._pitch_accel_accumulator
+    return self._pitch_accel_accumulator or 0
 end
 
 function steampunk_blimp.right_click_helm(self, clicker)
