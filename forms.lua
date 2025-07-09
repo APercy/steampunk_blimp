@@ -324,15 +324,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     if not player then return end
     local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)
     local ent = nil
+    local name = player:get_player_name()
     if plane_obj then
         ent = plane_obj:get_luaentity()
     else
-        if formname then
+        if formname and name then
             core.close_formspec(name, formname)
         end
         return
     end
-    local name = player:get_player_name()
 
     if formname == "steampunk_blimp:owner_main" then
         if ent then
