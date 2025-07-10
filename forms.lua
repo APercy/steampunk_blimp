@@ -328,9 +328,6 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     if plane_obj then
         ent = plane_obj:get_luaentity()
     else
-        if formname and name then
-            core.close_formspec(name, formname)
-        end
         return
     end
 
