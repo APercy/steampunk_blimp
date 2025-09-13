@@ -1,4 +1,4 @@
-Minetest 5.4 mod: Steampunk Blimp
+Minetest 5.9 mod: Steampunk Blimp
 ========================================
 
 This mod implements a fantasy steampunk blimp for minetest.
