@@ -65,6 +65,17 @@ function steampunk_blimp.pax_formspec(name)
     core.show_formspec(name, "steampunk_blimp:passenger_main", basic_form)
 end
 
+function steampunk_blimp.unload_inventory_first_formspec(name)
+    local basic_form = table.concat({
+        "formspec_version[3]",
+        "size[5,2.5]",},"")
+
+    basic_form = basic_form.."label[1,1.0;You should unload]"
+    basic_form = basic_form.."label[1,1.5;the inventory first]"
+
+    core.show_formspec(name, "steampunk_blimp:unload_inv", basic_form)
+end
+
 function steampunk_blimp.prepare_cannon_formspec(self, name, side)
     local player = core.get_player_by_name(name)
     local plane_obj = steampunk_blimp.getPlaneFromPlayer(player)

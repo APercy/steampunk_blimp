@@ -15,6 +15,18 @@ function steampunk_blimp.setText(self, vehicle_name)
     end
 end
 
+function steampunk_blimp.checkHasInventory(self)
+    local inventory = airutils.get_inventory(self)
+    if inventory then
+        if inventory:is_empty("main") then
+	        return false
+        else
+            return true
+        end
+    end
+    return false
+end
+
 function steampunk_blimp.testDamage(self, velocity, position)
     if self._last_accell == nil then return end
     local p = position --self.object:get_pos()
@@ -807,7 +819,11 @@ function steampunk_blimp.right_click_hull(self, clicker)
                     end
 
                     if not has_passengers then
-                        steampunk_blimp.get_blimp_back(airship_ent, clicker, false)
+                        if steampunk_blimp.checkHasInventory(airship_ent) then
+                            steampunk_blimp.unload_inventory_first_formspec(name)
+                        else
+                            steampunk_blimp.get_blimp_back(airship_ent, clicker, false)
+                        end
                         return
                     end
                     return
