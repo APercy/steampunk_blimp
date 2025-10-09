@@ -34,6 +34,7 @@ end
 local function boiler_step(self, accel)
     steampunk_blimp.start_boiler(self)
 
+    local time_correction = self.dtime and self.dtime/steampunk_blimp.ideal_step or 1.0
     local consumed_pressure = self._power_lever/steampunk_blimp.PRESSURE_CONSUMPTION
     if self._engine_running == false then consumed_pressure = consumed_pressure + lost_power end
 
@@ -44,7 +45,7 @@ local function boiler_step(self, accel)
         self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation)]]--
 
         steampunk_blimp.engine_set_sound_and_animation(self)
-        self._water_level = self._water_level - lost_water
+        self._water_level = self._water_level - lost_water * time_correction
     end
     if self._boiler_pressure < steampunk_blimp.boiler_min then
         self._power_lever = 0
@@ -52,11 +53,11 @@ local function boiler_step(self, accel)
         self.object:set_animation_frame_speed(0)
     end
 
-    self._boiler_pressure = self._boiler_pressure - consumed_pressure
+    self._boiler_pressure = self._boiler_pressure - consumed_pressure * time_correction
     --lets lose more pressure if it's going up
     if self._is_going_up == true then
         --minetest.chat_send_all("subindo "..consumed_pressure)
-        self._boiler_pressure = self._boiler_pressure - (200/steampunk_blimp.PRESSURE_CONSUMPTION)
+        self._boiler_pressure = self._boiler_pressure - (200/steampunk_blimp.PRESSURE_CONSUMPTION * time_correction)
     end
 
     if self._boiler_pressure < 0 then self._boiler_pressure = 0 end
