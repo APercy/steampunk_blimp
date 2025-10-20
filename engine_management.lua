@@ -13,15 +13,15 @@ function steampunk_blimp.start_boiler(self)
     if self._boiler_pressure < 150 then
         -- sound and animation
         if self.sound_handle_pistons then
-            minetest.sound_stop(self.sound_handle_pistons)
+            core.sound_stop(self.sound_handle_pistons)
             self.sound_handle_pistons = nil
         end
     elseif self._boiler_pressure >= 150 then
         -- sound
-        --minetest.chat_send_all(dump(self.sound_handle_pistons))
+        --core.chat_send_all(dump(self.sound_handle_pistons))
         if self.sound_handle_pistons == nil then
             if self.object then
-                self.sound_handle_pistons = minetest.sound_play({name = steampunk_blimp.piston_sound.name},--"default_item_smoke"},
+                self.sound_handle_pistons = core.sound_play({name = steampunk_blimp.piston_sound.name},--"default_item_smoke"},
                     {object = self.object, gain = steampunk_blimp.piston_sound.gain,
                         pitch = steampunk_blimp.piston_sound.pitch,
                         max_hear_distance = 32,
@@ -49,14 +49,14 @@ local function boiler_step(self, accel)
     end
     if self._boiler_pressure < steampunk_blimp.boiler_min then
         self._power_lever = 0
-        --if self.sound_handle_pistons then minetest.sound_stop(self.sound_handle_pistons) end
+        --if self.sound_handle_pistons then core.sound_stop(self.sound_handle_pistons) end
         self.object:set_animation_frame_speed(0)
     end
 
     self._boiler_pressure = self._boiler_pressure - consumed_pressure * time_correction
     --lets lose more pressure if it's going up
     if self._is_going_up == true then
-        --minetest.chat_send_all("subindo "..consumed_pressure)
+        --core.chat_send_all("subindo "..consumed_pressure)
         self._boiler_pressure = self._boiler_pressure - (200/steampunk_blimp.PRESSURE_CONSUMPTION * time_correction)
     end
 
@@ -76,7 +76,7 @@ local function furnace_step(self, accel)
     end
     if self._energy <= 0 or self._water_level <= 0 then
         self._engine_running = false
-        if self.sound_handle then minetest.sound_stop(self.sound_handle) end
+        if self.sound_handle then core.sound_stop(self.sound_handle) end
     end
 end
 
@@ -85,12 +85,12 @@ function steampunk_blimp.engine_step(self, accel)
     boiler_step(self, accel)
 
     if self.driver_name then
-        local player = minetest.get_player_by_name(self.driver_name)
+        local player = core.get_player_by_name(self.driver_name)
 
         local pressure = steampunk_blimp.get_pointer_angle(self._boiler_pressure, 200 )
         local water = steampunk_blimp.get_pointer_angle(self._water_level, steampunk_blimp.MAX_WATER)
         local coal = self._energy
-        --minetest.chat_send_all(self._power_lever)
+        --core.chat_send_all(self._power_lever)
         steampunk_blimp.update_hud(player, coal, 180-water, -pressure, self._power_lever)
     end
 end
