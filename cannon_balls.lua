@@ -350,7 +350,7 @@ function steampunk_blimp.cannon_shot(self, dest_obj, ammo_name)
     if ammo_name == true or ammo_name == false then ammo_name = "" end
     local speed = 50
     local match = false
-    for item_name, _ in pairs(minetest.registered_items) do
+    for item_name, _ in pairs(core.registered_items) do
         if item_name:lower():find(ammo_name, 1, true) then
             match = true
         end
