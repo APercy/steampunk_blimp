@@ -277,7 +277,7 @@ local function take_powder_from_from_inventory(self)
     if not self then return "" end
     local inv = nil
     if self._inv then
-        inv = minetest.get_inventory({type="detached", name=self._inv_id})
+        inv = core.get_inventory({type="detached", name=self._inv_id})
     end
     if not inv then
         return
