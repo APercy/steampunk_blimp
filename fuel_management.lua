@@ -1,8 +1,8 @@
 --
 -- fuel
 --
-steampunk_blimp.MAX_FUEL = minetest.settings:get("steampunk_blimp_max_fuel") or 99
-steampunk_blimp.FUEL_CONSUMPTION = minetest.settings:get("steampunk_blimp_fuel_consumption") or 6000
+steampunk_blimp.MAX_FUEL = core.settings:get("steampunk_blimp_max_fuel") or 99
+steampunk_blimp.FUEL_CONSUMPTION = core.settings:get("steampunk_blimp_fuel_consumption") or 6000
 
 steampunk_blimp.MAX_WATER = 10
 steampunk_blimp.WATER_CONSUMPTION = 50000
@@ -23,8 +23,8 @@ function steampunk_blimp.load_fuel(self, player)
     local item_name = ""
     if itmstck then item_name = itmstck:get_name() end
 
-    local grp_wood = minetest.get_item_group(item_name, "wood")
-    local grp_tree = minetest.get_item_group(item_name, "tree")
+    local grp_wood = core.get_item_group(item_name, "wood")
+    local grp_tree = core.get_item_group(item_name, "tree")
     if grp_wood == 1 or grp_tree == 1 then
         local stack = ItemStack(item_name .. " 1")
 
@@ -38,7 +38,7 @@ function steampunk_blimp.load_fuel(self, player)
         return true
     end
 
-    --minetest.chat_send_all("fuel: ".. dump(item_name))
+    --core.chat_send_all("fuel: ".. dump(item_name))
     local fuel = steampunk_blimp.contains(steampunk_blimp.fuel, item_name)
     if fuel then
         local stack = ItemStack(item_name .. " 1")
@@ -47,7 +47,7 @@ function steampunk_blimp.load_fuel(self, player)
             inv:remove_item("main", stack)
             self._energy = self._energy + fuel.amount
             if self._energy > steampunk_blimp.MAX_FUEL then self._energy = steampunk_blimp.MAX_FUEL end
-            --minetest.chat_send_all(self.energy)
+            --core.chat_send_all(self.energy)
 
             --local energy_indicator_angle = steampunk_blimp.get_pointer_angle(self._energy, steampunk_blimp.MAX_FUEL)
         end
@@ -65,7 +65,7 @@ function steampunk_blimp.load_water(self, player)
     local item_name = ""
     if itmstck then item_name = itmstck:get_name() end
 
-    --minetest.chat_send_all("water: ".. dump(item_name))
+    --core.chat_send_all("water: ".. dump(item_name))
     local water = steampunk_blimp.contains(steampunk_blimp.water, item_name)
     if water then
         if self._water_level < steampunk_blimp.MAX_WATER then
