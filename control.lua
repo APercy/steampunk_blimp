@@ -5,8 +5,8 @@ steampunk_blimp.vector_up = vector.new(0, 1, 0)
 function steampunk_blimp.check_node_below(obj)
 	local pos_below = obj:get_pos()
 	pos_below.y = pos_below.y - 0.1
-	local node_below = minetest.get_node(pos_below).name
-	local nodedef = minetest.registered_nodes[node_below]
+	local node_below = core.get_node(pos_below).name
+	local nodedef = core.registered_nodes[node_below]
 	local touching_ground = not nodedef or -- unknown nodes are solid
 			nodedef.walkable or false
 	local liquid_below = not touching_ground and nodedef.liquidtype ~= "none"
@@ -38,7 +38,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     if self._last_time_command > 1 then self._last_time_command = 1 end
 	local player = nil
     if self.driver_name then
-        player = minetest.get_player_by_name(self.driver_name)
+        player = core.get_player_by_name(self.driver_name)
     end
     local retval_accel = accel;
 
@@ -178,7 +178,7 @@ function steampunk_blimp.buoyancy_auto_correction(self, dtime)
     local intensity = 0.2
     local correction = (intensity*factor) * time_correction
     if math.abs(correction) > 0.5 then correction = 0.5 * math.sign(correction) end
-    --minetest.chat_send_player(self.driver_name, correction)
+    --core.chat_send_player(self.driver_name, correction)
     local before_correction = self._baloon_buoyancy
     local new_baloon_buoyancy = self._baloon_buoyancy + correction
     if math.sign(before_correction) ~= math.sign(new_baloon_buoyancy) then
