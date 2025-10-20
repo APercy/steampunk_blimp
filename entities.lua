@@ -228,7 +228,7 @@ core.register_entity('steampunk_blimp:helm_interactor',{
     end,
 
     on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
-        --minetest.chat_send_all("punch")
+        --core.chat_send_all("punch")
         if not puncher or not puncher:is_player() then
             return
         end
@@ -267,7 +267,7 @@ core.register_entity('steampunk_blimp:hull_interactor',{
             parent_ent = ship_attach:get_luaentity()
         end
 
-        --minetest.chat_send_all("punch")
+        --core.chat_send_all("punch")
         if not puncher or not puncher:is_player() then
             damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value )
             return
@@ -592,7 +592,7 @@ core.register_entity("steampunk_blimp:blimp", {
         if self.hp <= steampunk_blimp.min_hp then
             self._engine_running = false
             if self._boiler_pressure > 0 then
-                minetest.sound_play({name = "default_cool_lava"},
+                core.sound_play({name = "default_cool_lava"},
                     {object = self.object, gain = 1.0,
                         pitch = 1.0,
                         max_hear_distance = 32,
