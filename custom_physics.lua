@@ -6,7 +6,7 @@ function steampunk_blimp.physics(self)
 	local vel=self.object:get_velocity()
 		-- dumb friction
 	if self.isonground and not self.isinliquid then
-        --minetest.chat_send_all("with friction")
+        --core.chat_send_all("with friction")
 		vel = {x=vel.x*friction,
 								y=vel.y,
 								z=vel.z*friction}
@@ -33,13 +33,13 @@ function steampunk_blimp.physics(self)
 			end
 			self.collided = false
 		end
-		--minetest.chat_send_all("vnew")
+		--core.chat_send_all("vnew")
 		self.object:set_velocity(vnew)
     end
     --[[else
         self.object:set_pos(self.object:get_pos())
         if not self.isonground then
-            --minetest.chat_send_all("test")
+            --core.chat_send_all("test")
             self.object:set_velocity(vel)
         end
 	end]]--
@@ -89,7 +89,7 @@ function steampunk_blimp.physics(self)
             velocity.y = velocity.y - (velocity.y/100)
             self.object:set_velocity(velocity)
         end
-        --minetest.chat_send_all("_baloon_buoyancy: "..self._baloon_buoyancy.." - dtime: "..self.dtime.." - ideal: "..steampunk_blimp.ideal_step)
+        --core.chat_send_all("_baloon_buoyancy: "..self._baloon_buoyancy.." - dtime: "..self.dtime.." - ideal: "..steampunk_blimp.ideal_step)
         local max_y_speed = 3
         if self._has_cannons == true then max_y_speed = 1.8 end
         local curr_y_speed = vel.y
