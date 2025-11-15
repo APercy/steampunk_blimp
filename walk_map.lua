@@ -2,7 +2,7 @@ function steampunk_blimp.clamp(value, min, max)
     local retVal = value
     if value < min then retVal = min end
     if value > max then retVal = max end
-    --minetest.chat_send_all(value .. " - " ..retVal)
+    --core.chat_send_all(value .. " - " ..retVal)
     return retVal
 end
 
@@ -11,7 +11,7 @@ function steampunk_blimp.reclamp(value, min, max)
     local mid = (max-min)/2
     if value > min and value <= (min+mid) then retVal = min end
     if value < max and value > (max-mid) then retVal = max end
-    --minetest.chat_send_all(value .. " - return: " ..retVal .. " - mid: " .. mid)
+    --core.chat_send_all(value .. " - return: " ..retVal .. " - mid: " .. mid)
     return retVal
 end
 
@@ -181,7 +181,7 @@ function steampunk_blimp.navigate_deck(pos, dpos, player)
         local ctrl = player:get_player_control()
         if ctrl.jump or ctrl.sneak then --ladder
             if ladder_zone then
-                --minetest.chat_send_all(dump(pos))
+                --core.chat_send_all(dump(pos))
                 if ctrl.jump then
                     pos_d.y = pos_d.y + 0.9
                     if pos_d.y > upper_deck_y then pos_d.y = upper_deck_y end
@@ -193,7 +193,7 @@ function steampunk_blimp.navigate_deck(pos, dpos, player)
             end
         end
     end
-    --minetest.chat_send_all(dump(pos_d))
+    --core.chat_send_all(dump(pos_d))
 
     return pos_d
 end
@@ -241,7 +241,7 @@ local function get_result_pos(self, player, index)
             self._passengers_base_pos[index].dist_moved = self._passengers_base_pos[index].dist_moved + move;
             if math.abs(self._passengers_base_pos[index].dist_moved) > 5 then
                 self._passengers_base_pos[index].dist_moved = 0
-                minetest.sound_play({name = steampunk_blimp.steps_sound.name},
+                core.sound_play({name = steampunk_blimp.steps_sound.name},
                     {object = player, gain = steampunk_blimp.steps_sound.gain,
                         max_hear_distance = 5,
                         ephemeral = true,})
@@ -267,7 +267,7 @@ function steampunk_blimp.move_persons(self)
     for i = steampunk_blimp.max_seats,1,-1
     do
         local player = nil
-        if self._passengers[i] then player = minetest.get_player_by_name(self._passengers[i]) end
+        if self._passengers[i] then player = core.get_player_by_name(self._passengers[i]) end
 
         if self.driver_name and self._passengers[i] == self.driver_name then
             --clean driver if it's nil
@@ -277,7 +277,7 @@ function steampunk_blimp.move_persons(self)
             end
         else
             if self._passengers[i] ~= nil then
-                --minetest.chat_send_all("pass: "..dump(self._passengers[i]))
+                --core.chat_send_all("pass: "..dump(self._passengers[i]))
                 --the rest of the passengers
                 if player then
                     if self._passenger_is_sit[i] == 0 then
@@ -288,13 +288,13 @@ function steampunk_blimp.move_persons(self)
                             local new_pos = steampunk_blimp.copy_vector(self._passengers_base_pos[i])
                             new_pos.x = new_pos.x - result_pos.z
                             new_pos.z = new_pos.z - result_pos.x
-                            --minetest.chat_send_all(dump(new_pos))
+                            --core.chat_send_all(dump(new_pos))
                             local pos_d = steampunk_blimp.navigate_deck(self._passengers_base_pos[i], new_pos, player)
-                            --minetest.chat_send_all(dump(height))
+                            --core.chat_send_all(dump(height))
                             self._passengers_base_pos[i] = steampunk_blimp.copy_vector(pos_d)
                             self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
                         end
-                        --minetest.chat_send_all(dump(self._passengers_base_pos[i]))
+                        --core.chat_send_all(dump(self._passengers_base_pos[i]))
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
                     else
                         local y_rot = 0
