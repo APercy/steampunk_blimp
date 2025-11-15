@@ -12,10 +12,10 @@ function steampunk_blimp.manual_formspec(name)
 	basic_form = basic_form.."button[1,2.5;4,1;fuel;Refueling]"
 	basic_form = basic_form.."button[1,4.0;4,1;share;Sharing]"
 
-    minetest.show_formspec(name, "steampunk_blimp:manual_main", basic_form)
+    core.show_formspec(name, "steampunk_blimp:manual_main", basic_form)
 end
 
-minetest.register_on_player_receive_fields(function(player, formname, fields)
+core.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "steampunk_blimp:manual_main" then
         local formspec_color = "#44444466"
 		if fields.short then
@@ -39,7 +39,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 "bgcolor["..formspec_color..";false]",
 				"label[1.0,2.0;", table.concat(text, ""), "]",
 			}, "")
-			minetest.show_formspec(player:get_player_name(), "steampunk_blimp:manual_shortcut", shortcut_form)
+			core.show_formspec(player:get_player_name(), "steampunk_blimp:manual_shortcut", shortcut_form)
 		end
 		if fields.fuel then
 			local text = {
@@ -57,7 +57,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 "bgcolor["..formspec_color..";false]",
 				"label[1.0,2.0;", table.concat(text, ""), "]",
 			}, "")
-			minetest.show_formspec(player:get_player_name(), "steampunk_blimp:fuel", fuel_form)
+			core.show_formspec(player:get_player_name(), "steampunk_blimp:fuel", fuel_form)
 		end
 		if fields.share then
 			local text = {
@@ -77,12 +77,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 "bgcolor["..formspec_color..";false]",
 				"label[1,2;", table.concat(text, ""), "]",
 			}, "")
-			minetest.show_formspec(player:get_player_name(), "steampunk_blimp:share", tips_form)
+			core.show_formspec(player:get_player_name(), "steampunk_blimp:share", tips_form)
 		end
 	end
 end)
 
-minetest.register_chatcommand("blimp_manual", {
+core.register_chatcommand("blimp_manual", {
 	params = "",
 	description = "Blimp manual",
 	func = function(name, param)
