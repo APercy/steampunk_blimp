@@ -337,7 +337,7 @@ function steampunk_blimp.remove_blimp(self)
         steampunk_blimp.start_furnace(self)
     end
     if self._boiler_pressure > 0 then
-        minetest.sound_play({name = "default_cool_lava"},
+        core.sound_play({name = "default_cool_lava"},
             {object = self.object, gain = 1.0,
                 pitch = 1.0,
                 max_hear_distance = 32,
@@ -635,14 +635,14 @@ function steampunk_blimp.right_click_helm(self, clicker)
     end
 
     if is_attached then
-        --minetest.chat_send_all('passengers: '.. dump(ship_self._passengers))
+        --core.chat_send_all('passengers: '.. dump(ship_self._passengers))
         --=========================
         --  form to pilot
         --=========================
         if ship_self.owner == "" then
             ship_self.owner = name
         end
-        local can_bypass = minetest.check_player_privs(clicker, {protection_bypass=true})
+        local can_bypass = core.check_player_privs(clicker, {protection_bypass=true})
         if ship_self.driver_name ~= nil and ship_self.driver_name ~= "" then
             --shows pilot formspec
             if name == ship_self.driver_name then
