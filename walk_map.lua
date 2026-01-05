@@ -291,8 +291,10 @@ function steampunk_blimp.move_persons(self)
                             --core.chat_send_all(dump(new_pos))
                             local pos_d = steampunk_blimp.navigate_deck(self._passengers_base_pos[i], new_pos, player)
                             --core.chat_send_all(dump(height))
-                            self._passengers_base_pos[i] = steampunk_blimp.copy_vector(pos_d)
-                            self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                            if self._passengers_base_pos[i].x ~= pos_d.x or self._passengers_base_pos[i].z ~= pos_d.z or self._passengers_base_pos[i].y ~= pos_d.y  then
+                                self._passengers_base_pos[i] = steampunk_blimp.copy_vector(pos_d)
+                                self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                            end
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
