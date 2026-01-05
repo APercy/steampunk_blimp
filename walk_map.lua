@@ -298,14 +298,6 @@ function steampunk_blimp.move_persons(self)
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
-                    else
-                        local y_rot = 0
-                        if self._passenger_is_sit[i] == 1 then y_rot = 0 end
-                        if self._passenger_is_sit[i] == 2 then y_rot = 90 end
-                        if self._passenger_is_sit[i] == 3 then y_rot = 180 end
-                        if self._passenger_is_sit[i] == 4 then y_rot = 270 end
-                        player:set_attach(self._passengers_base[i], "", {x = 0, y = 3.6, z = 0}, {x = 0, y = y_rot, z = 0})
-                        airutils.sit(player)
                     end
                 end
             end
