@@ -264,6 +264,22 @@ function steampunk_blimp.move_persons(self)
     --self._passenger = nil
     if self.object == nil then return end
 
+    --======================================================
+    --[[if steampunk_blimp.profiler_is_on == true then
+        if self.profiler_counter1 == nil then
+            self.profiler_counter1 = 0
+            self.profiler_sum1 = 0
+            self.profiler_counter2 = 0
+            self.profiler_sum2 = 0
+        end
+    else
+        self.profiler_counter1 = 0
+        self.profiler_sum1 = 0
+        self.profiler_counter2 = 0
+        self.profiler_sum2 = 0
+    end]]--
+    --======================================================
+
     for i = steampunk_blimp.max_seats,1,-1
     do
         local player = nil
@@ -291,7 +307,10 @@ function steampunk_blimp.move_persons(self)
                             --core.chat_send_all(dump(new_pos))
                             local pos_d = steampunk_blimp.navigate_deck(self._passengers_base_pos[i], new_pos, player)
                             --core.chat_send_all(dump(height))
-                            if self._passengers_base_pos[i].x ~= pos_d.x or self._passengers_base_pos[i].z ~= pos_d.z or self._passengers_base_pos[i].y ~= pos_d.y  then
+
+                            if (self._passengers_base_pos[i].x ~= pos_d.x or self._passengers_base_pos[i].z ~= pos_d.z or self._passengers_base_pos[i].y ~= pos_d.y) then
+                                --or self.profiler_counter1 == 1000 then --vai entrar sempre qdo for maior ou igual a 100
+                                --core.chat_send_all(dump(self.dtime))
                                 self._passengers_base_pos[i] = steampunk_blimp.copy_vector(pos_d)
                                 self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
                             end
@@ -303,6 +322,53 @@ function steampunk_blimp.move_persons(self)
             end
         end
     end
+    --[[if steampunk_blimp.profiler_is_on == true then
+        if self.profiler_counter1 < 1000 then
+            self.profiler_counter1 = self.profiler_counter1 + 1
+            self.profiler_sum1 = self.profiler_sum1 + self.dtime
+        end
+        if self.profiler_counter1 == 1000 then
+            self.profiler_counter2 = self.profiler_counter2 + 1
+            self.profiler_sum2 = self.profiler_sum2 + self.dtime
+        end
+        if self.profiler_counter2 == 1000 then
+            steampunk_blimp.profiler_is_on = false
+            --TODO printar resultados
+            core.chat_send_player(steampunk_blimp.profiler_name,core.colorize('#00ff00', " >>> blocking attach update: "..self.profiler_sum1))
+            core.chat_send_player(steampunk_blimp.profiler_name,core.colorize('#ff0000', " >>> free attach update: "..self.profiler_sum2))
+        end
+    end]]--
+    
 end
 
+--[[steampunk_blimp.profiler_is_on = false
+steampunk_blimp.profiler_name = ""
+core.register_chatcommand("run_profiler", {
+	params = "",
+	description = "Sum 100 cycles of dtime with and without comparing player movement on deck",
+	privs = {interact = true},
+	func = function(name, param)
+        local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
+        local player = core.get_player_by_name(name)
+        local attached_to = player:get_attach()
+
+		if attached_to ~= nil then
+            local seat = attached_to:get_attach()
+            if seat ~= nil then
+                local entity = seat:get_luaentity()
+                if entity then
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:cannon_blimp" then
+                        steampunk_blimp.profiler_is_on = true
+                        steampunk_blimp.profiler_name = name
+                        core.chat_send_player(name,core.colorize('#0000ff', " >>> profiler started"))
+                    else
+			            core.chat_send_player(name,colorstring)
+                    end
+                end
+            end
+		else
+			core.chat_send_player(name,colorstring)
+		end
+	end
+})]]--
 
