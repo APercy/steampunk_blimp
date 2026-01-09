@@ -30,14 +30,19 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 "* Jump and sneak: controls the up and down movement \n",
                 "* Aux (E) + right click while inside: acess inventory \n",
                 "* Aux (E) + backward while in drive position: the machine does backward \n",
-                "* Aux (E) + foward while in drive position: extra power \n"
+                "* Aux (E) + foward while in drive position: extra power \n",
+                "* Aux (E) + left while in drive position: shot left cannon *\n",
+                "* Aux (E) + right while in drive position: shot right cannon *\n",
+                "* Aux (E) + space while in drive position: shot both cannons *\n\n",
+                "(* the cannons must be loaded and unlocked before the shot)\n",
+                "(* the ammo for the cannons must be at the bottom line of blimp inventory)"
 			}
 			local shortcut_form = table.concat({
 				"formspec_version[3]",
 				"size[16,10]",
                 "no_prepend[]",
                 "bgcolor["..formspec_color..";false]",
-				"label[1.0,2.0;", table.concat(text, ""), "]",
+        "textarea[0.75,0.1;15.25,9;;" .. table.concat(text, "") .. ";]",
 			}, "")
 			core.show_formspec(player:get_player_name(), "steampunk_blimp:manual_shortcut", shortcut_form)
 		end
@@ -48,14 +53,22 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 				"water for the boiler. The fuel can be coal, coal block or wood. To supply it, \n",
 				"be on board and punch the necessary items on the airship.\n",
                 "There is another way to load water to the boiler: if it is landed on water, it can load \n",
-				"it through the menu. But the current pressure will be lost. \n"
+				"it through the menu. But the current pressure will be lost. \n\n",
+        "Repair\n",
+        "Now impacts and shots will damage the airship.\nBut the damage is limited until hp reaches the value of 10.\n",
+        "The damaged blimp wont fly and will fall after losing it's pressure.\n",
+        "To repair the damaged airship, punch gold ingots into it.\n\n",
+        "Gun load\n\n",
+        "Put gunpowder and cannon ball into last line of the blimp inventory.\n",
+        "Then right click on each gun for view gun load menu.\n",
+        "For effective combat, a second player is needed to load the guns."
 			}
 			local fuel_form = table.concat({
 				"formspec_version[3]",
 				"size[16,10]",
                 "no_prepend[]",
                 "bgcolor["..formspec_color..";false]",
-				"label[1.0,2.0;", table.concat(text, ""), "]",
+        "textarea[0.75,0.1;15.25,9;;" .. table.concat(text, "") .. ";]",
 			}, "")
 			core.show_formspec(player:get_player_name(), "steampunk_blimp:fuel", fuel_form)
 		end
@@ -75,7 +88,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 				"size[16,10]",
                 "no_prepend[]",
                 "bgcolor["..formspec_color..";false]",
-				"label[1,2;", table.concat(text, ""), "]",
+        "textarea[0.75,0.1;15.25,9;;" .. table.concat(text, "") .. ";]",
 			}, "")
 			core.show_formspec(player:get_player_name(), "steampunk_blimp:share", tips_form)
 		end

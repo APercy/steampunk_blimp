@@ -553,6 +553,15 @@ if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 		            {"", "default:steel_ingot",""},
 	            }
             })
+        elseif airutils.is_mcl then
+            core.register_craft({
+	            output = 'steampunk_blimp:cannon_ball1',
+	            recipe = {
+		            {"", "mcl_core:iron_ingot",""},
+		            {"mcl_core:iron_ingot","mcl_tnt:tnt", "mcl_core:iron_ingot"},
+		            {"", "mcl_core:iron_ingot",""},
+	            }
+            })
         end
     end
 
