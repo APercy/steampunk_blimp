@@ -219,12 +219,11 @@ local function set_list(list)
 end
 
 local function take_item_from_ship_inventory(self, itemname)
-    local inv = airutils.get_inventory(self)
-    if not inv then return nil end
+    if not self._inv then return nil end
 
     local total_taken = 0
     local stack = ItemStack(itemname.." 1")
-    local taken = inv:remove_item("main", stack)
+    local taken = self._inv:remove_item("main", stack)
     local total_taken = taken:get_count()
 
     if total_taken > 0 then
@@ -244,8 +243,7 @@ local function find_in_list(item_name, list)
 end
 
 local function take_ammo_from_from_last_line(self)
-    local inv = airutils.get_inventory(self)
-    if not inv then return "" end
+    if not self._inv then return "" end
 
     local total_taken = 0
     local curr_stack = nil
@@ -253,13 +251,13 @@ local function take_ammo_from_from_last_line(self)
     local ammo_name = ""
     for i = 41, 50, 1
     do
-        curr_stack = inv:get_stack("main", i)
+        curr_stack = self._inv:get_stack("main", i)
         ammo_name = curr_stack:get_name()
         --core.chat_send_all(dump(curr_stack))
         if find_in_list(ammo_name, steampunk_blimp.avail_ammo) > 0 then
             --core.chat_send_all("achou "..dump(curr_stack))
             local stack = ItemStack(ammo_name)
-            taken = inv:remove_item("main", stack)
+            taken = self._inv:remove_item("main", stack)
             break
         end
     end
@@ -275,17 +273,10 @@ end
 
 local function take_powder_from_from_inventory(self)
     if not self then return "" end
-    local inv = nil
-    if self._inv then
-        inv = core.get_inventory({type="detached", name=self._inv_id})
-    end
-    if not inv then
-        return
-    end
 
     --local inv = airutils.get_inventory(self)
     --core.chat_send_all("antes inventario")
-    if not inv then return "" end
+    if not self._inv then return "" end
     --core.chat_send_all("tem inventario")
 
     local total_taken = 0
@@ -294,13 +285,13 @@ local function take_powder_from_from_inventory(self)
     local item_name = ""
     for i = 1, 50, 1
     do
-        curr_stack = inv:get_stack("main", i)
+        curr_stack = self._inv:get_stack("main", i)
         item_name = curr_stack:get_name()
         --core.chat_send_all(dump(curr_stack))
         if find_in_list(item_name, steampunk_blimp.avail_powder) > 0 then
             --core.chat_send_all("achou "..dump(curr_stack))
             local stack = ItemStack(item_name)
-            taken = inv:remove_item("main", stack)
+            taken = self._inv:remove_item("main", stack)
             break
         end
     end
@@ -315,13 +306,12 @@ local function take_powder_from_from_inventory(self)
 end
 
 local function add_item_to_ship_inventory(self, itemname)
-    local inv = airutils.get_inventory(self)
-    if not inv then return nil end
+    if not self._inv then return nil end
     if itemname == "" or itemname == nil then return end
 
     local total_added = 0
     local stack = ItemStack(itemname.." 1")
-    local added = inv:add_item("main", stack)
+    local added = self._inv:add_item("main", stack)
     local total_added = added:get_count()
 
     if total_added > 0 then

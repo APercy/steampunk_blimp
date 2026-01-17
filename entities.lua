@@ -520,7 +520,7 @@ core.register_entity("steampunk_blimp:blimp", {
 		    if not inv then
                 airutils.create_inventory(self, steampunk_blimp.trunk_slots)
 		    else
-		        self.inv = inv
+		        self._inv = inv
             end
         end
 
