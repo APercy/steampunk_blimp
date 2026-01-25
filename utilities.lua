@@ -657,14 +657,7 @@ function steampunk_blimp.right_click_helm(self, clicker)
             end
         else
             --check if is on owner list
-            local is_shared = false
-            if name == ship_self.owner or can_bypass then is_shared = true end
-            for k, v in pairs(ship_self._shared_owners) do
-                if v == name then
-                    is_shared = true
-                    break
-                end
-            end
+            local is_shared = steampunk_blimp.shared_player_is_allowed(ship_self, clicker)
             --normal user
             if is_shared == false then
                 steampunk_blimp.pax_formspec(name)
@@ -861,4 +854,45 @@ function steampunk_blimp.right_click_cannon(self, clicker)
             steampunk_blimp.prepare_cannon_formspec(self, name, side)
         end
     end
+end
+
+function steampunk_blimp.repair(self, puncher)
+    local itmstck=puncher:get_wielded_item()
+    local name = puncher:get_player_name()
+    local item_name = ""
+    if itmstck then item_name = itmstck:get_name() end
+
+    if itmstck then
+        local repair = airutils.contains(steampunk_blimp.rep_material, item_name)
+        if repair then
+            local stack = ItemStack(item_name .. " 1")
+            if self.hp < steampunk_blimp.max_hp then
+                itmstck:set_count(1)
+                local inv = puncher:get_inventory()
+                inv:remove_item("main", itmstck)
+                if repair then
+                    self.hp = self.hp + repair.amount
+                end
+                if self.hp > steampunk_blimp.max_hp then self.hp = steampunk_blimp.max_hp end
+            end
+            if self.hp >= steampunk_blimp.max_hp then core.chat_send_player(name, "The blimp has already been fixed!") end
+        end
+    end
+end
+
+-- check if the blimp is shared for this player
+function steampunk_blimp.shared_player_is_allowed(self, clicker)
+    if not self._shared_owners then return false end
+    if not clicker then return false end
+    local name = clicker:get_player_name()
+    local is_shared = false
+    local can_bypass = core.check_player_privs(clicker, {protection_bypass=true})
+    if name == self.owner or can_bypass then is_shared = true end
+    for k, v in pairs(self._shared_owners) do
+        if v == name then
+            is_shared = true
+            break
+        end
+    end
+    return is_shared
 end

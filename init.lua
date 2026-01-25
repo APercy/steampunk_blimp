@@ -340,6 +340,7 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 
 steampunk_blimp.wind_enabled = core.settings:get_bool('steampunk_blimp.enable_wind')
 steampunk_blimp.cannons_enabled = core.settings:get_bool('steampunk_blimp.enable_cannons')
+steampunk_blimp.only_owners_can_repair = core.settings:get_bool('steampunk_blimp.only_owners_can_repair')
 
 --
 -- crafting

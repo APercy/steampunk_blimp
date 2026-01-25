@@ -8,3 +8,6 @@ steampunk_blimp.disable_craftitems (airships cannot be built) bool false
 
 # Enables building the gunboat version of the airship
 steampunk_blimp.enable_cannons (enables building the gunboat version) bool false
+
+# Only owners (and shared owners) can reapir the airship
+steampunk_blimp.only_owners_can_repair (disables the ability for any player to repair the airship) bool false

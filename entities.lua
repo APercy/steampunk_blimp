@@ -753,24 +753,19 @@ core.register_entity("steampunk_blimp:blimp", {
             --refuel
             if steampunk_blimp.load_fuel(self, puncher) then return end
             if steampunk_blimp.load_water(self, puncher) then return end
-        end
 
-        if itmstck then
-            local repair = airutils.contains(steampunk_blimp.rep_material, item_name)
-            if repair then
-                local stack = ItemStack(item_name .. " 1")
-                if self.hp < steampunk_blimp.max_hp then
-                    itmstck:set_count(1)
-                    local inv = puncher:get_inventory()
-                    inv:remove_item("main", itmstck)
-                    if repair then
-                        self.hp = self.hp + repair.amount
-                    end
-                    if self.hp > steampunk_blimp.max_hp then self.hp = steampunk_blimp.max_hp end
+            if steampunk_blimp.only_owners_can_repair == true then
+                if steampunk_blimp.shared_player_is_allowed(self, puncher) then
+                    -- aqui somente os donos pode reparar
+                    steampunk_blimp.repair(self, puncher)
                 end
-                if self.hp >= steampunk_blimp.max_hp then core.chat_send_player(name, "The blimp has already been fixed!") end
+            else
+                -- qq um repara aqui
+                steampunk_blimp.repair(self, puncher)
             end
         end
+
+
 
         if self.owner and self.owner ~= name and self.owner ~= "" then
             if is_admin == false then return end
@@ -784,6 +779,7 @@ core.register_entity("steampunk_blimp:blimp", {
         -- deal with painting or destroying
         if itmstck then
             --core.chat_send_all(dump(item_name))
+
             local find_str = 'dye:'
             if airutils.is_mcl and not core.get_modpath("mcl_playerplus") then
                 --mineclonia
@@ -821,30 +817,6 @@ core.register_entity("steampunk_blimp:blimp", {
                     break
                 end
             end
-
-
-            --[[if not has_passengers and toolcaps and toolcaps.damage_groups and
-                    toolcaps.groupcaps and (toolcaps.groupcaps.choppy or toolcaps.groupcaps.axey_dig) then
-
-                local is_empty = true
-
-                --airutils.make_sound(self,'hit')
-                if is_empty == true then
-                    self.hp = self.hp - 10
-                    core.sound_play("steampunk_blimp_collision", {
-                        object = self.object,
-                        max_hear_distance = 5,
-                        gain = 1.0,
-                        fade = 0.0,
-                        pitch = 1.0,
-                    })
-                end
-            end
-
-            if self.hp <= 0 then
-                steampunk_blimp.get_blimp_back(self, puncher, false)
-            end]]--
-
         end
 
     end,
