@@ -235,7 +235,7 @@ core.register_tool("steampunk_blimp:blimp", {
             --ent.hp = 50 --reset hp
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
-            airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
+            steampunk_blimp.create_inventory(ent, steampunk_blimp.trunk_slots)
 
             local properties = ent.object:get_properties()
             properties.infotext = owner .. " nice blimp"
@@ -284,7 +284,7 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
             steampunk_blimp.paint(ent, "black")
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
-            airutils.create_inventory(ent, steampunk_blimp.trunk_slots, owner)
+            steampunk_blimp.create_inventory(ent, steampunk_blimp.trunk_slots)
 
             local properties = ent.object:get_properties()
             properties.infotext = owner .. " war blimp"

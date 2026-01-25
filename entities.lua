@@ -518,7 +518,7 @@ core.register_entity("steampunk_blimp:blimp", {
 		    local inv = core.get_inventory({type = "detached", name = self._inv_id})
 		    -- if the game was closed the inventories have to be made anew, instead of just reattached
 		    if not inv then
-                airutils.create_inventory(self, steampunk_blimp.trunk_slots)
+                steampunk_blimp.create_inventory(self, steampunk_blimp.trunk_slots)
 		    else
 		        self._inv = inv
             end

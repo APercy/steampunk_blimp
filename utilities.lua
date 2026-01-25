@@ -896,3 +896,46 @@ function steampunk_blimp.shared_player_is_allowed(self, clicker)
     end
     return is_shared
 end
+
+
+function steampunk_blimp.create_inventory(self, size, owner)
+    owner = owner or ""
+    if owner == "" then owner = self.owner end
+    --core.chat_send_all("slots: " .. size)
+    if owner ~= nil and owner ~= "" then
+        if self._inv_id == "" then
+            self._inv_id = inventory_id(owner)
+        end
+        local vehicle_inv = core.create_detached_inventory(self._inv_id, {
+            allow_move = function(inv, from_list, from_index, to_list, to_index, count)
+                return count -- allow moving
+            end,
+
+            allow_put = function(inv, listname, index, stack)
+                return stack:get_count() -- allow putting
+            end,
+
+            allow_take = function(inv, listname, index, stack)
+                return stack:get_count() -- allow taking
+            end,
+            on_put = function(inv, toList, toIndex, stack)
+                airutils.save_inventory(self)
+            end,
+            on_take = function(inv, toList, toIndex, stack)
+                airutils.save_inventory(self)
+            end,
+            on_move = function(inv, from_list, from_index, to_list, to_index, count)
+                airutils.save_inventory(self)
+            end,
+        }) --, owner)
+        if size >= 8 then
+            if vehicle_inv:set_size("main", size) then
+                vehicle_inv:set_width("main", 8)
+            end
+        else
+            vehicle_inv:set_size("main", size)
+        end
+        self._inv = vehicle_inv
+        airutils.load_inventory(self)
+    end
+end
