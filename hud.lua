@@ -69,7 +69,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         ids = {}
 
         ids["title"] = player:hud_add({
-            hud_elem_type = "text",
+            type = "text",
             position  = {x = 0, y = 1},
             offset    = {x = screen_pos_x + 240, y = screen_pos_y - 100},
             text      = "Blimp engine state",
@@ -79,7 +79,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         })
 
         ids["bg"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = screen_pos_x, y = screen_pos_y},
             text      = "steampunk_blimp_hud_panel.png",
@@ -88,7 +88,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         })
 
         ids["coal_1"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = coal_1_x, y = coal_1_y},
             text      = "steampunk_blimp_0.png",
@@ -97,7 +97,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         })
 
         ids["coal_2"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = coal_2_x, y = coal_2_y},
             text      = "steampunk_blimp_0.png",
@@ -106,7 +106,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         })
 
         ids["throttle"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = throttle_x, y = throttle_y},
             text      = "steampunk_blimp_throttle.png",
@@ -115,7 +115,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         })
 
         ids["water_pt_1"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = water_gauge_x, y = water_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -124,7 +124,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         })
 
         ids["water_pt_2"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = water_gauge_x, y = water_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -132,7 +132,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["water_pt_3"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = water_gauge_x, y = water_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -140,7 +140,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["water_pt_4"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = water_gauge_x, y = water_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -148,7 +148,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["water_pt_5"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = water_gauge_x, y = water_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -156,7 +156,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["water_pt_6"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = water_gauge_x, y = water_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -164,7 +164,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["water_pt_7"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = water_gauge_x, y = water_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -173,7 +173,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
         })
 
         ids["press_pt_1"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = press_gauge_x, y = press_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -181,7 +181,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["press_pt_2"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = press_gauge_x, y = press_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -189,7 +189,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["press_pt_3"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = press_gauge_x, y = press_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -197,7 +197,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["press_pt_4"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = press_gauge_x, y = press_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -205,7 +205,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["press_pt_5"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = press_gauge_x, y = press_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -213,7 +213,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["press_pt_6"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = press_gauge_x, y = press_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
@@ -221,7 +221,7 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
             alignment = { x = 1, y = 0 },
         })
         ids["press_pt_7"] = player:hud_add({
-            hud_elem_type = "image",
+            type = "image",
             position  = {x = 0, y = 1},
             offset    = {x = press_gauge_x, y = press_gauge_y},
             text      = "steampunk_blimp_ind_box.png",
