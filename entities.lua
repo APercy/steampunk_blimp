@@ -755,6 +755,23 @@ core.register_entity("steampunk_blimp:blimp", {
             if steampunk_blimp.load_water(self, puncher) then return end
         end
 
+        if itmstck then
+            local repair = airutils.contains(steampunk_blimp.rep_material, item_name)
+            if repair then
+                local stack = ItemStack(item_name .. " 1")
+                if self.hp < steampunk_blimp.max_hp then
+                    itmstck:set_count(1)
+                    local inv = puncher:get_inventory()
+                    inv:remove_item("main", itmstck)
+                    if repair then
+                        self.hp = self.hp + repair.amount
+                    end
+                    if self.hp > steampunk_blimp.max_hp then self.hp = steampunk_blimp.max_hp end
+                end
+                if self.hp >= steampunk_blimp.max_hp then core.chat_send_player(name, "The blimp has already been fixed!") end
+            end
+        end
+
         if self.owner and self.owner ~= name and self.owner ~= "" then
             if is_admin == false then return end
         end
@@ -793,22 +810,6 @@ core.register_entity("steampunk_blimp:blimp", {
                 end
                 -- end painting
             end
-
-            local repair = airutils.contains(steampunk_blimp.rep_material, item_name)
-            if repair then
-                local stack = ItemStack(item_name .. " 1")
-                if self.hp < steampunk_blimp.max_hp then
-                    itmstck:set_count(1)
-                    local inv = puncher:get_inventory()
-                    inv:remove_item("main", itmstck)
-                    if repair then
-                        self.hp = self.hp + repair.amount
-                    end
-                    if self.hp > steampunk_blimp.max_hp then self.hp = steampunk_blimp.max_hp end
-                end
-                if self.hp >= steampunk_blimp.max_hp then core.chat_send_player(name, "The blimp has already been fixed!") end
-            end
-
         end
 
         if is_attached == false then
