@@ -333,6 +333,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     end
 
     if formname == "steampunk_blimp:owner_main" then
+        if steampunk_blimp.shared_player_is_allowed(ent, player) == false then return end
         if ent then
 		    if fields.disembark_l then
                 steampunk_blimp.dettach_pax(ent, player, "l")
@@ -371,6 +372,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         core.close_formspec(name, "steampunk_blimp:passenger_main")
 	end
     if formname == "steampunk_blimp:logo_ext" then
+        if steampunk_blimp.shared_player_is_allowed(ent, player) == false then return end
         if ent then
             if fields.set_texture then
                 if ent.name == "steampunk_blimp:blimp" then
@@ -408,6 +410,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         end
     end
     if formname == "steampunk_blimp:pilot_main" then
+        if steampunk_blimp.shared_player_is_allowed(ent, player) == false then return end
         if ent then
 		    if fields.turn_on then
                 steampunk_blimp.start_furnace(ent)
