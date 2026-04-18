@@ -897,6 +897,13 @@ function steampunk_blimp.shared_player_is_allowed(self, clicker)
     return is_shared
 end
 
+local function inventory_id(maker_name)
+    local id= airutils.modname .. "_" .. maker_name .. "_"
+    for i=0,5 do
+        id=id..(math.random(0,9))
+    end
+    return id
+end
 
 function steampunk_blimp.create_inventory(self, size, owner)
     owner = owner or ""
