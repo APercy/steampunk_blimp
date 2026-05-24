@@ -1,3 +1,6 @@
+local function xyz(fx, fy, fz) return { x = fx, y = fy, z = fz } end
+local c = core
+local cmodepath = c.getmodpath
 steampunk_blimp = {}
 steampunk_blimp.gravity = 9.8
 steampunk_blimp.trunk_slots = 50
@@ -30,7 +33,7 @@ steampunk_blimp.rep_material = {
 steampunk_blimp.avail_powder = { "tnt:gunpowder", "mcl_mobitems:gunpowder", "cannons:gunpowder", }
 steampunk_blimp.avail_ammo = { "steampunk_blimp:cannon_ball1", }
 
-if core.get_modpath("cannons") then
+if cmodepath("cannons") then
 	local cannons_entities = {
 		"cannons:ball_wood_stack_1",
 		"cannons:ball_stone_stack_1",
@@ -52,7 +55,7 @@ steampunk_blimp.max_seats = 7
 steampunk_blimp.wind_enabled = false
 steampunk_blimp.pilot_base_pos = { x = 0.0, y = 20.821, z = -30 }
 steampunk_blimp.passenger_pos = {
-	[1] = { x = 0.0, y = 0, z = -15 },
+	[1] = xyz(0.0, 0, -15 ),
 	[2] = { x = -11, y = 0, z = -12 },
 	[3] = { x = 11, y = 0, z = -12 },
 	[4] = { x = -11, y = 0, z = 14 },
@@ -190,17 +193,17 @@ steampunk_blimp.colors = {
 steampunk_blimp.cannons_loc = { x = 24, y = -2, z = 0 }
 steampunk_blimp.cannons_sz = 15
 
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "cannon_balls.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "walk_map.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "utilities.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "control.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "fuel_management.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "engine_management.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "custom_physics.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "hud.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "entities.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "forms.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "manual.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "cannon_balls.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "walk_map.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "utilities.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "control.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "fuel_management.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "engine_management.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "custom_physics.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "hud.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "entities.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "forms.lua")
+dofile(cmodepath("steampunk_blimp") .. DIR_DELIM .. "manual.lua")
 
 --
 -- helpers and co.
@@ -220,7 +223,7 @@ function steampunk_blimp.minmax(v, m) return math.min(math.abs(v), m) * steampun
 -- items
 -----------
 -- blimp
-core.register_tool("steampunk_blimp:blimp", {
+c.register_tool("steampunk_blimp:blimp", {
 	description = "Steampunk Blimp",
 	inventory_image = "steampunk_blimp_icon.png",
 	liquids_pointable = true,
@@ -233,11 +236,11 @@ core.register_tool("steampunk_blimp:blimp", {
 		local staticdata = stack_meta:get_string("staticdata")
 
 		local pointed_pos = pointed_thing.under
-		--local node_below = core.get_node(pointed_pos).name
-		--local nodedef = core.registered_nodes[node_below]
+		--local node_below = c.get_node(pointed_pos).name
+		--local nodedef = c.registered_nodes[node_below]
 
 		pointed_pos.y = pointed_pos.y + 3
-		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
+		local blimp = c.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
 		if blimp and placer then
 			local ent = blimp:get_luaentity()
 			ent._passengers = steampunk_blimp.copy_vector({
@@ -249,7 +252,7 @@ core.register_tool("steampunk_blimp:blimp", {
 				[6] = nil,
 				[7] = nil
 			})
-			--core.chat_send_all('passengers: '.. dump(ent._passengers))
+			--c.chat_send_all('passengers: '.. dump(ent._passengers))
 			local owner = placer:get_player_name()
 			ent.owner = owner
 			--ent.hp = 50 --reset hp
@@ -269,7 +272,7 @@ core.register_tool("steampunk_blimp:blimp", {
 
 
 -- tactical steampunk blimp
-core.register_tool("steampunk_blimp:cannon_blimp", {
+c.register_tool("steampunk_blimp:cannon_blimp", {
 	description = "Gunboat Steampunk Blimp",
 	inventory_image = "steampunk_blimp_gunboat_icon.png",
 	liquids_pointable = true,
@@ -287,11 +290,11 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
 		end
 
 		local pointed_pos = pointed_thing.under
-		--local node_below = core.get_node(pointed_pos).name
-		--local nodedef = core.registered_nodes[node_below]
+		--local node_below = c.get_node(pointed_pos).name
+		--local nodedef = c.registered_nodes[node_below]
 
 		pointed_pos.y = pointed_pos.y + 3
-		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
+		local blimp = c.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
 		if blimp and placer then
 			local ent = blimp:get_luaentity()
 			ent._passengers = steampunk_blimp.copy_vector({
@@ -303,7 +306,7 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
 				[6] = nil,
 				[7] = nil
 			})
-			--core.chat_send_all('passengers: '.. dump(ent._passengers))
+			--c.chat_send_all('passengers: '.. dump(ent._passengers))
 			ent.owner = owner
 			--ent.hp = 50 --reset hp
 			ent._vehicle_name = "Gunboat Steampunk Blimp",
@@ -324,7 +327,7 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
 
 
 -- ephemeral blimp
-core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
+c.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 	description = "Ephemeral Blimp",
 	inventory_image = "steampunk_blimp_ephemeral_icon.png",
 	liquids_pointable = true,
@@ -333,11 +336,11 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 		if pointed_thing.type ~= "node" then return end
 
 		local pointed_pos = pointed_thing.under
-		--local node_below = core.get_node(pointed_pos).name
-		--local nodedef = core.registered_nodes[node_below]
+		--local node_below = c.get_node(pointed_pos).name
+		--local nodedef = c.registered_nodes[node_below]
 
 		pointed_pos.y = pointed_pos.y + 3
-		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:blimp")
+		local blimp = c.add_entity(pointed_pos, "steampunk_blimp:blimp")
 		if blimp and placer then
 			local ent = blimp:get_luaentity()
 			ent._passengers = steampunk_blimp.copy_vector({
@@ -349,7 +352,7 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 				[6] = nil,
 				[7] = nil
 			})
-			--core.chat_send_all('passengers: '.. dump(ent._passengers))
+			--c.chat_send_all('passengers: '.. dump(ent._passengers))
 			local owner = placer:get_player_name()
 			ent.owner = owner
 			ent._remove = true
@@ -370,47 +373,47 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 	end,
 })
 
-steampunk_blimp.wind_enabled = core.settings:get_bool('steampunk_blimp.enable_wind')
-steampunk_blimp.cannons_enabled = core.settings:get_bool('steampunk_blimp.enable_cannons')
-steampunk_blimp.only_owners_can_repair = core.settings:get_bool('steampunk_blimp.only_owners_can_repair')
+steampunk_blimp.wind_enabled = c.settings:get_bool('steampunk_blimp.enable_wind')
+steampunk_blimp.cannons_enabled = c.settings:get_bool('steampunk_blimp.enable_cannons')
+steampunk_blimp.only_owners_can_repair = c.settings:get_bool('steampunk_blimp.only_owners_can_repair')
 
 --
 -- crafting
 --
 
-if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
+if not c.settings:get_bool('steampunk_blimp.disable_craftitems') then
 	local item_name = "steampunk_blimp:cylinder_part"
 	if airutils.is_repixture then
 		crafting.register_craft({ output = item_name, items = { "group:fuzzy 8", "rp_default:stick 4", "group:planks 1", } })
 	elseif airutils.is_mcl then
-		core.register_craft({ output = item_name, recipe = { { "mcl_core:stick", "mcl_wool:white", "mcl_core:stick" }, { "mcl_wool:white", "mcl_core:wood", "mcl_wool:white" }, { "mcl_core:stick", "mcl_wool:white", "mcl_core:stick" }, } })
+		c.register_craft({ output = item_name, recipe = { { "mcl_core:stick", "mcl_wool:white", "mcl_core:stick" }, { "mcl_wool:white", "mcl_core:wood", "mcl_wool:white" }, { "mcl_core:stick", "mcl_wool:white", "mcl_core:stick" }, } })
 	else
-		core.register_craft({ output = item_name, recipe = { { "default:stick", "wool:white", "default:stick" }, { "wool:white", "group:wood", "wool:white" }, { "default:stick", "wool:white", "default:stick" }, } })
+		c.register_craft({ output = item_name, recipe = { { "default:stick", "wool:white", "default:stick" }, { "wool:white", "group:wood", "wool:white" }, { "default:stick", "wool:white", "default:stick" }, } })
 	end
 
 	item_name = "steampunk_blimp:cylinder"
 	if airutils.is_repixture then
 		crafting.register_craft({ output = item_name, items = { "steampunk_blimp:cylinder_part 3", } })
 	else
-		core.register_craft({ output = item_name, recipe = { { "steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part" }, } })
+		c.register_craft({ output = item_name, recipe = { { "steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part", "steampunk_blimp:cylinder_part" }, } })
 	end
 
 	item_name = "steampunk_blimp:rotor"
 	if airutils.is_repixture then
 		crafting.register_craft({ output = item_name, items = { "group:fuzzy 3", "rp_default:stick 3", "rp_default:block_wrought_iron 1", } })
 	elseif airutils.is_mcl then
-		core.register_craft({ output = item_name, recipe = { { "mcl_wool:white", "mcl_core:stick", "" }, { "mcl_wool:white", "mcl_core:stick", "mcl_core:ironblock" }, { "mcl_wool:white", "mcl_core:stick", "" }, } })
+		c.register_craft({ output = item_name, recipe = { { "mcl_wool:white", "mcl_core:stick", "" }, { "mcl_wool:white", "mcl_core:stick", "mcl_core:ironblock" }, { "mcl_wool:white", "mcl_core:stick", "" }, } })
 	else
-		core.register_craft({ output = item_name, recipe = { { "wool:white", "default:stick", "" }, { "wool:white", "default:stick", "default:steelblock" }, { "wool:white", "default:stick", "" }, } })
+		c.register_craft({ output = item_name, recipe = { { "wool:white", "default:stick", "" }, { "wool:white", "default:stick", "default:steelblock" }, { "wool:white", "default:stick", "" }, } })
 	end
 
 	item_name = "steampunk_blimp:boiler"
 	if airutils.is_repixture then
 		crafting.register_craft({ output = item_name, items = { "rp_default:ingot_wrought_iron 4", "rp_default:block_wrought_iron 2", } })
 	elseif airutils.is_mcl then
-		core.register_craft({ output = item_name, recipe = { { "mcl_core:iron_ingot", "mcl_core:iron_ingot" }, { "mcl_core:ironblock", "mcl_core:iron_ingot", }, { "mcl_core:ironblock", "mcl_core:iron_ingot" }, } })
+		c.register_craft({ output = item_name, recipe = { { "mcl_core:iron_ingot", "mcl_core:iron_ingot" }, { "mcl_core:ironblock", "mcl_core:iron_ingot", }, { "mcl_core:ironblock", "mcl_core:iron_ingot" }, } })
 	else
-		core.register_craft({ output = item_name, recipe = { { "default:steel_ingot", "default:steel_ingot" }, { "default:steelblock", "default:steel_ingot", }, { "default:steelblock", "default:steel_ingot" }, } })
+		c.register_craft({ output = item_name, recipe = { { "default:steel_ingot", "default:steel_ingot" }, { "default:steelblock", "default:steel_ingot", }, { "default:steelblock", "default:steel_ingot" }, } })
 	end
 
 	if steampunk_blimp.cannons_enabled == true then
@@ -418,9 +421,9 @@ if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 		if airutils.is_repixture then
 			crafting.register_craft({ output = item_name, items = { "rp_default:ingot_wrought_iron 2", "rp_default:block_wrought_iron 4", "group:planks 3", } })
 		elseif airutils.is_mcl then
-			core.register_craft({ output = item_name, recipe = { { "mcl_core:ironblock", "mcl_core:ironblock", "group:wood" }, { "mcl_core:iron_ingot", "mcl_core:iron_ingot", "group:wood" }, { "mcl_core:ironblock", "mcl_core:ironblock", "group:wood" }, } })
+			c.register_craft({ output = item_name, recipe = { { "mcl_core:ironblock", "mcl_core:ironblock", "group:wood" }, { "mcl_core:iron_ingot", "mcl_core:iron_ingot", "group:wood" }, { "mcl_core:ironblock", "mcl_core:ironblock", "group:wood" }, } })
 		else
-			core.register_craft({ output = item_name, recipe = { { "default:steelblock", "default:steelblock", "group:wood" }, { "default:steel_ingot", "default:steel_ingot", "group:wood" }, { "default:steelblock", "default:steelblock", "group:wood" }, } })
+			c.register_craft({ output = item_name, recipe = { { "default:steelblock", "default:steelblock", "group:wood" }, { "default:steel_ingot", "default:steel_ingot", "group:wood" }, { "default:steelblock", "default:steelblock", "group:wood" }, } })
 		end
 	end
 
@@ -428,14 +431,14 @@ if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 	if airutils.is_repixture then
 		crafting.register_craft({ output = item_name, items = { "group:planks 6", "steampunk_blimp:rotor 2", "steampunk_blimp:boiler 1", } })
 	else
-		core.register_craft({ output = item_name, recipe = { { "group:wood", "group:wood", "steampunk_blimp:rotor" }, { "group:wood", "steampunk_blimp:boiler", "group:wood" }, { "group:wood", "group:wood", "steampunk_blimp:rotor" }, } })
+		c.register_craft({ output = item_name, recipe = { { "group:wood", "group:wood", "steampunk_blimp:rotor" }, { "group:wood", "steampunk_blimp:boiler", "group:wood" }, { "group:wood", "group:wood", "steampunk_blimp:rotor" }, } })
 	end
 
 	item_name = "steampunk_blimp:blimp"
 	if airutils.is_repixture then
 		crafting.register_craft({ output = item_name, items = { "steampunk_blimp:cylinder 1", "steampunk_blimp:boat 1", } })
 	else
-		core.register_craft({ output = item_name, recipe = { { "steampunk_blimp:cylinder", }, { "steampunk_blimp:boat", }, } })
+		c.register_craft({ output = item_name, recipe = { { "steampunk_blimp:cylinder", }, { "steampunk_blimp:boat", }, } })
 	end
 
 	if steampunk_blimp.cannons_enabled == true then
@@ -443,18 +446,18 @@ if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 		if airutils.is_repixture then
 			crafting.register_craft({ output = item_name, items = { "steampunk_blimp:blimp 1", "steampunk_blimp:cannon 2", } })
 		else
-			core.register_craft({
+			c.register_craft({
 				output = item_name,
 				recipe = { { "steampunk_blimp:cannon", "steampunk_blimp:blimp", "steampunk_blimp:cannon", }, }
 			})
 		end
 		if airutils.is_minetest then
-			core.register_craft({
+			c.register_craft({
 				output = 'steampunk_blimp:cannon_ball1',
 				recipe = { { "", "default:steel_ingot", "" }, { "default:steel_ingot", "tnt:tnt_stick", "default:steel_ingot" }, { "", "default:steel_ingot", "" }, }
 			})
 		elseif airutils.is_mcl then
-			core.register_craft({
+			c.register_craft({
 				output = 'steampunk_blimp:cannon_ball1',
 				recipe = { { "", "mcl_core:iron_ingot", "" }, { "mcl_core:iron_ingot", "mcl_tnt:tnt", "mcl_core:iron_ingot" }, { "", "mcl_core:iron_ingot", "" }, }
 			})
@@ -462,26 +465,26 @@ if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 	end
 
 	-- cylinder section
-	core.register_craftitem("steampunk_blimp:cylinder_part",
+	c.register_craftitem("steampunk_blimp:cylinder_part",
 		{ description = "steampunk_blimp cylinder section", inventory_image = "steampunk_blimp_cylinder_part.png", })
 
 	-- cylinder
-	core.register_craftitem("steampunk_blimp:cylinder",
+	c.register_craftitem("steampunk_blimp:cylinder",
 		{ description = "steampunk_blimp cylinder", inventory_image = "steampunk_blimp_cylinder.png", })
 
 	-- boiler
-	core.register_craftitem("steampunk_blimp:boiler",
+	c.register_craftitem("steampunk_blimp:boiler",
 		{ description = "steampunk_blimp boiler", inventory_image = "steampunk_blimp_boiler.png", })
 
 	-- cannon
-	core.register_craftitem("steampunk_blimp:cannon",
+	c.register_craftitem("steampunk_blimp:cannon",
 		{ description = "steampunk_blimp cannon", inventory_image = "steampunk_blimp_cannon_ico.png", })
 
 	-- rotor
-	core.register_craftitem("steampunk_blimp:rotor",
+	c.register_craftitem("steampunk_blimp:rotor",
 		{ description = "steampunk_blimp rotor", inventory_image = "steampunk_blimp_rotor.png", })
 
 	-- fuselage
-	core.register_craftitem("steampunk_blimp:boat",
+	c.register_craftitem("steampunk_blimp:boat",
 		{ description = "steampunk_blimp fuselage", inventory_image = "steampunk_blimp_boat.png", })
 end
