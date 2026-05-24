@@ -1,6 +1,6 @@
 local function xyz(fx, fy, fz) return { x = fx, y = fy, z = fz } end
 local c = core
-local cmodepath = c.getmodpath
+local cmodepath = c.get_modpath
 steampunk_blimp = {}
 steampunk_blimp.gravity = 9.8
 steampunk_blimp.trunk_slots = 50
