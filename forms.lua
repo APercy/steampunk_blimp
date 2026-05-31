@@ -790,9 +790,9 @@ core.register_chatcommand("blimp_eject", {
         local attached_to = player:get_attach()
 
 		if attached_to ~= nil then
-            local seat = attached_to:get_attach()
-            if seat ~= nil then
-                local entity = seat:get_luaentity()
+            local blimp = attached_to:get_attach()
+            if blimp ~= nil then
+                local entity = blimp:get_luaentity()
                 if entity then
                     if entity.name == "steampunk_blimp:blimp" then
                         for i = steampunk_blimp.max_seats,1,-1
@@ -803,6 +803,38 @@ core.register_chatcommand("blimp_eject", {
                             end
                         end
                     else
+			            core.chat_send_player(name,colorstring)
+                    end
+                end
+            end
+		else
+			core.chat_send_player(name,colorstring)
+		end
+	end
+})
+
+core.register_chatcommand("blimp_whistle", {
+	params = "",
+	description = "Runs the blimp whistle",
+	privs = {interact = true},
+	func = function(name, param)
+        local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
+        local player = core.get_player_by_name(name)
+        local attached_to = player:get_attach()
+
+		if attached_to ~= nil then
+            local blimp = attached_to:get_attach()
+            if blimp ~= nil then
+                local entity = blimp:get_luaentity()
+                if entity then
+                    if entity.name == "steampunk_blimp:blimp" and (entity.driver_name == name or entity.owner == name or core.check_player_privs(name, {protection_bypass=true})) then
+                        core.sound_play({name = "steampunk_blimp_steam_whistle"},
+                            {object = blimp, gain = 2.0,
+                                pitch = 1.0,
+                                max_hear_distance = 200,
+                                loop = false,}, true)
+                    else
+                        colorstring = core.colorize('#ff0000', " >>> you are not allowed to do it")
 			            core.chat_send_player(name,colorstring)
                     end
                 end
