@@ -113,7 +113,7 @@ end
 function steampunk_blimp.check_passenger_is_attached(self, name)
     local is_attached = false
     if is_attached == false then
-        for i = steampunk_blimp.max_seats,1,-1
+        for i = self.max_seats,1,-1
         do
             if self._passengers[i] == name then
                 is_attached = true
@@ -130,7 +130,7 @@ function steampunk_blimp.rescueConnectionFailedPassengers(self)
     if self._disconnection_check_time > 1 then
         --core.chat_send_all(dump(self._passengers))
         self._disconnection_check_time = 0
-        for i = steampunk_blimp.max_seats,1,-1
+        for i = self.max_seats,1,-1
         do
             if self._passengers[i] then
                 local player = core.get_player_by_name(self._passengers[i])
@@ -188,7 +188,10 @@ function steampunk_blimp.attach_pax(self, player, slot)
 
     --now yes, lets attach the player
     --randomize the seat
-    local t = {1,2,3,4,5,6,7}
+    local t = {}
+    for i = 1, self.max_seats do
+        t[i] = i
+    end
     for i = 1, #t*2 do
         local a = math.random(#t)
         local b = math.random(#t)
@@ -219,11 +222,11 @@ function steampunk_blimp.dettach_pax(self, player, side)
         steampunk_blimp.remove_hud(player)
 
         -- passenger clicked the object => driver gets off the vehicle
-        for i = steampunk_blimp.max_seats,1,-1
+        for i = self.max_seats,1,-1
         do
             if self._passengers[i] == name then
                 self._passengers[i] = nil
-                self._passengers_base_pos[i] = steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
+                --self._passengers_base_pos[i] = steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
                 --break
             end
         end
@@ -256,17 +259,22 @@ function steampunk_blimp.dettach_pax(self, player, side)
             if self.isinliquid then
                 pos.y = pos.y + 1
             else
-                pos.y = pos.y - 2.5
+                if self.item == "steampunk_blimp:blimp" then
+                    pos.y = pos.y - 2.5
+                end
             end
             player:set_pos(pos)
         end, player:get_pos())
     end
 end
 
-function steampunk_blimp.textures_copy()
+function steampunk_blimp.textures_copy(textures_var)
     local tablecopy = {}
-    for k, v in pairs(steampunk_blimp.textures) do
-      tablecopy[k] = v
+    local varName = textures_var or "blimp_textures"
+    if varName and steampunk_blimp[varName] then
+        for k, v in pairs(steampunk_blimp[varName]) do
+          tablecopy[k] = v
+        end
     end
     return tablecopy
 end
@@ -275,7 +283,7 @@ end
 local function paint(self, write_prefix)
     write_prefix = write_prefix or false
 
-    local l_textures = steampunk_blimp.textures_copy()
+    local l_textures = steampunk_blimp.textures_copy(self.textures_var)
     for _, texture in ipairs(l_textures) do
         local indx = texture:find(steampunk_blimp.color1_texture)
         if indx then
@@ -293,6 +301,15 @@ local function paint(self, write_prefix)
                 l_textures[_] = "rp_default_reed_block_side.png^[colorize:"..airutils.colors[self.color2]
             end
         end
+        indx = texture:find(steampunk_blimp.hull_color)
+        if indx then
+            if not airutils.is_repixture then
+                l_textures[_] = "default_wood.png^[colorize:"..airutils.colors[self.color]..":192^[hsl:0:-50:-25"
+            else
+                l_textures[_] = "default_wood_oak.png^[colorize:"..airutils.colors[self.color]..":192^[hsl:0:-50:-25"
+            end
+        end
+        --"default_wood.png^[colorize:#0063b0:192"
 
         indx = texture:find('steampunk_blimp_alpha_logo.png')
         if indx then
@@ -350,7 +367,7 @@ function steampunk_blimp.remove_blimp(self)
         self.sound_handle = nil
     end
 
-    for i = steampunk_blimp.max_seats,1,-1 
+    for i = self.max_seats,1,-1 
     do
         if self._passengers_base[i] then self._passengers_base[i]:remove() end
     end
@@ -448,7 +465,7 @@ function steampunk_blimp.checkAttach(self, player)
     if player then
         local player_attach = player:get_attach()
         if player_attach then
-            for i = steampunk_blimp.max_seats,1,-1
+            for i = self.max_seats,1,-1
             do
                 if player_attach == self._passengers_base[i] then
                     retVal = true
@@ -670,7 +687,7 @@ function steampunk_blimp.right_click_helm(self, clicker)
 end
 
 local function clear_passengers(self)
-    for i = steampunk_blimp.max_seats,1,-1
+    for i = self.max_seats,1,-1
     do
         if self._passengers[i] ~= nil then
             local old_player = core.get_player_by_name(self._passengers[i])
@@ -703,7 +720,7 @@ function steampunk_blimp.right_click(self, clicker)
 
     --check error after being shot for any other mod
     if is_attached == false then
-        for i = steampunk_blimp.max_seats,1,-1
+        for i = self.max_seats,1,-1
         do
             if self._passengers[i] == name then
                 self._passengers[i] = nil --clear the wrong information
@@ -773,9 +790,7 @@ function steampunk_blimp.right_click(self, clicker)
             clear_passengers(self)
 
             --attach normal passenger
-            --if self._door_closed == false then
-                steampunk_blimp.attach_pax(self, clicker)
-            --end
+            steampunk_blimp.attach_pax(self, clicker)
         end
     end
 
@@ -792,6 +807,7 @@ function steampunk_blimp.right_click_hull(self, clicker)
     local airship = self.object:get_attach()
     airship_ent = airship:get_luaentity()
     if airship_ent then
+        local max_seats = airship_ent.max_seats or 1
         local pass_is_attached = steampunk_blimp.check_passenger_is_attached(airship_ent, name)
 
         if not pass_is_attached then
@@ -803,7 +819,7 @@ function steampunk_blimp.right_click_hull(self, clicker)
                 if (item_name == "airutils:repair_tool" or item_name == "keys:skeleton_key" or item_name == "default:skeleton_key") and
                     airship_ent._engine_running == false and (airship_ent.owner == name or core.check_player_privs(clicker, {protection_bypass=true})) then
                     local has_passengers = false
-                    for i = steampunk_blimp.max_seats,1,-1
+                    for i = max_seats,1,-1
                     do
                         if airship_ent._passengers[i] ~= nil then
                             has_passengers = true

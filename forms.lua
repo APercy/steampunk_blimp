@@ -346,8 +346,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 for i = 5,1,-1
                 do
                     if ent._passengers[i] == name then
-                        ent._passengers_base_pos[i] = vector.new(steampunk_blimp.pilot_base_pos)
-                        ent._passengers_base[i]:set_attach(ent.object,'',steampunk_blimp.pilot_base_pos,{x=0,y=0,z=0})
+                        ent._passengers_base_pos[i] = vector.new(ent.pilot_base_pos)
+                        ent._passengers_base[i]:set_attach(ent.object,'',ent.pilot_base_pos,{x=0,y=0,z=0})
                         player:set_attach(ent._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
                     end
                     if ent._passengers[i] == ent.driver_name then
@@ -448,11 +448,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 if fields.take_control == "true" then
                     if ent.driver_name == nil or ent.driver_name == "" then
                         ent._at_control = true
-                        for i = steampunk_blimp.max_seats,1,-1
+                        for i = ent.max_seats,1,-1
                         do
                             if ent._passengers[i] == name then
-                                ent._passengers_base_pos[i] = vector.new(steampunk_blimp.pilot_base_pos)
-                                ent._passengers_base[i]:set_attach(ent.object,'',steampunk_blimp.pilot_base_pos,{x=0,y=0,z=0})
+                                ent._passengers_base_pos[i] = vector.new(ent.pilot_base_pos)
+                                ent._passengers_base[i]:set_attach(ent.object,'',ent.pilot_base_pos,{x=0,y=0,z=0})
                                 player:set_attach(ent._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
                                 ent.driver_name = name
                                 --core.chat_send_all(">>"..ent.driver_name)
@@ -604,7 +604,7 @@ core.register_chatcommand("blimp_share", {
             if seat ~= nil then
                 local entity = seat:get_luaentity()
                 if entity then
-                    if entity.name == "steampunk_blimp:blimp" then
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" then
                         if entity.owner == name then
                             local exists = false
                             for k, v in pairs(entity._shared_owners) do
@@ -647,7 +647,7 @@ core.register_chatcommand("blimp_remove", {
             if seat ~= nil then
                 local entity = seat:get_luaentity()
                 if entity then
-                    if entity.name == "steampunk_blimp:blimp" then
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" then
                         if entity.owner == name then
                             for k, v in pairs(entity._shared_owners) do
                                 if v == param then
@@ -684,7 +684,7 @@ core.register_chatcommand("blimp_list", {
             if seat ~= nil then
                 local entity = seat:get_luaentity()
                 if entity then
-                    if entity.name == "steampunk_blimp:blimp" then
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" then
                         core.chat_send_player(name,core.colorize('#ffff00', " >>> Current owners are:"))
                         core.chat_send_player(name,core.colorize('#0000ff', entity.owner))
                         for k, v in pairs(entity._shared_owners) do
@@ -715,7 +715,7 @@ core.register_chatcommand("blimp_lock", {
             if seat ~= nil then
                 local entity = seat:get_luaentity()
                 if entity then
-                    if entity.name == "steampunk_blimp:blimp" then
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" then
                         if param == "true" then
                             entity._passengers_locked = true
                             core.chat_send_player(name,core.colorize('#ffff00', " >>> Non owners cannot enter now."))
@@ -749,7 +749,7 @@ core.register_chatcommand("blimp_logo", {
             if seat ~= nil then
                 local entity = seat:get_luaentity()
                 if entity then
-                    if entity.name == "steampunk_blimp:blimp" then
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" then
                         if entity.owner == name or core.check_player_privs(name, {protection_bypass=true}) then
                             if airutils.isTextureLoaded then
                                 if param == '' then
@@ -794,8 +794,8 @@ core.register_chatcommand("blimp_eject", {
             if blimp ~= nil then
                 local entity = blimp:get_luaentity()
                 if entity then
-                    if entity.name == "steampunk_blimp:blimp" then
-                        for i = steampunk_blimp.max_seats,1,-1
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" then
+                        for i = entity.max_seats,1,-1
                         do
                             if entity._passengers[i] == name then
                                 steampunk_blimp.dettach_pax(entity, player, "l")
@@ -827,7 +827,7 @@ core.register_chatcommand("blimp_whistle", {
             if blimp ~= nil then
                 local entity = blimp:get_luaentity()
                 if entity then
-                    if entity.name == "steampunk_blimp:blimp" and (entity.driver_name == name or entity.owner == name or core.check_player_privs(name, {protection_bypass=true})) then
+                    if (entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa") and (entity.driver_name == name or entity.owner == name or core.check_player_privs(name, {protection_bypass=true})) then
                         core.sound_play({name = "steampunk_blimp_steam_whistle"},
                             {object = blimp, gain = 2.0,
                                 pitch = 1.0,
@@ -861,7 +861,7 @@ if airutils.is_repixture then
                 if seat ~= nil then
                     local entity = seat:get_luaentity()
                     if entity then
-                        if entity.name == "steampunk_blimp:blimp" then
+                        if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" then
                             if entity.owner == name or core.check_player_privs(name, {protection_bypass=true}) then
                                 --lets paint!!!!
                                 local color1, color2 = param:match("^([%a%d_-]+) (.+)$")

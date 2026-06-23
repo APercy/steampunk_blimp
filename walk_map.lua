@@ -1,3 +1,7 @@
+local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. DIR_DELIM .. "walk_maps_blimp.lua")
+dofile(modpath .. DIR_DELIM .. "walk_maps_hsa.lua")
+
 function steampunk_blimp.clamp(value, min, max)
     local retVal = value
     if value < min then retVal = min end
@@ -15,7 +19,7 @@ function steampunk_blimp.reclamp(value, min, max)
     return retVal
 end
 
-local function is_obstacle_zone(pos, start_point, end_point)
+function steampunk_blimp.is_obstacle_zone(pos, start_point, end_point)
     local retVal = steampunk_blimp.table_copy(pos)
 
     local min_x, min_z, max_x, max_z
@@ -52,150 +56,6 @@ local function is_obstacle_zone(pos, start_point, end_point)
     end
 
     return retVal
-end
-
-
-function steampunk_blimp.boat_upper_deck_map(pos, dpos)
-    local orig_pos = steampunk_blimp.copy_vector(pos)
-    local position = steampunk_blimp.copy_vector(dpos)
-    local new_pos = steampunk_blimp.copy_vector(dpos)
-
-    new_pos.z = steampunk_blimp.clamp(new_pos.z, -47, -16)
-    new_pos = is_obstacle_zone(new_pos, {x=4, z=-28}, {x=-4, z=-20}) --timao
-    --new_pos = is_obstacle_zone(new_pos, {x=-30, z=-24}, {x=4, z=-12})
-    --core.chat_send_all(dump(position.z))
-
-    if position.z >= -49 and position.z < -32 then --limit 10
-        new_pos.y = 20.821
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -8, 8)
-        return new_pos
-    end
-    if position.z >= -32 and position.z < -14 then --limit 11
-        new_pos.y = 20.821
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -11, 11)
-
-        if position.z > -24 then --escada
-            if orig_pos.x <= 4 then
-                new_pos.z = steampunk_blimp.reclamp(new_pos.z, -24, -12)
-            end
-        end
-        return new_pos
-    end
-    
-    return new_pos
-end
-
-local function is_ladder_zone(pos)
-    local ladder_zone = false
-    if pos.z <= -12 and pos.z >= -18 and pos.x > 4 and pos.x < 12 then ladder_zone = true end
-    return ladder_zone
-end
-
-function steampunk_blimp.boat_lower_deck_map(pos, dpos)
-    local position = steampunk_blimp.copy_vector(dpos)
-    local new_pos = steampunk_blimp.copy_vector(dpos)
-    new_pos.z = steampunk_blimp.clamp(new_pos.z, -29, 45)
-
-    if position.z > -31 and position.z < -14 then --limit 10
-        new_pos.y = 0
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -10, 10)
-        new_pos = is_obstacle_zone(new_pos, {x=-6, z=-9}, {x=6, z=14}) --caldeira
-        return new_pos
-    end
-
-    if position.z >= -14 and position.z < -4 then --limit 11
-        new_pos.y = 0
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -12, 12)
-        new_pos = is_obstacle_zone(new_pos, {x=-6, z=-9}, {x=6, z=14}) --caldeira
-        return new_pos
-    end
-
-    if position.z >= -4 and position.z <= 4 then --limit 14
-        new_pos.y = 0
-        new_pos.x = steampunk_blimp.clamp(position.x, -14, 14)
-        new_pos = is_obstacle_zone(new_pos, {x=-6, z=-9}, {x=6, z=14}) --caldeira
-        return new_pos
-    end
-
-    if position.z > 4 and position.z <= 19 then --limit 11
-        new_pos.y = 0
-        new_pos.x = steampunk_blimp.clamp(position.x, -12, 12)
-        new_pos = is_obstacle_zone(new_pos, {x=-6, z=-9}, {x=6, z=14}) --caldeira
-        return new_pos
-    end
-
-    if position.z > 19 and position.z <= 22 then --limit 10
-        new_pos.y = 4.4
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -10, 10)
-        return new_pos
-    end
-
-    if position.z > 22 and position.z <= 30 then --limit 7
-        new_pos.y = 8.5
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -7, 7)
-        return new_pos
-    end
-
-    if position.z > 30 and position.z <= 36 then --limit 5
-        new_pos.y = 8.5
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -5, 5)
-        return new_pos
-    end
-
-    if position.z > 36 and position.z < 47 then --limit 1
-        new_pos.y = 8.5
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, -2, 2)
-        return new_pos
-    end
-
-    return new_pos
-end
-
-function steampunk_blimp.ladder_map(pos, dpos)
-    local position = steampunk_blimp.copy_vector(dpos)
-    local new_pos = steampunk_blimp.copy_vector(dpos)
-    new_pos.z = steampunk_blimp.clamp(new_pos.z, -18, -12)
-    if position.z > -20 and position.z < -10 then --limit 10
-        new_pos.x = steampunk_blimp.clamp(new_pos.x, 4, 12)
-    end
-    return new_pos
-end
-
-function steampunk_blimp.navigate_deck(pos, dpos, player)
-    local pos_d = dpos
-    local ladder_zone = is_ladder_zone(pos)
-
-    local upper_deck_y = 20.821
-    local lower_deck_y = 0
-    if player then
-        if pos.y == upper_deck_y then
-            pos_d = steampunk_blimp.boat_upper_deck_map(pos, dpos)
-        elseif pos.y <= 8.5 and pos.y >= 0 then
-            if ladder_zone == false then
-                pos_d = steampunk_blimp.boat_lower_deck_map(pos, dpos)
-            end
-        elseif pos.y > 8.5 and pos.y < upper_deck_y then
-            pos_d = steampunk_blimp.ladder_map(pos, dpos)
-        end
-
-        local ctrl = player:get_player_control()
-        if ctrl.jump or ctrl.sneak then --ladder
-            if ladder_zone then
-                --core.chat_send_all(dump(pos))
-                if ctrl.jump then
-                    pos_d.y = pos_d.y + 0.9
-                    if pos_d.y > upper_deck_y then pos_d.y = upper_deck_y end
-                end
-                if ctrl.sneak then
-                    pos_d.y = pos_d.y - 0.9
-                    if pos_d.y < lower_deck_y then pos_d.y = lower_deck_y end
-                end
-            end
-        end
-    end
-    --core.chat_send_all(dump(pos_d))
-
-    return pos_d
 end
 
 --note: index variable just for the walk
@@ -264,23 +124,7 @@ function steampunk_blimp.move_persons(self)
     --self._passenger = nil
     if self.object == nil then return end
 
-    --======================================================
-    --[[if steampunk_blimp.profiler_is_on == true then
-        if self.profiler_counter1 == nil then
-            self.profiler_counter1 = 0
-            self.profiler_sum1 = 0
-            self.profiler_counter2 = 0
-            self.profiler_sum2 = 0
-        end
-    else
-        self.profiler_counter1 = 0
-        self.profiler_sum1 = 0
-        self.profiler_counter2 = 0
-        self.profiler_sum2 = 0
-    end]]--
-    --======================================================
-
-    for i = steampunk_blimp.max_seats,1,-1
+    for i = self.max_seats,1,-1
     do
         local player = nil
         if self._passengers[i] then player = core.get_player_by_name(self._passengers[i]) end
@@ -305,7 +149,14 @@ function steampunk_blimp.move_persons(self)
                             new_pos.x = new_pos.x - result_pos.z
                             new_pos.z = new_pos.z - result_pos.x
                             --core.chat_send_all(dump(new_pos))
-                            local pos_d = steampunk_blimp.navigate_deck(self._passengers_base_pos[i], new_pos, player)
+                            local pos_d = vector.new()
+
+                            --select blimp type to navigate
+                            if self.item == "steampunk_blimp:blimp" then
+                                pos_d = steampunk_blimp.navigate_blimp_deck(self._passengers_base_pos[i], new_pos, player)
+                            elseif self.item == "steampunk_blimp:hsa" then
+                                pos_d = steampunk_blimp.navigate_hsa_deck(self._passengers_base_pos[i], new_pos, player)
+                            end
                             --core.chat_send_all(dump(height))
 
                             if (self._passengers_base_pos[i].x ~= pos_d.x or self._passengers_base_pos[i].z ~= pos_d.z or self._passengers_base_pos[i].y ~= pos_d.y) then
@@ -322,53 +173,7 @@ function steampunk_blimp.move_persons(self)
             end
         end
     end
-    --[[if steampunk_blimp.profiler_is_on == true then
-        if self.profiler_counter1 < 1000 then
-            self.profiler_counter1 = self.profiler_counter1 + 1
-            self.profiler_sum1 = self.profiler_sum1 + self.dtime
-        end
-        if self.profiler_counter1 == 1000 then
-            self.profiler_counter2 = self.profiler_counter2 + 1
-            self.profiler_sum2 = self.profiler_sum2 + self.dtime
-        end
-        if self.profiler_counter2 == 1000 then
-            steampunk_blimp.profiler_is_on = false
-            --TODO printar resultados
-            core.chat_send_player(steampunk_blimp.profiler_name,core.colorize('#00ff00', " >>> blocking attach update: "..self.profiler_sum1))
-            core.chat_send_player(steampunk_blimp.profiler_name,core.colorize('#ff0000', " >>> free attach update: "..self.profiler_sum2))
-        end
-    end]]--
     
 end
 
---[[steampunk_blimp.profiler_is_on = false
-steampunk_blimp.profiler_name = ""
-core.register_chatcommand("run_profiler", {
-	params = "",
-	description = "Sum 100 cycles of dtime with and without comparing player movement on deck",
-	privs = {interact = true},
-	func = function(name, param)
-        local colorstring = core.colorize('#ff0000', " >>> you are not inside a blimp")
-        local player = core.get_player_by_name(name)
-        local attached_to = player:get_attach()
-
-		if attached_to ~= nil then
-            local seat = attached_to:get_attach()
-            if seat ~= nil then
-                local entity = seat:get_luaentity()
-                if entity then
-                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:cannon_blimp" then
-                        steampunk_blimp.profiler_is_on = true
-                        steampunk_blimp.profiler_name = name
-                        core.chat_send_player(name,core.colorize('#0000ff', " >>> profiler started"))
-                    else
-			            core.chat_send_player(name,colorstring)
-                    end
-                end
-            end
-		else
-			core.chat_send_player(name,colorstring)
-		end
-	end
-})]]--
 

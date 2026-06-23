@@ -69,10 +69,14 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         self._is_going_up = false
 		if ctrl.jump then
             if self._boiler_pressure > 0 then
-                if self._has_cannons then
-                    self._baloon_buoyancy = 1.005
+                if self.item == "steampunk_blimp:hsa" then
+                    self._baloon_buoyancy = 1.001
                 else
-                    self._baloon_buoyancy = 1.02
+                    if self._has_cannons then
+                        self._baloon_buoyancy = 1.005
+                    else
+                        self._baloon_buoyancy = 1.02
+                    end
                 end
                 if self.isinliquid then self._baloon_buoyancy = 1.10 end
             end
@@ -113,7 +117,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     local engineacc = (self._power_lever * steampunk_blimp.max_engine_acc) / 100;
 
     --do not exceed
-    local max_speed = 3
+    local max_speed = self.max_speed
     if longit_speed > max_speed then
         engineacc = engineacc - (longit_speed-max_speed) --it's an error to subtract speed from acceleration - TODO
     end

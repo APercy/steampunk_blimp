@@ -1,6 +1,7 @@
 steampunk_blimp = {}
 steampunk_blimp.gravity = 9.8
 steampunk_blimp.trunk_slots = 50
+local modpath = core.get_modpath(core.get_current_modname())
 steampunk_blimp.fuel = {
 	['default:coal_lump'] = { amount = 1 },
 	['default:coalblock'] = { amount = 10 },
@@ -48,10 +49,9 @@ steampunk_blimp.min_damage_value = 20 --min value to cause damage
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.max_engine_acc = 3
-steampunk_blimp.max_seats = 7
 steampunk_blimp.wind_enabled = false
-steampunk_blimp.pilot_base_pos = { x = 0.0, y = 20.821, z = -30 }
-steampunk_blimp.passenger_pos = {
+
+--[[steampunk_blimp.passenger_pos = {
 	[1] = { x = 0.0, y = 0, z = -15 },
 	[2] = { x = -11, y = 0, z = -12 },
 	[3] = { x = 11, y = 0, z = -12 },
@@ -59,7 +59,11 @@ steampunk_blimp.passenger_pos = {
 	[5] = { x = 11, y = 0, z = 14 },
 	[6] = { x = -11, y = 0, z = 13 },
 	[7] = { x = 11, y = 0, z = 13 },
-}
+}]]--
+function steampunk_blimp.get_random_pos(posy, limx, minz, maxz)
+ return {x=math.random(-limx, limx), y = posy, z=math.random(minz, maxz) }
+end
+
 
 steampunk_blimp.furnace_sound = { name = "default_furnace_active", pitch = 1.0, gain = 0.2 }
 steampunk_blimp.piston_sound = { name = "default_cool_lava", pitch = 0.4, gain = 0.05 }
@@ -73,100 +77,13 @@ elseif airutils.is_repixture then
 	steampunk_blimp.steps_sound = { name = "rp_sounds_footstep_wood", pitch = 1.0, gain = 0.5 }
 end
 
+dofile(modpath .. DIR_DELIM .. "textures.lua")
+
 if airutils.is_repixture then
-	steampunk_blimp.color1_texture = "rp_default_reed_block_side.png"
-	steampunk_blimp.color2_texture = "rp_default_reed_block_top.png"
-
-	steampunk_blimp.fire_tex =
-	"[combine:16x16:0,0=steampunk_blimp_alpha.png:0,0=rp_fire_bonfire_flame.png" --"rp_fire_bonfire_flame.png^[resize:16x16"
-	steampunk_blimp.canvas_texture = "mobs_wool.png^[colorize:#f4e7c1:128"
-	steampunk_blimp.metal_texture = "default_sand.png^[colorize:#a3acac:128"
-	steampunk_blimp.black_texture = "default_sand.png^[colorize:#030303:200"
-	steampunk_blimp.wood_texture = "default_sand.png^[colorize:#3a270d:230"
-	steampunk_blimp.forno_texture = steampunk_blimp.black_texture .. "^[mask:steampunk_blimp_forno_mask.png"
-	steampunk_blimp.rotor_texture = "(" ..
-		steampunk_blimp.canvas_texture ..
-		"^[mask:steampunk_blimp_rotor_mask2.png)^(default_wood_oak.png^[mask:steampunk_blimp_rotor_mask.png)"
-	local ladder_texture = "default_ladder.png"
-	steampunk_blimp.textures = {
-		steampunk_blimp.black_texture,			--alimentacao balao
-		steampunk_blimp.canvas_texture,		   --balao
-		steampunk_blimp.color2_texture,		   --faixas brancas nariz
-		steampunk_blimp.color1_texture,		   --faixas azuis nariz
-		steampunk_blimp.metal_texture,			--pontas do balão
-		"airutils_name_canvas.png",
-		steampunk_blimp.black_texture,			--caldeira
-		steampunk_blimp.forno_texture,			--caldeira
-		"default_wood_oak.png^[multiply:#A09090", --casco
-		steampunk_blimp.black_texture,			-- corpo da bussola
-		steampunk_blimp.metal_texture,			-- indicador bussola
-		steampunk_blimp.canvas_texture,		   --leme
-		"default_wood_oak.png^[multiply:#A09090", --leme
-		steampunk_blimp.wood_texture,			 --timao
-		"steampunk_blimp_compass.png",
-		ladder_texture,						   --escada
-		"default_wood_oak.png",				   --mureta
-		steampunk_blimp.wood_texture,			 --mureta
-		"steampunk_blimp_engine.png",			 --nacele rotores
-		steampunk_blimp.wood_texture,			 --quilha
-		"default_wood_oak.png",				   --rotores
-		steampunk_blimp.rotor_texture,			--"steampunk_blimp_rotor.png", --rotores
-		steampunk_blimp.black_texture,			--suportes rotores
-		"default_wood_oak.png^[multiply:#A09090", --suporte timao
-		"steampunk_blimp_rope.png",			   --cordas
-		steampunk_blimp.color1_texture,		   --det azul
-		steampunk_blimp.color2_texture,		   --det branco
-		steampunk_blimp.wood_texture,			 --fixacao cordas
-		"steampunk_blimp_alpha_logo.png",		 --logo
-	}
+    steampunk_blimp.set_repixture_blimptextures()
 else
-	steampunk_blimp.color1_texture = "wool_blue.png"
-	steampunk_blimp.color2_texture = "wool_yellow.png"
-
-	steampunk_blimp.fire_tex = "default_furnace_fire_fg.png"
-	steampunk_blimp.canvas_texture = "wool_white.png^[colorize:#f4e7c1:128"
-	steampunk_blimp.metal_texture = "default_clay.png^[colorize:#a3acac:128"
-	steampunk_blimp.black_texture = "default_clay.png^[colorize:#030303:200"
-	steampunk_blimp.wood_texture = "default_clay.png^[colorize:#3a270d:230"
-	steampunk_blimp.forno_texture = steampunk_blimp.black_texture .. "^[mask:steampunk_blimp_forno_mask.png"
-	steampunk_blimp.rotor_texture = "(" ..
-		steampunk_blimp.canvas_texture ..
-		"^[mask:steampunk_blimp_rotor_mask2.png)^(default_wood.png^[mask:steampunk_blimp_rotor_mask.png)"
-	local ladder_texture = "default_ladder_wood.png"
-	if airutils.is_mcl then ladder_texture = "default_ladder.png" end
-	steampunk_blimp.textures = {
-		steampunk_blimp.black_texture,	--alimentacao balao
-		steampunk_blimp.canvas_texture,   --balao
-		steampunk_blimp.color2_texture,   --faixas brancas nariz
-		steampunk_blimp.color1_texture,   --faixas azuis nariz
-		steampunk_blimp.metal_texture,	--pontas do balão
-		"airutils_name_canvas.png",
-		steampunk_blimp.black_texture,	--caldeira
-		steampunk_blimp.forno_texture,	--caldeira
-		"default_junglewood.png",		 --casco
-		steampunk_blimp.black_texture,	-- corpo da bussola
-		steampunk_blimp.metal_texture,	-- indicador bussola
-		steampunk_blimp.canvas_texture,   --leme
-		"default_junglewood.png",		 --leme
-		steampunk_blimp.wood_texture,	 --timao
-		"steampunk_blimp_compass.png",
-		ladder_texture,				   --escada
-		"default_wood.png",			   --mureta
-		steampunk_blimp.wood_texture,	 --mureta
-		"steampunk_blimp_engine.png",	 --nacele rotores
-		steampunk_blimp.wood_texture,	 --quilha
-		"default_wood.png",			   --rotores
-		steampunk_blimp.rotor_texture,	--"steampunk_blimp_rotor.png", --rotores
-		steampunk_blimp.black_texture,	--suportes rotores
-		"default_junglewood.png",		 --suporte timao
-		"steampunk_blimp_rope.png",	   --cordas
-		steampunk_blimp.color1_texture,   --det azul
-		steampunk_blimp.color2_texture,   --det branco
-		steampunk_blimp.wood_texture,	 --fixacao cordas
-		"steampunk_blimp_alpha_logo.png", --logo
-		--"steampunk_blimp_metal.png",
-		--"steampunk_blimp_red.png",
-	}
+    steampunk_blimp.set_minetest_blimptextures()
+    steampunk_blimp.set_minetest_hsatextures()
 end
 
 steampunk_blimp.colors = {
@@ -190,17 +107,17 @@ steampunk_blimp.colors = {
 steampunk_blimp.cannons_loc = { x = 24, y = -2, z = 0 }
 steampunk_blimp.cannons_sz = 15
 
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "cannon_balls.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "walk_map.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "utilities.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "control.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "fuel_management.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "engine_management.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "custom_physics.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "hud.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "entities.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "forms.lua")
-dofile(core.get_modpath("steampunk_blimp") .. DIR_DELIM .. "manual.lua")
+dofile(modpath .. DIR_DELIM .. "cannon_balls.lua")
+dofile(modpath .. DIR_DELIM .. "walk_map.lua")
+dofile(modpath .. DIR_DELIM .. "utilities.lua")
+dofile(modpath .. DIR_DELIM .. "control.lua")
+dofile(modpath .. DIR_DELIM .. "fuel_management.lua")
+dofile(modpath .. DIR_DELIM .. "engine_management.lua")
+dofile(modpath .. DIR_DELIM .. "custom_physics.lua")
+dofile(modpath .. DIR_DELIM .. "hud.lua")
+dofile(modpath .. DIR_DELIM .. "entities.lua")
+dofile(modpath .. DIR_DELIM .. "forms.lua")
+dofile(modpath .. DIR_DELIM .. "manual.lua")
 
 --
 -- helpers and co.
@@ -240,15 +157,7 @@ core.register_tool("steampunk_blimp:blimp", {
 		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
 		if blimp and placer then
 			local ent = blimp:get_luaentity()
-			ent._passengers = steampunk_blimp.copy_vector({
-				[1] = nil,
-				[2] = nil,
-				[3] = nil,
-				[4] = nil,
-				[5] = nil,
-				[6] = nil,
-				[7] = nil
-			})
+			ent._passengers = steampunk_blimp.allocate_array(ent.max_seats)
 			--core.chat_send_all('passengers: '.. dump(ent._passengers))
 			local owner = placer:get_player_name()
 			ent.owner = owner
@@ -294,15 +203,7 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
 		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:blimp", staticdata)
 		if blimp and placer then
 			local ent = blimp:get_luaentity()
-			ent._passengers = steampunk_blimp.copy_vector({
-				[1] = nil,
-				[2] = nil,
-				[3] = nil,
-				[4] = nil,
-				[5] = nil,
-				[6] = nil,
-				[7] = nil
-			})
+			ent._passengers = steampunk_blimp.allocate_array(ent.max_seats)
 			--core.chat_send_all('passengers: '.. dump(ent._passengers))
 			ent.owner = owner
 			--ent.hp = 50 --reset hp
@@ -340,15 +241,7 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:blimp")
 		if blimp and placer then
 			local ent = blimp:get_luaentity()
-			ent._passengers = steampunk_blimp.copy_vector({
-				[1] = nil,
-				[2] = nil,
-				[3] = nil,
-				[4] = nil,
-				[5] = nil,
-				[6] = nil,
-				[7] = nil
-			})
+			ent._passengers = steampunk_blimp.allocate_array(ent.max_seats)
 			--core.chat_send_all('passengers: '.. dump(ent._passengers))
 			local owner = placer:get_player_name()
 			ent.owner = owner
@@ -369,6 +262,50 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 		return itemstack
 	end,
 })
+
+-- high speed airship
+--[[core.register_tool("steampunk_blimp:hsa", {
+	description = "High Speed Airship",
+	inventory_image = "steampunk_blimp_gunboat_icon.png",
+	liquids_pointable = false,
+	stack_max = 1,
+
+	on_place = function(itemstack, placer, pointed_thing)
+		if pointed_thing.type ~= "node" then return end
+
+		local owner = placer:get_player_name()
+
+		local stack_meta = itemstack:get_meta()
+		local staticdata = stack_meta:get_string("staticdata")
+		if staticdata == nil or staticdata == "" then
+			staticdata = 'return {stored_owner="' .. owner .. '",}'
+		end
+
+		local pointed_pos = pointed_thing.under
+		--local node_below = core.get_node(pointed_pos).name
+		--local nodedef = core.registered_nodes[node_below]
+
+		pointed_pos.y = pointed_pos.y + 3
+		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:hsa", staticdata)
+		if blimp and placer then
+			local ent = blimp:get_luaentity()
+			ent._passengers = steampunk_blimp.allocate_array(ent.max_seats)
+			--core.chat_send_all('passengers: '.. dump(ent._passengers))
+			ent.owner = owner
+			--ent.hp = 50 --reset hp
+			ent._vehicle_name = "High Speed Airship"
+			blimp:set_yaw(placer:get_look_horizontal())
+			itemstack:take_item()
+			steampunk_blimp.create_inventory(ent, steampunk_blimp.trunk_slots)
+
+			local properties = ent.object:get_properties()
+			blimp:set_properties(properties)
+		end
+
+		return itemstack
+	end,
+})]]--
+
 
 steampunk_blimp.wind_enabled = core.settings:get_bool('steampunk_blimp.enable_wind')
 steampunk_blimp.cannons_enabled = core.settings:get_bool('steampunk_blimp.enable_cannons')

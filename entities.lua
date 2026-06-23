@@ -98,6 +98,34 @@ initial_properties = {
 
 })
 
+core.register_entity('steampunk_blimp:hsa_wings',{
+initial_properties = {
+	physical = false,
+	collide_with_objects=false,
+	pointable=false,
+    glow = 0,
+	visual = "mesh",
+    backface_culling = false,
+	mesh = "steampunk_hsa_wings.b3d",
+    textures = {
+            default_wood_texture, --asa
+            steampunk_blimp.canvas_texture, --asa
+        },
+	},
+
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
+    end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+
+})
+
 core.register_entity('steampunk_blimp:cannons',{
 initial_properties = {
 	physical = false,
@@ -322,6 +350,13 @@ local function get_staticdata(self) -- unloaded/unloads ... is now saved
     })
 end
 
+function steampunk_blimp.allocate_array(items)
+    items = items or 1
+    local retArray = {}
+    retArray.n = items
+    return retArray
+end
+
 local function on_activate(self, staticdata, dtime_s)
     --core.chat_send_all('passengers: '.. dump(self._passengers))
     if staticdata ~= "" and staticdata ~= nil then
@@ -341,7 +376,7 @@ local function on_activate(self, staticdata, dtime_s)
         self.buoyancy = data.stored_buoyancy or 0.15
         self.hull_integrity = data.stored_hull_integrity
         self.item = data.stored_item
-        self._passengers = data.stored_passengers or steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
+        self._passengers = data.stored_passengers or steampunk_blimp.allocate_array(self.max_seats) --steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
         self._passengers_locked = data.stored_passengers_locked
         self._ship_name = data.stored_ship_name
         self._vehicle_name = data.stored_vehicle_name
@@ -384,7 +419,7 @@ local function on_activate(self, staticdata, dtime_s)
     end
 
     local fire=core.add_entity(pos,'steampunk_blimp:fire')
-    fire:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
+    fire:set_attach(self.object,'',self.fire_position,{x=0,y=0,z=0})
     self.fire = fire
 
     if self._has_cannons == true then
@@ -415,13 +450,13 @@ local function on_activate(self, staticdata, dtime_s)
         self.cannons:set_bone_override("cannon_l", override)
         self.cannons:set_bone_override("cannon_r", override)
     else
-        local wings = core.add_entity(pos, 'steampunk_blimp:wings')
+        local wings = core.add_entity(pos, self.wings_entity)
         wings:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
         self.wings = wings
     end
 
     self._helm_interactor = core.add_entity(pos, 'steampunk_blimp:helm_interactor')
-    local helm_interactor_pos = vector.new(steampunk_blimp.pilot_base_pos)
+    local helm_interactor_pos = vector.new(self.pilot_base_pos)
     helm_interactor_pos.z = helm_interactor_pos.z + 7
     self._helm_interactor:set_attach(self.object,'',helm_interactor_pos,{x=0,y=0,z=0})
 
@@ -432,10 +467,10 @@ local function on_activate(self, staticdata, dtime_s)
     self._passenger_is_sit = steampunk_blimp.copy_vector({})
     self._passengers_base = steampunk_blimp.copy_vector({})
     self._passengers_base_pos = steampunk_blimp.copy_vector({})
-    for i = 1,steampunk_blimp.max_seats,1
+    for i = 1,self.max_seats,1
     do
         self._passenger_is_sit[i] = 0
-        self._passengers_base_pos[i] = steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
+        self._passengers_base_pos[i] = steampunk_blimp.get_random_pos(0, 10, 12, 14) --steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
         self._passengers_base[i]=core.add_entity(pos,'steampunk_blimp:stand_base')
         self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
     end
@@ -631,9 +666,24 @@ local function logic (self)
     end
 
     self.object:set_bone_position("low_rudder", {x=0,y=0,z=0}, {x=0,y=self._rudder_angle,z=0})
-    self.object:set_bone_position("rudder", {x=0,y=97,z=-148}, {x=0,y=self._rudder_angle,z=0})
-    self.object:set_bone_position("timao", {x=0,y=27,z=-25}, {x=0,y=0,z=self._rudder_angle*8})
-    self.object:set_bone_position("compass_axis", {x=0,y=30.2,z=-21.243}, {x=0, y=(math.deg(compass_angle)), z=0})
+
+    --self.object:set_bone_position("rudder", {x=0,y=97,z=-148}, {x=0,y=self._rudder_angle,z=0})
+    local override = {
+        rotation = { vec={x=0,y=math.rad(self._rudder_angle),z=0}, absolute = false }
+        }
+    self.object:set_bone_override("rudder", override)
+
+    --self.object:set_bone_position("timao", {x=0,y=27,z=-25}, {x=0,y=0,z=self._rudder_angle*8})
+    override = {
+        rotation = { vec={x=0,y=0,z=math.rad(self._rudder_angle*8)}, absolute = false }
+        }
+    self.object:set_bone_override("timao", override)
+
+    --self.object:set_bone_position("compass_axis", {x=0,y=30.2,z=-21.243}, {x=0, y=(math.deg(compass_angle)), z=0})
+    override = {
+        rotation = { vec={x=0,y=compass_angle,z=0}, absolute = false }
+        }
+    self.object:set_bone_override("compass_axis", override)
 
     --saves last velocy for collision detection (abrupt stop)
     self._last_vel = self.object:get_velocity()
@@ -743,7 +793,7 @@ local function on_punch(self, puncher, ttime, toolcaps, dir, damage)
 
     if is_attached == false then
         local has_passengers = false
-        for i = steampunk_blimp.max_seats,1,-1
+        for i = self.max_seats,1,-1
         do
             if self._passengers[i] ~= nil then
                 has_passengers = true
@@ -762,9 +812,15 @@ core.register_entity("steampunk_blimp:blimp", {
         visual = "mesh",
         backface_culling = false,
         mesh = "steampunk_blimp.b3d",
-        textures = steampunk_blimp.textures_copy(),
+        textures = steampunk_blimp.textures_copy("blimp_textures"),
     },
     textures = {},
+    textures_var = "blimp_textures",
+    pilot_base_pos = { x = 0.0, y = 20.821, z = -30 },
+    max_seats = 9,
+    max_speed = 3,
+    wings_entity = 'steampunk_blimp:wings',
+    fire_position = {x=0.0,y=0.0,z=0.0},
     driver_name = nil,
     sound_handle = nil,
     static_save = true,
@@ -811,6 +867,95 @@ core.register_entity("steampunk_blimp:blimp", {
     _rev_can = false,
     item = "steampunk_blimp:blimp",
     _vehicle_name = "Steampunk Blimp",
+
+    get_staticdata = get_staticdata, -- unloaded/unloads ... is now saved
+
+	on_deactivate = function(self)
+        if self._remove ~= true then
+            airutils.save_inventory(self)
+        end
+        if self.sound_handle then core.sound_stop(self.sound_handle) end
+        if self.sound_handle_pistons then core.sound_stop(self.sound_handle_pistons) end
+	end,
+
+    on_activate = on_activate,
+
+    on_step = on_step,
+
+    logic = logic,
+
+    on_punch = on_punch,
+
+    on_rightclick = steampunk_blimp.right_click,
+
+    on_deactivate = airutils.on_deactivate,
+})
+
+
+core.register_entity("steampunk_blimp:hsa", {
+    initial_properties = {
+        physical = true,
+        collide_with_objects = true, --true,
+        collisionbox = {-4, -0.2, -4, 4, 9, 4}, --{-1,0,-1, 1,0.3,1},
+        selectionbox = {-0.6,-0.2,-0.6, 0.6,3,0.6},
+        visual = "mesh",
+        backface_culling = true,
+        mesh = "steampunk_hsa.b3d",
+        textures = steampunk_blimp.textures_copy("hsa_textures"),
+    },
+    textures = {},
+    textures_var = "hsa_textures",
+    pilot_base_pos = { x = 0.0, y = 0.0, z = 32.5 },
+    max_seats = 4,
+    max_speed = 10,
+    wings_entity = 'steampunk_blimp:hsa_wings',
+    fire_position = {x=0.0,y=0.0,z=-3.14},
+    driver_name = nil,
+    sound_handle = nil,
+    static_save = true,
+    infotext = "High Speed Airship",
+    hp_max = steampunk_blimp.max_hp,
+    lastvelocity = vector.new(),
+    hp = 50,
+    color = "blue",
+    color2 = "white",
+    logo = "steampunk_blimp_alpha_logo.png",
+    timeout = 0;
+    buoyancy = 0.05,
+    max_hp = 50,
+    anchored = true,
+    physics = steampunk_blimp.physics,
+    hull_integrity = nil,
+    owner = "",
+    time_total = 0,
+    _shared_owners = {},
+    _engine_running = false,
+    _power_lever = 0,
+    _last_applied_power = 0,
+    _at_control = false,
+    _rudder_angle = 0,
+    _baloon_buoyancy = 0,
+    _show_hud = true,
+    _energy = 1.0,--0.001,
+    _water_level = 1.0,
+    _boiler_pressure = 1.0, --min 155 max 310
+    _is_going_up = false, --to tell the boiler to lose pressure
+    _passengers = {}, --passengers list
+    _passengers_base = {}, --obj id
+    _passengers_base_pos = steampunk_blimp.copy_vector({}),
+    _passenger_is_sit = {}, -- 0, 1, 2, 3 or 4 ==> stand, 0, 90, 180, 270 --the sit rotation
+    _passengers_locked = false,
+    _disconnection_check_time = 0,
+    _inv = nil,
+    _inv_id = "",
+    _ship_name = "",
+    _name_color = 0,
+    _name_hor_aligment = 3.0,
+    _has_cannons = false,
+    _unl_can = false,
+    _rev_can = false,
+    item = "steampunk_blimp:hsa",
+    _vehicle_name = "High Speed Airship",
 
     get_staticdata = get_staticdata, -- unloaded/unloads ... is now saved
 
