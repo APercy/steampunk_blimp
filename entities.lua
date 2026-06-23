@@ -265,6 +265,35 @@ core.register_entity('steampunk_blimp:helm_interactor',{
     on_rightclick = steampunk_blimp.right_click_helm,
 })
 
+local function hull_punch(self, puncher, ttime, toolcaps, dir, damage)
+    local ship_attach = self.object:get_attach()
+    local parent_ent = nil
+    if ship_attach then
+        parent_ent = ship_attach:get_luaentity()
+    end
+
+    --core.chat_send_all("punch")
+    if not puncher or not puncher:is_player() then
+        damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value )
+        return
+    end
+
+    local name = nil
+    if (puncher:is_player()) then
+        name = puncher:get_player_name()
+        local ppos = puncher:get_pos()
+        if (core.is_protected(ppos, name) and
+            airutils.protect_in_areas) then
+            return
+        end
+    end
+
+    --local weapon_name = puncher:get_wielded_item():get_name()
+    if parent_ent then
+        damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value*2 )
+    end
+end
+
 core.register_entity('steampunk_blimp:hull_interactor',{
     initial_properties = {
 	    physical = false,
@@ -288,34 +317,35 @@ core.register_entity('steampunk_blimp:hull_interactor',{
       return core.serialize(self.sdata)
     end,
 
-    on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
-        local ship_attach = self.object:get_attach()
-        local parent_ent = nil
-        if ship_attach then
-            parent_ent = ship_attach:get_luaentity()
-        end
+    on_punch = hull_punch,
 
-        --core.chat_send_all("punch")
-        if not puncher or not puncher:is_player() then
-            damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value )
-            return
-        end
+    on_rightclick = steampunk_blimp.right_click_hull,
+})
 
-        local name = nil
-        if (puncher:is_player()) then
-	        name = puncher:get_player_name()
-            local ppos = puncher:get_pos()
-            if (core.is_protected(ppos, name) and
-                airutils.protect_in_areas) then
-                return
-            end
-        end
+core.register_entity('steampunk_blimp:hsa_hull_interactor',{
+    initial_properties = {
+	    physical = false,
+	    collide_with_objects=false,
+        collisionbox = {-3, 2.5, -3, 3, 5, 3},
+	    pointable=true,
+	    visual = "mesh",
+	    mesh = "steampunk_blimp_stand_base.b3d",
+        textures = {"steampunk_blimp_alpha.png",},
+	},
+    dist_moved = 0,
 
-        --local weapon_name = puncher:get_wielded_item():get_name()
-        if parent_ent then
-            damage_vehicle(parent_ent, toolcaps, ttime, damage, steampunk_blimp.min_damage_value*2 )
-        end
+    on_activate = function(self,std)
+	    self.sdata = core.deserialize(std) or {}
+	    if self.sdata.remove then self.object:remove() end
+        self.object:set_armor_groups({immortal=1})
     end,
+
+    get_staticdata=function(self)
+      self.sdata.remove=true
+      return core.serialize(self.sdata)
+    end,
+
+    on_punch = hull_punch,
 
     on_rightclick = steampunk_blimp.right_click_hull,
 })
@@ -460,7 +490,7 @@ local function on_activate(self, staticdata, dtime_s)
     helm_interactor_pos.z = helm_interactor_pos.z + 7
     self._helm_interactor:set_attach(self.object,'',helm_interactor_pos,{x=0,y=0,z=0})
 
-    self._hull_interactor = core.add_entity(pos, 'steampunk_blimp:hull_interactor')
+    self._hull_interactor = core.add_entity(pos, self.hull_interactor_entity)
     self._hull_interactor:set_attach(self.object,'',{x=0.0,y=0.0,z=0.0},{x=0,y=0,z=0})
 
     --passengers positions
@@ -476,7 +506,7 @@ local function on_activate(self, staticdata, dtime_s)
     end
 
     --animation load - stoped
-    self.object:set_animation({x = 1, y = 47}, 0, 0, true)
+    self.object:set_animation({x = self.start_frame, y = self.end_frame}, 0, 0, true)
 
     self.object:set_bone_position("low_rudder_a", {x=0,y=0,z=-40}, {x=-5.35,y=0,z=0})
 
@@ -819,7 +849,12 @@ core.register_entity("steampunk_blimp:blimp", {
     pilot_base_pos = { x = 0.0, y = 20.821, z = -30 },
     max_seats = 9,
     max_speed = 3,
+    max_engine_acc = 3,
     wings_entity = 'steampunk_blimp:wings',
+    hull_interactor_entity = 'steampunk_blimp:hull_interactor',
+    start_frame = 1,
+    end_frame = 47,
+    frame_multiplier = 1,
     fire_position = {x=0.0,y=0.0,z=0.0},
     driver_name = nil,
     sound_handle = nil,
@@ -908,7 +943,12 @@ core.register_entity("steampunk_blimp:hsa", {
     pilot_base_pos = { x = 0.0, y = 0.0, z = 32.5 },
     max_seats = 4,
     max_speed = 10,
+    max_engine_acc = 4,
     wings_entity = 'steampunk_blimp:hsa_wings',
+    hull_interactor_entity = 'steampunk_blimp:hsa_hull_interactor',
+    start_frame = 1,
+    end_frame = 47,
+    frame_multiplier = 2,
     fire_position = {x=0.0,y=0.0,z=-3.14},
     driver_name = nil,
     sound_handle = nil,

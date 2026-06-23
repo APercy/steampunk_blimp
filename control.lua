@@ -114,7 +114,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 	end
 
     --engine acceleration calc
-    local engineacc = (self._power_lever * steampunk_blimp.max_engine_acc) / 100;
+    local engineacc = (self._power_lever * self.max_engine_acc) / 100;
 
     --do not exceed
     local max_speed = self.max_speed

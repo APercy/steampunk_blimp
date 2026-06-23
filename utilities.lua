@@ -519,7 +519,7 @@ function steampunk_blimp.engine_set_sound_and_animation(self)
     if self._last_applied_power ~= self._power_lever then
         --core.chat_send_all('test2')
         self._last_applied_power = self._power_lever
-        self.object:set_animation_frame_speed(steampunk_blimp.iddle_rotation + (self._power_lever))
+        self.object:set_animation_frame_speed((steampunk_blimp.iddle_rotation + (self._power_lever))*self.frame_multiplier)
         if self._last_sound_update == nil then self._last_sound_update = self._power_lever end
         if math.abs(self._last_sound_update - self._power_lever) > 5 then
             self._last_sound_update = self._power_lever
