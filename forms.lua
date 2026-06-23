@@ -30,6 +30,8 @@ function steampunk_blimp.pilot_formspec(name)
     if ent._unl_can == true then unl_can = "true" end
     local rev_can = "false"
     if ent._rev_can == true then rev_can = "true" end
+    local open_wings = "false"
+    if ent._open_wings == true then open_wings = "true" end
 
 	basic_form = basic_form.."button[1.0,1.0;4,1;turn_on;Start/Stop the fire]"
     basic_form = basic_form.."button[1.0,2.0;4,1;water;Load water from below]"
@@ -40,9 +42,16 @@ function steampunk_blimp.pilot_formspec(name)
 
     basic_form = basic_form.."checkbox[6.0,1.2;take_control;Take the Control;"..take_control.."]"
     basic_form = basic_form.."checkbox[6.0,1.8;anchor;Anchor away;"..anchor.."]"
-    if is_driver and ent._has_cannons == true then
-        basic_form = basic_form.."checkbox[6,2.4;unlock;Unlock cannons;"..unl_can.."]"
-        basic_form = basic_form.."checkbox[6,3.0;rev_can;Reverse cannons;"..rev_can.."]"
+    
+    if is_driver then
+        if ent._has_cannons == true then
+            basic_form = basic_form.."checkbox[6,2.4;unlock;Unlock cannons;"..unl_can.."]"
+            basic_form = basic_form.."checkbox[6,3.0;rev_can;Reverse cannons;"..rev_can.."]"
+        else
+            if ent.item == "steampunk_blimp:hsa" then
+                basic_form = basic_form.."checkbox[6,2.4;open_wings;Extend wings;"..open_wings.."]"
+            end
+        end
     end
 
     basic_form = basic_form.."label[6.0,3.8;Disembark:]"
@@ -532,6 +541,33 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 end
                 ent.cannons:set_bone_override("cannon_l", override)
                 ent.cannons:set_bone_override("cannon_r", override)
+            end
+            if fields.open_wings then
+                local override_l = {}
+                local override_r = {}
+                if fields.open_wings == "true" then
+                    ent._open_wings = true
+                    --ent.cannons:set_bone_position("cannon_l", {x=-24,y=-2,z=0}, {x=0,y=0,z=0})
+                    --ent.cannons:set_bone_position("cannon_r", {x= 24,y=-2,z=0}, {x=0,y=0,z=0})
+                    override_l = {
+                        rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
+                        }
+                    override_r = {
+                        rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
+                        }
+                else
+                    ent._open_wings = false
+                    --ent.cannons:set_bone_position("cannon_l", {x=-24,y=-2,z=0}, {x=180,y=0,z=0})
+                    --ent.cannons:set_bone_position("cannon_r", {x= 24,y=-2,z=0}, {x=180,y=0,z=0})
+                    override_l = {
+                        rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
+                        }
+                    override_r = {
+                        rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
+                        }
+                end
+                ent.wings:set_bone_override("wings.l", override_l)
+                ent.wings:set_bone_override("wings.r", override_r)
             end
             if fields.unlock then
                 if fields.unlock == "true" then
