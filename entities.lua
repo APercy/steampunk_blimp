@@ -363,6 +363,7 @@ local function get_staticdata(self) -- unloaded/unloads ... is now saved
         stored_color2 = self.color2,
         stored_logo = self.logo,
         stored_anchor = self.anchored,
+        --stored_buoyancy = self.buoyancy,
         stored_hull_integrity = self.hull_integrity,
         stored_item = self.item,
         stored_inv_id = self._inv_id,
@@ -403,7 +404,7 @@ local function on_activate(self, staticdata, dtime_s)
         self.color2 = data.stored_color2 or "white"
         self.logo = data.stored_logo or "steampunk_blimp_alpha_logo.png"
         self.anchored = data.stored_anchor or false
-        self.buoyancy = data.stored_buoyancy or 0.15
+        --self.buoyancy = data.stored_buoyancy or 0.15
         self.hull_integrity = data.stored_hull_integrity
         self.item = data.stored_item
         self._passengers = data.stored_passengers or steampunk_blimp.allocate_array(self.max_seats) --steampunk_blimp.copy_vector({[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil})
@@ -516,7 +517,7 @@ local function on_activate(self, staticdata, dtime_s)
 	    local inv = core.get_inventory({type = "detached", name = self._inv_id})
 	    -- if the game was closed the inventories have to be made anew, instead of just reattached
 	    if not inv then
-            steampunk_blimp.create_inventory(self, steampunk_blimp.trunk_slots)
+            steampunk_blimp.create_inventory(self, self.trunk_slots)
 	    else
 	        self._inv = inv
         end
@@ -870,6 +871,7 @@ core.register_entity("steampunk_blimp:blimp", {
     frame_multiplier = 1,
     fire_position = {x=0.0,y=0.0,z=0.0},
     climb_buoyancy = 1.02,
+    trunk_slots = 50,
     driver_name = nil,
     sound_handle = nil,
     static_save = true,
@@ -971,6 +973,7 @@ core.register_entity("steampunk_blimp:hsa", {
     _wing_min_speed = 10,
     climb_buoyancy = 1.00001,
     ceiling = 10000,
+    trunk_slots = 16,
     driver_name = nil,
     sound_handle = nil,
     static_save = true,
@@ -982,7 +985,7 @@ core.register_entity("steampunk_blimp:hsa", {
     color2 = "white",
     logo = "steampunk_blimp_alpha_logo.png",
     timeout = 0;
-    buoyancy = 0.0001,
+    buoyancy = 0.03,
     max_hp = 50,
     anchored = true,
     physics = steampunk_blimp.physics,

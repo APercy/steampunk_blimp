@@ -1,6 +1,5 @@
 steampunk_blimp = {}
 steampunk_blimp.gravity = 9.8
-steampunk_blimp.trunk_slots = 50
 local modpath = core.get_modpath(core.get_current_modname())
 steampunk_blimp.fuel = {
 	['default:coal_lump'] = { amount = 1 },
@@ -163,7 +162,7 @@ core.register_tool("steampunk_blimp:blimp", {
 			--ent.hp = 50 --reset hp
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
-			steampunk_blimp.create_inventory(ent, steampunk_blimp.trunk_slots)
+			steampunk_blimp.create_inventory(ent, ent.trunk_slots)
 
 			local properties = ent.object:get_properties()
 			properties.infotext = owner .. " nice blimp"
@@ -210,7 +209,7 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
 				steampunk_blimp.paint(ent, "black")
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
-			steampunk_blimp.create_inventory(ent, steampunk_blimp.trunk_slots)
+			steampunk_blimp.create_inventory(ent, ent.trunk_slots)
 
 			local properties = ent.object:get_properties()
 			properties.infotext = owner .. " war blimp"
@@ -295,7 +294,7 @@ core.register_tool("steampunk_blimp:hsa", {
 			ent._vehicle_name = "High Speed Airship"
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
-			steampunk_blimp.create_inventory(ent, steampunk_blimp.trunk_slots)
+			steampunk_blimp.create_inventory(ent, ent.trunk_slots)
 
 			local properties = ent.object:get_properties()
 			blimp:set_properties(properties)

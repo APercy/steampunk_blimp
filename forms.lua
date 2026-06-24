@@ -384,7 +384,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
         if steampunk_blimp.shared_player_is_allowed(ent, player) == false then return end
         if ent then
             if fields.set_texture then
-                if ent.name == "steampunk_blimp:blimp" then
+                if ent.name == "steampunk_blimp:blimp" or ent.name == "steampunk_blimp:hsa" then
                     if ent.owner == name or core.check_player_privs(name, {protection_bypass=true}) then
                         if fields.texture_name then
                             local image_name = fields.texture_name
@@ -447,7 +447,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
             end
             if fields.inventory then
                 if ent._remove ~= true then
-                    airutils.show_vehicle_trunk_formspec(ent, player, steampunk_blimp.trunk_slots)
+                    airutils.show_vehicle_trunk_formspec(ent, player, ent.trunk_slots)
                 end
             end
             if fields.manual then

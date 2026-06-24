@@ -754,7 +754,7 @@ function steampunk_blimp.right_click(self, clicker)
                     end
                 end
                 if is_shared then
-                    airutils.show_vehicle_trunk_formspec(self, clicker, steampunk_blimp.trunk_slots)
+                    airutils.show_vehicle_trunk_formspec(self, clicker, self.trunk_slots)
                 end
             else
                 if self.driver_name ~= nil and self.driver_name ~= "" then
