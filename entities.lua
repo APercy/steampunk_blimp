@@ -612,13 +612,16 @@ local function logic (self)
     steampunk_blimp.testDamage(self, velocity, curr_pos)
 
     --wings extended!
-    if self._lift and self._open_wings == true and longit_speed > (self._wing_min_speed or 1) then
-        --core.chat_send_all(dump(longit_speed))
-        local ceiling = 15000
-        local ref_speed = longit_speed - (self._wing_min_speed or 1)
-        local newaccel = airutils.getLiftAccel(self, velocity, accel, ref_speed, self._last_roll or 0, curr_pos, self._lift, ceiling, self._wing_span)
-        local curr_buoy = newaccel.y
-        self._baloon_buoyancy = math.min(curr_buoy, self.climb_buoyancy)
+    if self._lift and self._open_wings == true then
+        if longit_speed > (self._wing_min_speed or 1) then
+            --core.chat_send_all(dump(longit_speed))
+            local ceiling = self.ceiling or 15000
+            local ref_speed = longit_speed - (self._wing_min_speed or 1)
+            local newaccel = airutils.getLiftAccel(self, vector.divide(velocity,10), accel, ref_speed, self._last_roll or 0, curr_pos, self._lift, ceiling, self._wing_span)
+            local curr_lift = newaccel.y
+            self._baloon_buoyancy = math.min(curr_lift, self.climb_buoyancy)
+            --core.chat_send_all(dump(buoy))
+        end
     end
 
     accel = steampunk_blimp.control(self, self.dtime, hull_direction, relative_longit_speed, accel) or velocity
@@ -961,12 +964,13 @@ core.register_entity("steampunk_blimp:hsa", {
     end_frame = 47,
     frame_multiplier = 2,
     fire_position = {x=0.0,y=0.0,z=-3.14},
-    _lift = 1,
+    _lift = 10,
     _wing_span = 10,
-    _wing_angle_of_attack = 0.1,
-    _angle_of_attack = 0.1,
+    _wing_angle_of_attack = 1.6,
+    _angle_of_attack = 1,
     _wing_min_speed = 10,
     climb_buoyancy = 1.00001,
+    ceiling = 10000,
     driver_name = nil,
     sound_handle = nil,
     static_save = true,
@@ -978,7 +982,7 @@ core.register_entity("steampunk_blimp:hsa", {
     color2 = "white",
     logo = "steampunk_blimp_alpha_logo.png",
     timeout = 0;
-    buoyancy = 0.05,
+    buoyancy = 0.0001,
     max_hp = 50,
     anchored = true,
     physics = steampunk_blimp.physics,
