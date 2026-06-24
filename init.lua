@@ -79,6 +79,7 @@ dofile(modpath .. DIR_DELIM .. "textures.lua")
 
 if airutils.is_repixture then
     steampunk_blimp.set_repixture_blimptextures()
+    steampunk_blimp.set_repixture_hsatextures()
 else
     steampunk_blimp.set_minetest_blimptextures()
     steampunk_blimp.set_minetest_hsatextures()

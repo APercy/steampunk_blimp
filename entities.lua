@@ -970,7 +970,7 @@ core.register_entity("steampunk_blimp:hsa", {
     _wing_span = 10,
     _wing_angle_of_attack = 1.6,
     _angle_of_attack = 1,
-    _wing_min_speed = 10,
+    _wing_min_speed = 8,
     climb_buoyancy = 1.00001,
     ceiling = 10000,
     trunk_slots = 16,

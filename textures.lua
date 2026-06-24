@@ -148,3 +148,44 @@ function steampunk_blimp.set_minetest_hsatextures()
         steampunk_blimp.metal_texture,              --pontas do balão
 	}
 end
+
+function steampunk_blimp.set_repixture_hsatextures()
+	repixture_defaults()
+
+	steampunk_blimp.hsa_textures = {
+        "default_wood_oak.png^[multiply:#A09090",                   --casco inferior
+        "default_wood_oak.png",                         --quilha
+        "default_wood_oak.png^[multiply:#A09090",                   --interior
+        "steampunk_hsa_glasses.png",                --vidros frontais
+        "steampunk_hsa_front_windows.png",          --janelas metal
+        "steampunk_hsa_glasses.png",                --janelas redondas
+        "airutils_black.png",                       --coluna timao
+        "steampunk_blimp_steel.png",                --borda janelas inferiores
+        "steampunk_hsa_glasses.png",                --vidros janelas inferiores
+        steampunk_blimp.wood_texture,               --timao
+        "steampunk_blimp_compass.png",              --bussola
+        steampunk_blimp.color2_texture,             --det branco
+        steampunk_blimp.color1_texture,             --det azul
+        steampunk_blimp.black_texture,              --corpo bussola
+        "default_wood_oak.png",                         --moldura janela traseira
+        "default_wood_oak.png",                         --grade janela traseira
+        "steampunk_hsa_glasses.png",                --vidros janela traseira
+        "default_wood_oak.png",                         --rotor 1
+        "default_wood_oak.png",                         --rotor 2
+        "steampunk_blimp_engine.png",               --nacele rotores
+        "default_wood_oak.png",                         --borda traseira
+        steampunk_blimp.black_texture,	            --caldeira
+        "default_wood_oak.png",                         --montante asas
+        steampunk_blimp.black_texture,	            --conexao asas
+        "default_wood_oak.png",                         --suporte asas
+        steampunk_blimp.canvas_texture,             --balao
+        steampunk_blimp.color1_texture,             --det azul
+        steampunk_blimp.color2_texture,             --det branco
+        "airutils_name_canvas.png",                 --faixa do nome
+        "steampunk_blimp_alpha_logo.png",           --logo
+        steampunk_blimp.hull_color,                 --casco superior
+        "steampunk_blimp_steel.png",                --divsao parabrisa
+        steampunk_blimp.forno_texture,              --grade do forno
+        steampunk_blimp.metal_texture,              --pontas do balão
+	}
+end
