@@ -68,6 +68,7 @@ local function furnace_step(self, accel)
     if self._energy > 0 and self._engine_running then
         local consumed_power = (1/steampunk_blimp.FUEL_CONSUMPTION)
         if self._has_cannons == true then consumed_power = consumed_power + (consumed_power*0.3) end
+        if self._open_wings == true then consumed_power = consumed_power + (consumed_power*0.5) end
         local time_correction = (self.dtime/steampunk_blimp.ideal_step)
         if time_correction < 1 then time_correction = 1 end
         local dtimed_pressure = gained_pressure*time_correction

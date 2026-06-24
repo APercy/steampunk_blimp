@@ -69,14 +69,9 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         self._is_going_up = false
 		if ctrl.jump then
             if self._boiler_pressure > 0 then
-                if self.item == "steampunk_blimp:hsa" then
-                    self._baloon_buoyancy = 1.001
-                else
-                    if self._has_cannons then
-                        self._baloon_buoyancy = 1.005
-                    else
-                        self._baloon_buoyancy = 1.02
-                    end
+                self._baloon_buoyancy = self.climb_buoyancy
+                if self._has_cannons then
+                    self._baloon_buoyancy = self._baloon_buoyancy - 0.015
                 end
                 if self.isinliquid then self._baloon_buoyancy = 1.10 end
             end
@@ -142,7 +137,7 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
         end
     end
 
-    if self.hp > steampunk_blimp.min_hp then
+    if self.hp > steampunk_blimp.min_hp then --and not self._open_wings then
         steampunk_blimp.buoyancy_auto_correction(self, self.dtime)
     end
 

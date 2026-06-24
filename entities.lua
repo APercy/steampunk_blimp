@@ -611,6 +611,16 @@ local function logic (self)
     --detect collision
     steampunk_blimp.testDamage(self, velocity, curr_pos)
 
+    --wings extended!
+    if self._lift and self._open_wings == true and longit_speed > (self._wing_min_speed or 1) then
+        --core.chat_send_all(dump(longit_speed))
+        local ceiling = 15000
+        local ref_speed = longit_speed - (self._wing_min_speed or 1)
+        local newaccel = airutils.getLiftAccel(self, velocity, accel, ref_speed, self._last_roll or 0, curr_pos, self._lift, ceiling, self._wing_span)
+        local curr_buoy = newaccel.y
+        self._baloon_buoyancy = math.min(curr_buoy, self.climb_buoyancy)
+    end
+
     accel = steampunk_blimp.control(self, self.dtime, hull_direction, relative_longit_speed, accel) or velocity
 
     --get disconnected players
@@ -856,6 +866,7 @@ core.register_entity("steampunk_blimp:blimp", {
     end_frame = 47,
     frame_multiplier = 1,
     fire_position = {x=0.0,y=0.0,z=0.0},
+    climb_buoyancy = 1.02,
     driver_name = nil,
     sound_handle = nil,
     static_save = true,
@@ -950,6 +961,12 @@ core.register_entity("steampunk_blimp:hsa", {
     end_frame = 47,
     frame_multiplier = 2,
     fire_position = {x=0.0,y=0.0,z=-3.14},
+    _lift = 1,
+    _wing_span = 10,
+    _wing_angle_of_attack = 0.1,
+    _angle_of_attack = 0.1,
+    _wing_min_speed = 10,
+    climb_buoyancy = 1.00001,
     driver_name = nil,
     sound_handle = nil,
     static_save = true,

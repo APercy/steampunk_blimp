@@ -48,7 +48,7 @@ function steampunk_blimp.pilot_formspec(name)
             basic_form = basic_form.."checkbox[6,2.4;unlock;Unlock cannons;"..unl_can.."]"
             basic_form = basic_form.."checkbox[6,3.0;rev_can;Reverse cannons;"..rev_can.."]"
         else
-            if ent.item == "steampunk_blimp:hsa" then
+            if ent._lift and ent._lift > 0 then
                 basic_form = basic_form.."checkbox[6,2.4;open_wings;Extend wings;"..open_wings.."]"
             end
         end
