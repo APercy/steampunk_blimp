@@ -962,3 +962,42 @@ function steampunk_blimp.create_inventory(self, size, owner)
         airutils.load_inventory(self)
     end
 end
+
+function steampunk_blimp.manage_wings(self, open)
+    open = open or false
+    local override_l = {}
+    local override_r = {}
+    if open == true then
+        self._open_wings = true
+        override_l = {
+            rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
+            }
+        override_r = {
+            rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
+            }
+        core.chat_send_player(self.driver_name,core.colorize('#00ff00', " >>> wings extended"))
+    else
+        self._open_wings = false
+        override_l = {
+            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
+            }
+        override_r = {
+            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
+            }
+        core.chat_send_player(self.driver_name,core.colorize('#0000ff', " >>> wings retracted"))
+    end
+    self.wings:set_bone_override("wings.l", override_l)
+    self.wings:set_bone_override("wings.r", override_r)
+    core.sound_play({name = "default_cool_lava"},
+        {object = self.object, gain = 1.0,
+            pitch = 0.7,
+            max_hear_distance = 40,
+            loop = false,}, true)
+    core.after(1.0, function(pos)
+        core.sound_play({name = "steampunk_blimp_collision"},
+            {object = self.object, gain = 4.0,
+                pitch = 1.0,
+                max_hear_distance = 40,
+                loop = false,}, true)
+    end, self)
+end

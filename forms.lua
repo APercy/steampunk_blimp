@@ -543,31 +543,9 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 ent.cannons:set_bone_override("cannon_r", override)
             end
             if fields.open_wings then
-                local override_l = {}
-                local override_r = {}
-                if fields.open_wings == "true" then
-                    ent._open_wings = true
-                    --ent.cannons:set_bone_position("cannon_l", {x=-24,y=-2,z=0}, {x=0,y=0,z=0})
-                    --ent.cannons:set_bone_position("cannon_r", {x= 24,y=-2,z=0}, {x=0,y=0,z=0})
-                    override_l = {
-                        rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
-                        }
-                    override_r = {
-                        rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
-                        }
-                else
-                    ent._open_wings = false
-                    --ent.cannons:set_bone_position("cannon_l", {x=-24,y=-2,z=0}, {x=180,y=0,z=0})
-                    --ent.cannons:set_bone_position("cannon_r", {x= 24,y=-2,z=0}, {x=180,y=0,z=0})
-                    override_l = {
-                        rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
-                        }
-                    override_r = {
-                        rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
-                        }
-                end
-                ent.wings:set_bone_override("wings.l", override_l)
-                ent.wings:set_bone_override("wings.r", override_r)
+                local open = false
+                if fields.open_wings == "true" then open = true end
+                steampunk_blimp.manage_wings(ent, open)
             end
             if fields.unlock then
                 if fields.unlock == "true" then

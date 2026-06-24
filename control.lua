@@ -42,6 +42,10 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
     end
     local retval_accel = accel;
 
+    if not self._wing_cooldown then self._wing_cooldown = 1 end
+    self._wing_cooldown = self._wing_cooldown + self.dtime
+    if self._wing_cooldown > 1 then self._wing_cooldown = 1 end
+
 	-- player control
     local ctrl = nil
     local shot = 0 --to force a recoil after cannon shot
@@ -103,6 +107,12 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
                         local r_shot = steampunk_blimp.cannon_shot(self, self._cannon_r, self._r_armed)
                         shot = l_shot + r_shot
                     end
+                end
+            elseif self._has_cannons == false and self._lift then
+                if ctrl.jump and ctrl.aux1 then
+                    if self._wing_cooldown < 1 then return end
+                    self._wing_cooldown = 0
+                    steampunk_blimp.manage_wings(self, not self._open_wings)
                 end
             end
         end
