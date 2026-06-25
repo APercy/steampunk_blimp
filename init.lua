@@ -374,6 +374,16 @@ if not core.settings:get_bool('steampunk_blimp.disable_craftitems') then
 		core.register_craft({ output = item_name, recipe = { { "steampunk_blimp:cylinder", }, { "steampunk_blimp:boat", }, } })
 	end
 
+	item_name = "steampunk_blimp:hsa"
+	if airutils.is_repixture then
+		crafting.register_craft({ output = item_name, items = { "steampunk_blimp:cylinder 1", "steampunk_blimp:rotor 1",  "steampunk_blimp:boiler 1", "group:wood 3" } })
+	else
+		core.register_craft({ output = item_name, recipe = {
+            { "steampunk_blimp:cylinder", "steampunk_blimp:boiler", "steampunk_blimp:rotor"},
+            { "group:wood", "group:wood", "group:wood", },
+         } })
+	end
+
 	if steampunk_blimp.cannons_enabled == true then
 		item_name = "steampunk_blimp:cannon_blimp"
 		if airutils.is_repixture then
