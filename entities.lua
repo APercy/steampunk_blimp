@@ -697,7 +697,7 @@ local function logic (self)
 
     newpitch = newpitch + pitch_by_accel
     if newpitch > limit_pitch then newpitch = limit_pitch end
-    if limit_pitch < -limit_pitch then newpitch = -limit_pitch end
+    if newpitch < -limit_pitch then newpitch = -limit_pitch end
 
     --self.object:set_acceleration(accel)
     self.object:add_velocity(vector.multiply(accel,self.dtime))
