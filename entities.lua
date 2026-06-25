@@ -958,7 +958,7 @@ core.register_entity("steampunk_blimp:hsa", {
     textures_var = "hsa_textures",
     pilot_base_pos = { x = 0.0, y = 0.0, z = 32.5 },
     max_seats = 4,
-    max_speed = 10,
+    max_speed = 8,
     max_engine_acc = 4,
     wings_entity = 'steampunk_blimp:hsa_wings',
     hull_interactor_entity = 'steampunk_blimp:hsa_hull_interactor',
