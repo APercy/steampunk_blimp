@@ -265,7 +265,7 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 -- high speed airship
 core.register_tool("steampunk_blimp:hsa", {
 	description = "High Speed Airship",
-	inventory_image = "steampunk_blimp_gunboat_icon.png",
+	inventory_image = "steampunk_blimp_hsa_icon.png",
 	liquids_pointable = false,
 	stack_max = 1,
 
@@ -284,7 +284,7 @@ core.register_tool("steampunk_blimp:hsa", {
 		--local node_below = core.get_node(pointed_pos).name
 		--local nodedef = core.registered_nodes[node_below]
 
-		pointed_pos.y = pointed_pos.y + 3
+		pointed_pos.y = pointed_pos.y + 1.5
 		local blimp = core.add_entity(pointed_pos, "steampunk_blimp:hsa", staticdata)
 		if blimp and placer then
 			local ent = blimp:get_luaentity()
