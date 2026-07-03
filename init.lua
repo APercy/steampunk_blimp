@@ -328,12 +328,12 @@ core.register_abm({
         
         for _, object in ipairs(radius_objects) do
             if object then
-                local obj_pos = object:get_pos()
                 local entity = object:get_luaentity()
                 if entity and entity.name and entity.hp then
                     if entity.hp < max_hp then
                         for index, value in ipairs(affected_entities) do
                             if entity.name == value then
+                                local obj_pos = object:get_pos()
                                 local value_to_add = math.random(4, 8)
                                 entity.hp = entity.hp + value_to_add
                                 if entity.hp > max_hp then entity.hp = max_hp end
