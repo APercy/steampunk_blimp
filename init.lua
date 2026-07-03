@@ -305,6 +305,55 @@ core.register_tool("steampunk_blimp:hsa", {
 	end,
 })
 
+-- full repair station
+core.register_node("steampunk_blimp:repair_station", {
+    description = "Airship Repair Station",
+    tiles = {"steampunk_blimp_repairs.png"}, -- texture
+    groups = {cracky = 3, crumbly = 3}, -- Define quais ferramentas quebram este bloco
+    is_ground_content = true,
+})
+
+core.register_abm({
+    label = "Airship repair station",
+    nodenames = {"steampunk_blimp:repair_station"},
+    neighbors = {},
+    interval = 40.0, -- Checks every 40 seconds
+    chance = 2,     -- 1 in 2 chance of triggering when conditions are met
+    action = function(pos, node, active_object_count, active_object_count_wider)
+        local check_radius = 20
+        local max_hp = 150
+		local radius_objects = minetest.get_objects_inside_radius(pos, check_radius)
+        local meta = minetest.get_meta(pos)
+        local affected_entities = {"steampunk_blimp:hsa", "steampunk_blimp:ephemeral_blimp", "steampunk_blimp:cannon_blimp", "steampunk_blimp:blimp"}
+        
+        for _, object in ipairs(radius_objects) do
+            if object then
+                local obj_pos = object:get_pos()
+                local entity = object:get_luaentity()
+                if entity and entity.name and entity.hp then
+                    if entity.hp < max_hp then
+                        for index, value in ipairs(affected_entities) do
+                            if entity.name == value then
+                                local value_to_add = math.random(4, 8)
+                                entity.hp = entity.hp + value_to_add
+                                if entity.hp > max_hp then entity.hp = max_hp end
+                                core.sound_play("steampunk_blimp_saw", {
+                                    pos = obj_pos,
+                                    gain = 1.0,           -- Volume (0.0 to 1.0+)
+                                    max_hear_distance = check_radius, -- Distance in meters/nodes before it falls off to 0
+                                    pitch = 1.0,          -- Playback speed
+                                })
+                                break
+                            end
+                        end
+                    end
+                end 
+            end --end if it's an object
+        end --end check radius
+    end
+})
+
+
 
 steampunk_blimp.wind_enabled = core.settings:get_bool('steampunk_blimp.enable_wind')
 steampunk_blimp.cannons_enabled = core.settings:get_bool('steampunk_blimp.enable_cannons')
