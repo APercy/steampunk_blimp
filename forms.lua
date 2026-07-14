@@ -457,6 +457,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 if fields.take_control == "true" then
                     if ent.driver_name == nil or ent.driver_name == "" then
                         ent._at_control = true
+                        ent._yaw_by_mouse = false
                         for i = ent.max_seats,1,-1
                         do
                             if ent._passengers[i] == name then
@@ -474,6 +475,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 else
                     ent.driver_name = nil
                     ent._at_control = false
+                    ent._yaw_by_mouse = false
                     steampunk_blimp.remove_hud(player)
                 end
 		    end
@@ -849,6 +851,40 @@ core.register_chatcommand("blimp_whistle", {
                                 loop = false,}, true)
                     else
                         colorstring = core.colorize('#ff0000', " >>> you are not allowed to do it")
+			            core.chat_send_player(name,colorstring)
+                    end
+                end
+            end
+		else
+			core.chat_send_player(name,colorstring)
+		end
+	end
+})
+
+core.register_chatcommand("blimp_mouse", {
+	params = "<false>",
+	description = "Enable/disable yaw by mouse",
+	privs = {interact = true},
+	func = function(name, param)
+        local option = param --"true"..param
+        local colorstring = core.colorize('#ff0000', " >>> you are not the blimp pilot")
+        local player = core.get_player_by_name(name)
+        local attached_to = player:get_attach()
+
+		if attached_to ~= nil then
+            local seat = attached_to:get_attach()
+            if seat ~= nil then
+                local entity = seat:get_luaentity()
+                if entity then
+                    if entity.name == "steampunk_blimp:blimp" or entity.name == "steampunk_blimp:hsa" and entity.driver_name == name then
+                        if param ~= "false" then
+                            entity._yaw_by_mouse = true
+                            core.chat_send_player(name,core.colorize('#00ff00', " >>> yaw by mouse enabled"))
+                        else
+                            entity._yaw_by_mouse = false
+                            core.chat_send_player(name,core.colorize('#0000ff', " >>> yaw by mouse disabled"))
+                        end
+                    else
 			            core.chat_send_player(name,colorstring)
                     end
                 end

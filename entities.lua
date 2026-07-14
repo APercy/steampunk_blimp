@@ -916,6 +916,8 @@ core.register_entity("steampunk_blimp:blimp", {
     _has_cannons = false,
     _unl_can = false,
     _rev_can = false,
+    _rudder_limit = 30.0,
+    _yaw_intensity = 20.0,
     item = "steampunk_blimp:blimp",
     _vehicle_name = "Steampunk Blimp",
 
@@ -1018,6 +1020,8 @@ core.register_entity("steampunk_blimp:hsa", {
     _has_cannons = false,
     _unl_can = false,
     _rev_can = false,
+    _rudder_limit = 30.0,
+    _yaw_intensity = 20.0,
     item = "steampunk_blimp:hsa",
     _vehicle_name = "High Speed Airship",
 

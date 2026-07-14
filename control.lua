@@ -85,14 +85,19 @@ function steampunk_blimp.control(self, dtime, hull_direction, longit_speed, acce
 		end
 
 		-- rudder
-        local rudder_limit = 30
+        if self._yaw_by_mouse == true then
+            local rot_y = math.deg(player:get_look_horizontal())
+            airutils.set_yaw_by_mouse(self, rot_y)
+        end
         local speed = 10
         if not ctrl.aux1 then
-		    if ctrl.right then
-		        self._rudder_angle = math.max(self._rudder_angle-speed*dtime,-rudder_limit)
-		    elseif ctrl.left then
-		        self._rudder_angle = math.min(self._rudder_angle+speed*dtime,rudder_limit)
-		    end
+            if not self._yaw_by_mouse then
+		        if ctrl.right then
+		            self._rudder_angle = math.max(self._rudder_angle-speed*dtime,-self._rudder_limit)
+		        elseif ctrl.left then
+		            self._rudder_angle = math.min(self._rudder_angle+speed*dtime,self._rudder_limit)
+		        end
+            end
         else
             if self._has_cannons == true and self._unl_can == true then
                 if ctrl.right and self._cannon_r then
@@ -168,7 +173,7 @@ end
 function steampunk_blimp.rudder_auto_correction(self, longit_speed, dtime)
     local factor = 1
     if self._rudder_angle > 0 then factor = -1 end
-    local correction = (steampunk_blimp.rudder_limit*(longit_speed/2000)) * factor * (dtime/steampunk_blimp.ideal_step)
+    local correction = (self._rudder_limit*(longit_speed/2000)) * factor * (dtime/steampunk_blimp.ideal_step)
     local before_correction = self._rudder_angle
     local new_rudder_angle = self._rudder_angle + correction
     if math.sign(before_correction) ~= math.sign(new_rudder_angle) then
