@@ -107,6 +107,13 @@ local function do_attach(self, player, slot)
         else
             player_api.player_attached[name] = true
         end
+
+        if steampunk_blimp.move_player_mode == 1 then
+            self._passengers_base[slot]:set_attach(self.object,'',self._passengers_base_pos[slot],{x=0,y=0,z=0})
+        else
+            self.object:set_bone_override("p"..slot, {position = {vec = self._passengers_base_pos[slot], absolute = true},})
+        end
+
     end
 end
 

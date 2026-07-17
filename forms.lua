@@ -356,12 +356,20 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                 do
                     if ent._passengers[i] == name then
                         ent._passengers_base_pos[i] = vector.new(ent.pilot_base_pos)
-                        ent._passengers_base[i]:set_attach(ent.object,'',ent.pilot_base_pos,{x=0,y=0,z=0})
+                        if steampunk_blimp.move_player_mode == 1 then
+                            ent._passengers_base[i]:set_attach(ent.object,'',ent.pilot_base_pos,{x=0,y=0,z=0})
+                        else
+                            ent.object:set_bone_override("p"..i, {position = {vec = ent.pilot_base_pos, absolute = true},})
+                        end
                         player:set_attach(ent._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
                     end
                     if ent._passengers[i] == ent.driver_name then
                         ent._passengers_base_pos[i] = vector.new(steampunk_blimp.passenger_pos[i])
-                        ent._passengers_base[i]:set_attach(ent.object,'',ent._passengers_base_pos[i],{x=0,y=0,z=0})
+                        if steampunk_blimp.move_player_mode == 1 then
+                            ent._passengers_base[i]:set_attach(ent.object,'',ent._passengers_base_pos[i],{x=0,y=0,z=0})
+                        else
+                            ent.object:set_bone_override("p"..i, {position = {vec = ent._passengers_base_pos[i], absolute = true},})
+                        end
                     end
                 end
                 ent.driver_name = name
@@ -462,7 +470,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
                         do
                             if ent._passengers[i] == name then
                                 ent._passengers_base_pos[i] = vector.new(ent.pilot_base_pos)
-                                ent._passengers_base[i]:set_attach(ent.object,'',ent.pilot_base_pos,{x=0,y=0,z=0})
+                                if steampunk_blimp.move_player_mode == 1 then
+                                    ent._passengers_base[i]:set_attach(ent.object,'',ent.pilot_base_pos,{x=0,y=0,z=0})
+                                else
+                                    ent.object:set_bone_override("p"..i, {position = {vec = ent.pilot_base_pos, absolute = true},})
+                                end
                                 player:set_attach(ent._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
                                 ent.driver_name = name
                                 --core.chat_send_all(">>"..ent.driver_name)

@@ -48,6 +48,12 @@ steampunk_blimp.min_damage_value = 20 --min value to cause damage
 steampunk_blimp.rudder_limit = 30
 steampunk_blimp.iddle_rotation = 0
 steampunk_blimp.wind_enabled = false
+steampunk_blimp.move_player_mode = 2
+
+local old_walk_option = core.settings:get_bool('steampunk_blimp.old_walk_mode') or false
+if old_walk_option == true then
+    steampunk_blimp.move_player_mode = 1
+end
 
 --[[steampunk_blimp.passenger_pos = {
 	[1] = { x = 0.0, y = 0, z = -15 },

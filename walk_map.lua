@@ -163,7 +163,11 @@ function steampunk_blimp.move_persons(self)
                                 --or self.profiler_counter1 == 1000 then --vai entrar sempre qdo for maior ou igual a 100
                                 --core.chat_send_all(dump(self.dtime))
                                 self._passengers_base_pos[i] = steampunk_blimp.copy_vector(pos_d)
-                                self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                                if steampunk_blimp.move_player_mode == 1 then
+                                    self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                                else
+                                    self.object:set_bone_override("p"..i, {position = {vec = self._passengers_base_pos[i], absolute = true},})
+                                end
                             end
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))

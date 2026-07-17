@@ -503,7 +503,11 @@ local function on_activate(self, staticdata, dtime_s)
         self._passenger_is_sit[i] = 0
         self._passengers_base_pos[i] = steampunk_blimp.get_random_pos(0, 10, 12, 14) --steampunk_blimp.copy_vector(steampunk_blimp.passenger_pos[i])
         self._passengers_base[i]=core.add_entity(pos,'steampunk_blimp:stand_base')
-        self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+        if steampunk_blimp.move_player_mode == 1 then
+            self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+        else
+            self._passengers_base[i]:set_attach(self.object, 'p'..i, {x=0,y=0,z=0}, {x=0,y=0,z=0})
+        end
     end
 
     --animation load - stoped
