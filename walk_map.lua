@@ -132,7 +132,6 @@ function steampunk_blimp.move_persons(self)
         if self.driver_name and self._passengers[i] == self.driver_name then
             --clean driver if it's nil
             if player == nil then
-                --self._passengers[i] = nil
                 self.driver_name = nil
             end
         else
