@@ -540,6 +540,9 @@ local function on_step(self,dtime,colinfo)
 --  physics comes first
     local vel = self.object:get_velocity()
 
+    --get disconnected players
+    steampunk_blimp.rescueConnectionFailedPassengers(self)
+
     if colinfo then
 	    self.isonground = colinfo.touching_ground
     else
@@ -556,7 +559,10 @@ local function on_step(self,dtime,colinfo)
 	    self:logic()
     end
 
+    steampunk_blimp.move_persons(self)
+
     self.lastvelocity = self.object:get_velocity()
+    self._last_vel = self.lastvelocity
     self.time_total=self.time_total+self.dtime
 end
 
@@ -590,9 +596,6 @@ local function logic (self)
 
     self._last_pos = curr_pos
     self.object:move_to(curr_pos)
-
-    --get disconnected players
-    steampunk_blimp.rescueConnectionFailedPassengers(self)
 
     if self.owner == "" then return end
     if self.hp <= steampunk_blimp.min_hp then
@@ -734,10 +737,7 @@ local function logic (self)
     self.object:set_bone_override("compass_axis", override)
 
     --saves last velocy for collision detection (abrupt stop)
-    self._last_vel = self.object:get_velocity()
     self._last_accell = accel
-
-    steampunk_blimp.move_persons(self)
 end
 
 local function on_punch(self, puncher, ttime, toolcaps, dir, damage)
@@ -859,6 +859,7 @@ local function on_deactivate(self)
     if self.sound_handle_pistons then core.sound_stop(self.sound_handle_pistons) end
 
     if airutils.debug_log then
+        local pos = self.object:get_pos()
         core.log("action","deactivating: "..self._vehicle_name.." from "..self.owner.." at position "..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z))
     end
 end
