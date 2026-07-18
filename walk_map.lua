@@ -166,12 +166,16 @@ function steampunk_blimp.move_persons(self)
                                 if steampunk_blimp.move_player_mode == 1 then
                                     self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
                                 else
-                                    self.object:set_bone_override("p"..i, {position = {vec = self._passengers_base_pos[i], absolute = true},})
+                                    --self.object:set_bone_override("p"..i, {position = {vec = self._passengers_base_pos[i], absolute = true},})
                                 end
                             end
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
-                        player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
+                        if steampunk_blimp.move_player_mode == 1 then
+                            player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
+                        else
+                            self.object:set_bone_override("p"..i, {rotation = {vec = {x = 0, y = math.rad(y_rot), z = 0}, absolute = false}, position = {vec = self._passengers_base_pos[i], absolute = true}})
+                        end
                     end
                 end
             end

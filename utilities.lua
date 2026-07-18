@@ -93,6 +93,7 @@ function steampunk_blimp.testDamage(self, velocity, position)
 end
 
 local function do_attach(self, player, slot)
+    slot = slot or 0
     if slot == 0 then return end
     if self._passengers[slot] == nil then
         local name = player:get_player_name()
@@ -131,27 +132,34 @@ function steampunk_blimp.check_passenger_is_attached(self, name)
     return is_attached
 end
 
+function steampunk_blimp.check_is_attached(self, name)
+    local is_attached = nil
+    if airutils.is_mcl then
+        is_attached = mcl_player.player_attached[name]
+    elseif airutils.is_repixture then
+        is_attached = rp_player.player_attached[name]
+    else
+        is_attached = player_api.player_attached[name]
+    end
+    --core.chat_send_all(dump(name).." - "..dump(is_attached))
+    return is_attached
+end
+
 --this method checks each 1 second for a disconected player who comes back
 function steampunk_blimp.rescueConnectionFailedPassengers(self)
     self._disconnection_check_time = self._disconnection_check_time + self.dtime
     if self._disconnection_check_time > 1 then
         --core.chat_send_all(dump(self._passengers))
         self._disconnection_check_time = 0
+
         for i = self.max_seats,1,-1
         do
             if self._passengers[i] then
                 local player = core.get_player_by_name(self._passengers[i])
                 if player then --we have a player!
-                    local is_attached = nil
-                    if airutils.is_mcl then
-                        is_attached = mcl_player.player_attached[self._passengers[i]]
-                    elseif airutils.is_repixture then
-                        is_attached = rp_player.player_attached[self._passengers[i]]
-                    else
-                        is_attached = player_api.player_attached[self._passengers[i]]
-                    end
+                    local is_attached = steampunk_blimp.check_is_attached(self, self._passengers[i])
 
-                    if is_attached == nil then --but isn't attached?
+                    if is_attached == nil or is_attached == false then --but isn't attached?
                         --core.chat_send_all("okay")
 		                if player:get_hp() > 0 then
                             self._passengers[i] = nil --clear the slot first

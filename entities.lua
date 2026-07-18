@@ -591,6 +591,9 @@ local function logic (self)
     self._last_pos = curr_pos
     self.object:move_to(curr_pos)
 
+    --get disconnected players
+    steampunk_blimp.rescueConnectionFailedPassengers(self)
+
     if self.owner == "" then return end
     if self.hp <= steampunk_blimp.min_hp then
         self._engine_running = false
@@ -630,9 +633,6 @@ local function logic (self)
     end
 
     accel = steampunk_blimp.control(self, self.dtime, hull_direction, relative_longit_speed, accel) or velocity
-
-    --get disconnected players
-    steampunk_blimp.rescueConnectionFailedPassengers(self)
 
     local turn_rate = math.rad(18)
     newyaw = yaw + self.dtime*(1 - 1 / (math.abs(relative_longit_speed) + 1)) *
