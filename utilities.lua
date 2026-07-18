@@ -120,13 +120,11 @@ end
 
 function steampunk_blimp.check_passenger_is_attached(self, name)
     local is_attached = false
-    if is_attached == false then
-        for i = self.max_seats,1,-1
-        do
-            if self._passengers[i] == name then
-                is_attached = true
-                break
-            end
+    for i = self.max_seats,1,-1
+    do
+        if self._passengers[i] == name then
+            is_attached = true
+            break
         end
     end
     return is_attached
@@ -151,10 +149,10 @@ function steampunk_blimp.rescueConnectionFailedPassengers(self)
     if self._disconnection_check_time > 1 then
         --core.chat_send_all(dump(self._passengers))
         self._disconnection_check_time = 0
-
         for i = self.max_seats,1,-1
         do
             if self._passengers[i] then
+                --core.chat_send_all("pax: "..dump(self._passengers[i]))
                 local player = core.get_player_by_name(self._passengers[i])
                 if player then --we have a player!
                     local is_attached = steampunk_blimp.check_is_attached(self, self._passengers[i])

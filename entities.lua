@@ -933,6 +933,10 @@ core.register_entity("steampunk_blimp:blimp", {
         end
         if self.sound_handle then core.sound_stop(self.sound_handle) end
         if self.sound_handle_pistons then core.sound_stop(self.sound_handle_pistons) end
+
+        if airutils.debug_log then
+            core.log("action","deactivating: "..self._vehicle_name.." from "..self.owner.." at position "..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z))
+        end
 	end,
 
     on_activate = on_activate,
@@ -944,8 +948,6 @@ core.register_entity("steampunk_blimp:blimp", {
     on_punch = on_punch,
 
     on_rightclick = steampunk_blimp.right_click,
-
-    on_deactivate = airutils.on_deactivate,
 })
 
 
