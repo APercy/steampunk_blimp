@@ -258,6 +258,7 @@ function steampunk_blimp.dettach_pax(self, player, side)
         end
 
         -- move player down
+        local pos = self.object:get_pos()
         core.after(0.1, function(pos)
             local rotation = self.object:get_rotation()
             local direction = rotation.y
