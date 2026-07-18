@@ -851,6 +851,18 @@ local function on_punch(self, puncher, ttime, toolcaps, dir, damage)
     end
 end
 
+local function on_deactivate(self)
+    if self._remove ~= true then
+        airutils.save_inventory(self)
+    end
+    if self.sound_handle then core.sound_stop(self.sound_handle) end
+    if self.sound_handle_pistons then core.sound_stop(self.sound_handle_pistons) end
+
+    if airutils.debug_log then
+        core.log("action","deactivating: "..self._vehicle_name.." from "..self.owner.." at position "..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z))
+    end
+end
+
 core.register_entity("steampunk_blimp:blimp", {
     initial_properties = {
         physical = true,
@@ -927,17 +939,7 @@ core.register_entity("steampunk_blimp:blimp", {
 
     get_staticdata = get_staticdata, -- unloaded/unloads ... is now saved
 
-	on_deactivate = function(self)
-        if self._remove ~= true then
-            airutils.save_inventory(self)
-        end
-        if self.sound_handle then core.sound_stop(self.sound_handle) end
-        if self.sound_handle_pistons then core.sound_stop(self.sound_handle_pistons) end
-
-        if airutils.debug_log then
-            core.log("action","deactivating: "..self._vehicle_name.." from "..self.owner.." at position "..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z))
-        end
-	end,
+	on_deactivate = on_deactivate,
 
     on_activate = on_activate,
 
@@ -1033,17 +1035,7 @@ core.register_entity("steampunk_blimp:hsa", {
 
     get_staticdata = get_staticdata, -- unloaded/unloads ... is now saved
 
-	on_deactivate = function(self)
-        if self._remove ~= true then
-            airutils.save_inventory(self)
-        end
-        if self.sound_handle then core.sound_stop(self.sound_handle) end
-        if self.sound_handle_pistons then core.sound_stop(self.sound_handle_pistons) end
-
-        if airutils.debug_log then
-            core.log("action","deactivating: "..self._vehicle_name.." from "..self.owner.." at position "..math.floor(pos.x)..","..math.floor(pos.y)..","..math.floor(pos.z))
-        end
-	end,
+	on_deactivate = on_deactivate,
 
     on_activate = on_activate,
 
