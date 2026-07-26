@@ -975,7 +975,7 @@ core.register_entity("steampunk_blimp:hsa", {
     hull_interactor_entity = 'steampunk_blimp:hsa_hull_interactor',
     start_frame = 1,
     end_frame = 47,
-    frame_multiplier = 2,
+    frame_multiplier = 1,
     fire_position = {x=0.0,y=0.0,z=-3.14},
     _lift = 10,
     _wing_span = 10,
