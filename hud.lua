@@ -234,6 +234,15 @@ function steampunk_blimp.update_hud(player, coal, water, pressure, power_lever)
 end
 
 
+local function delete_hud(player, ids, player_name)
+        --player:hud_remove(ids["altitude"])
+        --player:hud_remove(ids["time"])
+        for key in pairs(ids) do
+            player:hud_remove(ids[key])
+        end
+        steampunk_blimp.hud_list[player_name] = nil
+end
+
 function steampunk_blimp.remove_hud(player)
     if player then
         local player_name = player:get_player_name()
@@ -241,12 +250,11 @@ function steampunk_blimp.remove_hud(player)
         local ids = steampunk_blimp.hud_list[player_name]
         --core.chat_send_all(dump(ids))
         if ids then
-            --player:hud_remove(ids["altitude"])
-            --player:hud_remove(ids["time"])
-            for key in pairs(ids) do
-                player:hud_remove(ids[key])
-            end
-            steampunk_blimp.hud_list[player_name] = nil
+            delete_hud(player, ids, player_name)
+
+            core.after(1.0, function(player, ids, player_name)
+                delete_hud(player, ids, player_name)
+            end, player, ids, player_name)
         end
     end
 
