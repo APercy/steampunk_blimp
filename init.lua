@@ -166,6 +166,8 @@ core.register_tool("steampunk_blimp:blimp", {
 			--core.chat_send_all('passengers: '.. dump(ent._passengers))
 			local owner = placer:get_player_name()
 			ent.owner = owner
+            ent.item = ent.name
+            if ent._has_cannons == true then ent.item = "steampunk_blimp:cannon_blimp" end
 			--ent.hp = 50 --reset hp
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
@@ -197,7 +199,7 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
 		local stack_meta = itemstack:get_meta()
 		local staticdata = stack_meta:get_string("staticdata")
 		if staticdata == nil or staticdata == "" then
-			staticdata = 'return {stored_has_cannons=true,stored_owner="' .. owner .. '",}'
+			staticdata = 'return {stored_has_cannons=true,stored_owner="' .. owner .. '",stored_color="black",}'
 		end
 
 		local pointed_pos = pointed_thing.under
@@ -211,9 +213,10 @@ core.register_tool("steampunk_blimp:cannon_blimp", {
 			ent._passengers = steampunk_blimp.allocate_array(ent.max_seats)
 			--core.chat_send_all('passengers: '.. dump(ent._passengers))
 			ent.owner = owner
+            ent.item = "steampunk_blimp:cannon_blimp"
 			--ent.hp = 50 --reset hp
 			ent._vehicle_name = "Gunboat Steampunk Blimp",
-				steampunk_blimp.paint(ent, "black")
+				--steampunk_blimp.paint(ent, "black")
 			blimp:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
 			steampunk_blimp.create_inventory(ent, ent.trunk_slots)
@@ -250,6 +253,7 @@ core.register_craftitem("steampunk_blimp:ephemeral_blimp", {
 			--core.chat_send_all('passengers: '.. dump(ent._passengers))
 			local owner = placer:get_player_name()
 			ent.owner = owner
+            ent.item = "steampunk_blimp:ephemeral_blimp"
 			ent._remove = true
 			ent._water_level = steampunk_blimp.MAX_WATER --start it full loaded
 			ent._energy = steampunk_blimp.MAX_FUEL	   --start it full loaded
@@ -297,6 +301,7 @@ core.register_tool("steampunk_blimp:hsa", {
 			ent._passengers = steampunk_blimp.allocate_array(ent.max_seats)
 			--core.chat_send_all('passengers: '.. dump(ent._passengers))
 			ent.owner = owner
+            ent.item = "steampunk_blimp:hsa"
 			--ent.hp = 50 --reset hp
 			ent._vehicle_name = "High Speed Airship"
 			blimp:set_yaw(placer:get_look_horizontal())

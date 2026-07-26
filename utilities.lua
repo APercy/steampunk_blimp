@@ -404,6 +404,8 @@ function steampunk_blimp.get_blimp_back(self, player, overload)
     local pos = self.object:get_pos()
     local lua_ent = self.object:get_luaentity()
     local staticdata = lua_ent:get_staticdata(self)
+    local item_name = lua_ent.item
+    --core.chat_send_all(dump(item_name))
     --local player = core.get_player_by_name(self.owner)
 
     steampunk_blimp.remove_blimp(self)
@@ -411,7 +413,7 @@ function steampunk_blimp.get_blimp_back(self, player, overload)
     if remove_it == false then
         pos.y=pos.y+2
 
-        local stack = ItemStack(self.item)
+        local stack = ItemStack(item_name)
         local stack_meta = stack:get_meta()
         stack_meta:set_string("staticdata", staticdata)
 

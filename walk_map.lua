@@ -151,9 +151,9 @@ function steampunk_blimp.move_persons(self)
                             local pos_d = vector.new()
 
                             --select blimp type to navigate
-                            if self.item == "steampunk_blimp:blimp" then
+                            if self.name == "steampunk_blimp:blimp" or self.name == "steampunk_blimp:cannon_blimp" then
                                 pos_d = steampunk_blimp.navigate_blimp_deck(self._passengers_base_pos[i], new_pos, player)
-                            elseif self.item == "steampunk_blimp:hsa" then
+                            elseif self.name == "steampunk_blimp:hsa" then
                                 pos_d = steampunk_blimp.navigate_hsa_deck(self._passengers_base_pos[i], new_pos, player)
                             end
                             --core.chat_send_all(dump(height))

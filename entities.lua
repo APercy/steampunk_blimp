@@ -935,7 +935,7 @@ core.register_entity("steampunk_blimp:blimp", {
     _rev_can = false,
     _rudder_limit = 30.0,
     _yaw_intensity = 20.0,
-    item = "steampunk_blimp:blimp",
+    item = "steampunk_blimp:blimp", --I know I could use the item.name BUT I can transform one blimp into another, so this way work better for me
     _vehicle_name = "Steampunk Blimp",
 
     get_staticdata = get_staticdata, -- unloaded/unloads ... is now saved
@@ -1031,7 +1031,7 @@ core.register_entity("steampunk_blimp:hsa", {
     _rev_can = false,
     _rudder_limit = 30.0,
     _yaw_intensity = 20.0,
-    item = "steampunk_blimp:hsa",
+    item = "steampunk_blimp:hsa", --I know I could use the item.name BUT I can transform one blimp into another, so this way work better for me
     _vehicle_name = "High Speed Airship",
 
     get_staticdata = get_staticdata, -- unloaded/unloads ... is now saved
