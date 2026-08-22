@@ -983,28 +983,24 @@ function steampunk_blimp.manage_wings(self, open)
     open = open or false
     local override_l = {}
     local override_r = {}
+    local wings_ent = self.wings:get_luaentity()
     if open == true then
         self._open_wings = true
-        override_l = {
-            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
-            }
-        override_r = {
-            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
-            }
+        if wings_ent then
+            self.wings:set_animation({x = wings_ent.animation_start, y = wings_ent.animation_end}, 30, 0, false)
+        end
+
         core.chat_send_player(self.driver_name,core.colorize('#00ff00', " >>> wings extended"))
     else
         self._open_wings = false
-        override_l = {
-            rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
-            }
-        override_r = {
-            rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
-            }
+        if wings_ent then
+            self.wings:set_animation({x = wings_ent.animation_start, y = wings_ent.animation_end}, -30, 0, false)
+        end
+
         core.chat_send_player(self.driver_name,core.colorize('#0000ff', " >>> wings retracted"))
         self._baloon_buoyancy = 0
     end
-    self.wings:set_bone_override("wings.l", override_l)
-    self.wings:set_bone_override("wings.r", override_r)
+
     core.sound_play({name = "default_cool_lava"},
         {object = self.object, gain = 1.0,
             pitch = 0.7,

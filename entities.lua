@@ -112,20 +112,24 @@ initial_properties = {
             steampunk_blimp.canvas_texture, --asa
         },
 	},
+    animation_start = 1,
+    animation_end = 41,
 
     on_activate = function(self,std)
 	    self.sdata = core.deserialize(std) or {}
 	    if self.sdata.remove then self.object:remove() end
         self.object:set_armor_groups({immortal=1})
 
-        override_l = {
+        self.object:set_animation({x = self.animation_start, y = self.animation_end}, 0, 0, false)
+
+        --[[override_l = {
             rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
             }
         override_r = {
             rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
             }
         self.object:set_bone_override("wings.l", override_l)
-        self.object:set_bone_override("wings.r", override_r)
+        self.object:set_bone_override("wings.r", override_r)]]--
     end,
 
     get_staticdata=function(self)
