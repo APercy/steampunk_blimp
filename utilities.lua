@@ -619,11 +619,11 @@ function steampunk_blimp.pitch_by_accel(self, accel, hull_direction, max_pitch)
     if math.abs(self._pitch_accel_accumulator) > 0 then
         pitch_to_decrease = math.rad(angle)*self._last_longit_accel or math.rad(angle)
         local abs_difference = self._pitch_accel_accumulator - pitch_to_decrease
-        if math.sign(self._pitch_accel_accumulator) == math.sign(abs_difference) then
+        --if math.sign(self._pitch_accel_accumulator) == math.sign(abs_difference) then
             new_pitch = self._pitch_accel_accumulator - pitch_to_decrease
-        else
-            new_pitch = 0
-        end
+        --else
+            --new_pitch = 0
+        --end
     end
     self._last_longit_accel = longit_accel
 
@@ -644,7 +644,7 @@ function steampunk_blimp.pitch_by_accel(self, accel, hull_direction, max_pitch)
     else
         self._pitch_accel_accumulator = 0
     end]]--
-
+    
     return self._pitch_accel_accumulator or 0
 end
 
@@ -986,19 +986,19 @@ function steampunk_blimp.manage_wings(self, open)
     if open == true then
         self._open_wings = true
         override_l = {
-            rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
+            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
             }
         override_r = {
-            rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
+            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
             }
         core.chat_send_player(self.driver_name,core.colorize('#00ff00', " >>> wings extended"))
     else
         self._open_wings = false
         override_l = {
-            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
+            rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
             }
         override_r = {
-            rotation = { vec={x=0,y=math.rad(360),z=0}, interpolation = 1, absolute = false }
+            rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
             }
         core.chat_send_player(self.driver_name,core.colorize('#0000ff', " >>> wings retracted"))
         self._baloon_buoyancy = 0

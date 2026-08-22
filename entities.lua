@@ -117,6 +117,15 @@ initial_properties = {
 	    self.sdata = core.deserialize(std) or {}
 	    if self.sdata.remove then self.object:remove() end
         self.object:set_armor_groups({immortal=1})
+
+        override_l = {
+            rotation = { vec={x=0,y=math.rad(-90),z=0}, interpolation = 1, absolute = false }
+            }
+        override_r = {
+            rotation = { vec={x=0,y=math.rad(90),z=0}, interpolation = 1, absolute = false }
+            }
+        self.object:set_bone_override("wings.l", override_l)
+        self.object:set_bone_override("wings.r", override_r)
     end,
 
     get_staticdata=function(self)
@@ -632,6 +641,9 @@ local function logic (self)
             local curr_lift = newaccel.y
             self._baloon_buoyancy = math.min(curr_lift, self.climb_buoyancy)
             --core.chat_send_all(dump(buoy))
+        else
+            --stabilize the ship
+            if self._baloon_buoyancy > 0.0 then self._baloon_buoyancy = 0.0 end
         end
     end
 
@@ -884,7 +896,7 @@ core.register_entity("steampunk_blimp:blimp", {
     wings_entity = 'steampunk_blimp:wings',
     hull_interactor_entity = 'steampunk_blimp:hull_interactor',
     start_frame = 1,
-    end_frame = 47,
+    end_frame = 48,
     frame_multiplier = 1,
     fire_position = {x=0.0,y=0.0,z=0.0},
     climb_buoyancy = 1.02,
@@ -973,8 +985,8 @@ core.register_entity("steampunk_blimp:hsa", {
     max_engine_acc = 4,
     wings_entity = 'steampunk_blimp:hsa_wings',
     hull_interactor_entity = 'steampunk_blimp:hsa_hull_interactor',
-    start_frame = 1,
-    end_frame = 47,
+    start_frame = 0,
+    end_frame = 48,
     frame_multiplier = 1,
     fire_position = {x=0.0,y=0.0,z=-3.14},
     _lift = 10,

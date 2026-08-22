@@ -103,8 +103,6 @@ function steampunk_blimp.set_minetest_blimptextures()
 		steampunk_blimp.color2_texture,   --det branco
 		steampunk_blimp.wood_texture,	 --fixacao cordas
 		"steampunk_blimp_alpha_logo.png", --logo
-		--"steampunk_blimp_metal.png",
-		--"steampunk_blimp_red.png",
 	}
 end
 
